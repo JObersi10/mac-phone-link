@@ -58,10 +58,18 @@ final class SessionManager {
 
     private func locateServerJar() throws -> String {
         let fm = FileManager.default
+        // 1. Bundled inside the .app (the normal, self-contained case).
+        if let bundled = Bundle.main.resourceURL?
+            .appendingPathComponent("scrcpy-server").path,
+           fm.isReadableFile(atPath: bundled) {
+            return bundled
+        }
+        // 2. Explicit override (useful for `swift run` during development).
         if let env = ProcessInfo.processInfo.environment["PHONELINK_SCRCPY_SERVER"],
            fm.isReadableFile(atPath: env) {
             return env
         }
+        // 3. Application Support fallback.
         let appSupport = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
         if let candidate = appSupport?
             .appendingPathComponent("mac-phone-link/scrcpy-server").path,

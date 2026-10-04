@@ -40,8 +40,14 @@ public struct Adb {
         self.serial = serial
     }
 
-    /// Search PATH and the common platform-tools locations for `adb`.
+    /// Search the app bundle, then PATH and common platform-tools locations.
     static func locate() -> String? {
+        // Prefer the adb bundled inside the .app so the tool is self-contained
+        // and version-consistent with the bundled scrcpy-server.
+        if let bundled = Bundle.main.resourceURL?.appendingPathComponent("adb").path,
+           FileManager.default.isExecutableFile(atPath: bundled) {
+            return bundled
+        }
         let candidates = [
             "/opt/homebrew/bin/adb",
             "/usr/local/bin/adb",

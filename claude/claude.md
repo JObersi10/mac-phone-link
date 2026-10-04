@@ -45,10 +45,13 @@ These are product constraints the owner set; honor them.
 
 ## Pinned protocol versions
 
-- scrcpy server: `ScrcpyProtocol.ScrcpyServer.pinnedVersion` (currently 3.1).
-  NOTE: live virtual-display resize (the aspect-ratio button's device-side path)
-  needs scrcpy **≥ 4.0** (resizable virtual display). See handoff "Open
-  decisions".
+- scrcpy server: `ScrcpyProtocol.ScrcpyServer.pinnedVersion` = **4.1**, bundled
+  at `vendor/scrcpy-server` and copied into the app. 4.1 gives resizable virtual
+  displays, so the aspect-ratio button's live device-side resize works. The
+  version string MUST match the bundled server exactly (scrcpy-server validates
+  it).
+- `adb`: bundled at `vendor/adb` (universal binary from scrcpy macOS v4.1),
+  copied into the app; `AdbBridge` prefers it.
 - KDE Connect: protocol v7.
 
 Protocol byte/JSON layouts are version-specific — re-verify against upstream

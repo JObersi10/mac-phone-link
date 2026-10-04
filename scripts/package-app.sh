@@ -31,6 +31,27 @@ if ls "${BIN_PATH}"/*.bundle >/dev/null 2>&1; then
   cp -R "${BIN_PATH}"/*.bundle "${BUILD_DIR}/${BUNDLE}/Contents/Resources/" || true
 fi
 
+# Bundle the runtime tools (scrcpy-server + adb, both Apache-2.0) so the app is
+# self-contained — no manual download. These live committed in vendor/.
+RES="${BUILD_DIR}/${BUNDLE}/Contents/Resources"
+if [ -f vendor/scrcpy-server ]; then
+  cp vendor/scrcpy-server "${RES}/scrcpy-server"
+  echo "    bundled scrcpy-server"
+else
+  echo "    WARN: vendor/scrcpy-server missing — mirroring will prompt for it"
+fi
+if [ -f vendor/adb ]; then
+  cp vendor/adb "${RES}/adb"
+  chmod +x "${RES}/adb"
+  echo "    bundled adb"
+else
+  echo "    WARN: vendor/adb missing — adb must be on PATH at runtime"
+fi
+# Apache-2.0 requires shipping scrcpy's LICENSE alongside its binaries.
+if [ -f vendor/scrcpy-LICENSE ]; then
+  cp vendor/scrcpy-LICENSE "${RES}/scrcpy-LICENSE"
+fi
+
 echo "==> Ad-hoc code signature (unsigned distribution)"
 # Ad-hoc signing lets the app run locally after the quarantine attribute is
 # cleared; it is NOT notarized. See README "Installing an unsigned build".

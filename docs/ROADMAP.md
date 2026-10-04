@@ -13,10 +13,9 @@ are done; most remaining work is transport, rendering, and UX.
       `scrcpy-server` into Application Support (checksum-verified).
 
 ## Milestone 2 — Per-app windows polish
-- [ ] **Bump scrcpy pin to 4.x** for resizable virtual displays, then re-verify
-      the control-message/video layouts and re-run protocol tests. This makes
-      the aspect-ratio button's live device resize real (it already sends
-      `RESIZE_DISPLAY`; the client-side framing works today regardless).
+- [x] **Bumped scrcpy pin to 4.1** (bundled) for resizable virtual displays, so
+      the aspect-ratio button's live device resize is supported. Re-verify the
+      control-message/video layouts against 4.1 during on-device testing.
 - [ ] App picker that lists installed packages (`adb shell pm list packages`);
       also feeds appName→package resolution for notification→mirror.
 - [ ] Remember window size/DPI per app.

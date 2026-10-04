@@ -5,4 +5,8 @@ build/
 .swiftpm/
 Package.resolved
 *.dmg
-vendor/scrcpy-server
+# Vendored runtime tools (scrcpy-server, adb, scrcpy-LICENSE) ARE committed so
+# the build is self-contained. Ignore only the raw download archives.
+vendor/*.zip
+vendor/*.tar.gz
+vendor/platform-tools/

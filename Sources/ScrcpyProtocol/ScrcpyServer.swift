@@ -14,7 +14,12 @@ import Foundation
 ///   server/.../DeviceMessage — device → client messages (clipboard)
 public enum ScrcpyServer {
     /// The scrcpy-server release this protocol module targets.
-    public static let pinnedVersion = "3.1"
+    ///
+    /// 4.x is required for resizable virtual displays (the aspect-ratio button's
+    /// live device-side resize via RESIZE_DISPLAY). The bundled scrcpy-server
+    /// MUST match this string exactly — scrcpy-server validates the version
+    /// argument against its own build and refuses to start on a mismatch.
+    public static let pinnedVersion = "4.1"
 
     /// scrcpy-server speaks this SCID handshake value for app-selected sockets.
     /// (Informational; the launcher passes `scid=` on the command line.)

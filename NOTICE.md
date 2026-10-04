@@ -14,10 +14,21 @@ the phone via `adb` and implements a compatible desktop client. The scrcpy wire
 format (control messages, video framing) in `Sources/ScrcpyProtocol` is a clean
 reimplementation based on scrcpy's public source and documentation.
 
-**We do not vendor `scrcpy-server` in this repository.** The user supplies the
-matching release. If you choose to redistribute `scrcpy-server` alongside a
-build, Apache-2.0 requires that you include scrcpy's `LICENSE` and `NOTICE` with
-it. Apache-2.0 is compatible with this project's MIT license.
+**We bundle `scrcpy-server` (v4.1) in this repository** at `vendor/scrcpy-server`,
+and the build copies it into `PhoneLink.app/Contents/Resources/` so the app is
+self-contained. Apache-2.0 permits this; the required `LICENSE` is shipped
+alongside at `vendor/scrcpy-LICENSE` and copied into the app bundle. Apache-2.0
+is compatible with this project's MIT license.
+
+## Android Debug Bridge (adb) — Apache License 2.0
+
+- Part of the Android SDK Platform-Tools, © Google LLC.
+
+**How we use it / bundle it:** `adb` (from the scrcpy macOS v4.1 distribution,
+a universal x86_64+arm64 binary) is committed at `vendor/adb` and copied into
+the app bundle so screen mirroring works without a separate platform-tools
+install. adb is the supported interface to the device; the app only runs
+commands the user could run themselves.
 
 ## KDE Connect — GPL-2.0-or-later
 

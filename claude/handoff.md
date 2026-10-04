@@ -3,6 +3,39 @@
 > Update this after any big implementation step and before compaction, so the
 > next session loses nothing crucial. Newest status at top.
 
+## 2026-10-04 — Bundle tools (v4.1) + transport reality
+
+### Done
+- **Bundled scrcpy-server v4.1 and adb** (user-provided) at `vendor/scrcpy-server`
+  and `vendor/adb` (committed; adb is a 19MB universal binary). `package-app.sh`
+  copies both + `vendor/scrcpy-LICENSE` into `PhoneLink.app/Contents/Resources`.
+  `SessionManager` and `AdbBridge` prefer the bundled copies. This fixes the
+  "scrcpy-server jar not found" error the user hit.
+- Bumped `ScrcpyServer.pinnedVersion` → **4.1** (enables resizable virtual
+  displays → aspect-ratio button's live resize). Version string must match the
+  bundled server exactly.
+- NOTICE updated for bundling (Apache-2.0: scrcpy-server + adb).
+
+### HARD REALITY CONSTRAINTS (do not chase these; told the user)
+- **Mirroring requires adb** (USB cable or wireless debugging) — no loophole on
+  non-rooted Android. Phone Link skips it only because Samsung's phone app is a
+  privileged OEM system app; we can't be one. Capture + input injection need
+  shell/root privilege.
+- **Bluetooth cannot carry mirroring** — H.264 needs multi-Mbps; BT/BLE can't.
+  Even Phone Link uses Wi-Fi for mirroring; BT only for call audio + signaling.
+- **Offline / not-same-network**: the real answer is **USB cable** (carries
+  everything, no network, works offline). Wi-Fi needs same LAN. BT would need a
+  custom phone app (KDE Connect is Wi-Fi only) and still couldn't mirror.
+- Companion features (notifications/media/ring/battery) need NO debugging — Wi-Fi
+  via KDE Connect, or tunnel over USB for offline.
+
+### Next (user's chosen order: both → windowed UI → companion transport)
+1. [this commit] bundling — DONE, verify CI green.
+2. Windowed Phone Link-style UI (NavigationSplitView) + onboarding (replace the
+   menu-bar-only app). Onboarding should offer `adb install` of KDE Connect and
+   explain USB-vs-Wi-Fi honestly.
+3. Companion transport (mDNS + TLS pairing) — unlocks the no-debug features.
+
 ## 2026-10-04 — Seamless-UX pass + claude/ folder
 
 **Branch:** `ccr-151fd929-grpp95` · **PR:** JObersi10/mac-phone-link#1 (draft)
