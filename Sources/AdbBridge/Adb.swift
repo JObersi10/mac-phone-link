@@ -154,4 +154,12 @@ public struct Adb {
         }
         return packages.sorted()
     }
+
+    /// Launch an app on the phone's own (physical) display via its launcher
+    /// intent. Used so "open app" brings the app to the real screen (portrait,
+    /// no Samsung DeX) rather than onto a virtual display.
+    public func launchApp(package: String) throws {
+        try run(["shell", "monkey", "-p", package,
+                 "-c", "android.intent.category.LAUNCHER", "1"], captureOutput: false)
+    }
 }

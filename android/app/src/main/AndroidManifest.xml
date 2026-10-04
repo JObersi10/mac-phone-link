@@ -3,11 +3,14 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
-    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <!-- Ring-my-phone needs to override Do Not Disturb / ring at full volume. -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
+
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
 
     <application
         android:allowBackup="true"
@@ -22,6 +25,31 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- Allow opening a maclink:// pairing link directly. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="maclink"/>
+            </intent-filter>
         </activity>
+
+        <!-- The persistent companion link (Wi-Fi / USB today; Bluetooth later). -->
+        <service
+            android:name=".CompanionService"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice"/>
+
+        <!-- Reads notifications to relay them, and grants access to active media
+             sessions for the now-playing + media controls. -->
+        <service
+            android:name=".NotifListener"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService"/>
+            </intent-filter>
+        </service>
     </application>
 </manifest>

@@ -187,18 +187,21 @@ final class AppModel: ObservableObject {
         return launch(newDisplay: nil, startApp: nil, title: "Phone Screen", isFullScreen: true)
     }
 
-    /// Launch an app on its own virtual display and return the session id so the
-    /// caller can open a dedicated window for it. The virtual display uses the
-    /// phone's own resolution (portrait) so the app opens at the phone's aspect
-    /// ratio — and so Samsung DeX (which only triggers on large landscape
-    /// displays) does not take over.
+    /// Open an app. On One UI 8 a scrcpy virtual display always becomes Samsung
+    /// DeX, so (per the current product decision) we instead launch the app on
+    /// the phone's real screen and show the portrait phone-screen mirror — no
+    /// DeX. This shares the single phone-screen window; opening another app just
+    /// brings that app to the foreground on the phone.
     @discardableResult
     func openApp(_ package: String, title: String? = nil) -> UUID? {
         let pkg = package.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !pkg.isEmpty else { return nil }
-        let display = phoneDisplaySpec ?? "1080x2400/420"
-        return launch(newDisplay: display, startApp: pkg,
-                      title: title ?? prettyName(pkg), isFullScreen: false)
+        let serial = selectedDevice
+        DispatchQueue.global().async {
+            do { try Adb(serial: serial).launchApp(package: pkg) }
+            catch { DispatchQueue.main.async { AppLog.shared.log("launch \(pkg) failed: \(error)") } }
+        }
+        return startFullMirror()
     }
 
     /// Prettify a package name for display, e.g. "org.videolan.vlc" → "Vlc".
