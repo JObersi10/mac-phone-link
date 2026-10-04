@@ -9,7 +9,7 @@ import CoreVideo
 /// zero-copy renderer" (see docs/ROADMAP.md) replaces this with a
 /// `CAMetalLayer` drawing the `CVPixelBuffer`'s IOSurface directly, which is
 /// where the real latency win over scrcpy's SDL path comes from.
-final class FrameRenderView: NSView {
+class FrameRenderView: NSView {
     private let ciContext = CIContext(options: [.useSoftwareRenderer: false])
     private(set) var frameSize: CGSize = .zero
 
