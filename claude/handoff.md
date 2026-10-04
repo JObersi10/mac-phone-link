@@ -9,9 +9,13 @@
 KEEP BUILDING this** — the edge is the **Bluetooth companion/control plane** +
 the no-adb APK path. (Reality reconfirmed: Bluetooth can't do mirroring in any
 app; mirroring stays Wi-Fi/USB. Bluetooth is for the companion/control features.)
-**Android CI job is now wired** (ubuntu: `gradle wrapper` + `assembleDebug`,
-installs `platforms;android-34`) → produces a `companion-apk` artifact. First
-Android build may need fixes — iterate via the Android job logs.
+**Android CI job wired and GREEN** (f2ed558): ubuntu `gradle wrapper 8.2` +
+`assembleDebug`, AGP 8.2.2 / Kotlin 1.9.22 / compileSdk 34 / JDK 17, SDK via
+setup-android with `packages: platform-tools` (the default 'tools' package is
+obsolete and must be skipped) + `sdkmanager platforms;android-34 build-tools`.
+Produces the **`companion-apk` artifact** (app-debug.apk). macOS job also green
+(nav buttons / phone-screen window / phone-aspect+DeX fix / Mac updater all
+compiled). Both artifacts download from the latest green run.
 
 This turn's work (committed so it isn't lost; Mac side only):
 - Mirror window: **back / home / recents** nav buttons (`NavButtonBar`,
