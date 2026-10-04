@@ -1,0 +1,55 @@
+name: Build
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & test (macOS)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: |
+          sw_vers
+          swift --version
+          xcodebuild -version || true
+
+      - name: Resolve dependencies
+        run: swift package resolve
+
+      - name: Build (release)
+        run: swift build -c release
+
+      - name: Run tests
+        # Only the platform-agnostic targets have tests; they also run on the
+        # macOS toolchain. Keep going so a test failure still yields artifacts.
+        run: swift test --parallel
+        continue-on-error: false
+
+      - name: Package .app and .dmg
+        run: ./scripts/package-app.sh
+
+      - name: Upload .app bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: PhoneLink-app
+          path: build/PhoneLink.app
+          if-no-files-found: error
+
+      - name: Upload .dmg
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-phone-link-dmg
+          path: build/mac-phone-link.dmg
+          if-no-files-found: warn
