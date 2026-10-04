@@ -3,6 +3,29 @@
 > Update this after any big implementation step and before compaction, so the
 > next session loses nothing crucial. Newest status at top.
 
+## 2026-10-04 — Consolidation before compaction
+
+- **`ROADMAP.md` (top level) is now the single source of truth** for the whole
+  plan (vision, hard constraints, status, M1–M7, full feature list incl. the
+  AirSync settings screenshot items: notification sync/dismissals, open-app-on-
+  click, system-notification style, per-app notification toggles + icons, call
+  alerts + ring-for-calls; and file access: drag-drop onto window, mount phone
+  as a Finder network location, bidirectional file share). `docs/PRODUCT.md` has
+  the detailed matrix; `docs/ANDROID_APP.md` the APK design. `claude.md` updated.
+- **CI is GREEN on `f8f6a9d`** (latest). PR #1 draft, branch
+  `ccr-151fd929-grpp95`. Everything in the UX batch compiled.
+- **Immediate open thread:** user runs the build, mirroring may disconnect →
+  they use **Developer → Save Log to Downloads** and send the log; it contains
+  the scrcpy-server error that explains any disconnect. That log drives the next
+  fix. Also: verify scroll direction (may need inverting), add real app
+  icons/labels, and the "Phone apps" folder (M1 leftovers).
+- **Next big milestone: the Android app** (`android/` + CI APK job), then the
+  encrypted BT/Wi-Fi transport + QR/AES pairing, which unlocks the companion
+  half. See ROADMAP M2–M4.
+- All "future, not now" items (file access, call alerts, per-app toggles, Wi-Fi
+  Direct, 2-way media, Mac-battery notification) are captured in ROADMAP — do
+  NOT build them until their milestone.
+
 ## 2026-10-04 — UX batch + full product spec
 
 ### Done (Mac side)

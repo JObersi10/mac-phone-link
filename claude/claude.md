@@ -6,20 +6,29 @@ this file is the stable context.
 
 ## What this project is
 
-A native macOS menu-bar companion for an Android phone: screen mirroring,
-per-app windows, notifications, media control, ring-my-phone, battery, clipboard,
-calls. The goal is the *seamless, all-in-one* experience Windows Phone Link
-gives — but native to macOS, and without its clunk.
+An open, no-Microsoft, no-cloud equivalent of **AirSync**: Android ⇄ macOS
+mirroring and sync. A **native windowed SwiftUI macOS app** (+ menu-bar extra)
+and a **custom Android app** (the APK). Screen/app mirroring, notifications,
+media, ring, battery, clipboard, files — over Bluetooth / Wi-Fi / USB, E2E
+encrypted. **The full plan lives in `ROADMAP.md`** (read it first after this).
+
+Current status: PR #1, CI green on macOS. Mac display + UI largely built
+(mirroring via scrcpy/adb, per-app windows, apps grid, menu bar, logging). The
+companion half needs the Android app + transport (next milestones).
 
 ## Hard constraints (do not cross these)
 
 1. **No Microsoft.** Do not reverse-engineer, impersonate, or connect to
    Microsoft Link to Windows / Phone Link cloud, OAuth, Device Graph, or WNS.
    Do not decompile or incorporate the Samsung MDX ("Link to Windows") APK.
-2. **No cloud at all, for now.** Everything is LAN + USB + (later) BLE. The role
-   Microsoft's cloud played (WNS fallback) is intentionally dropped; proximity /
-   fallback becomes BLE later.
-3. Deliver the *experience* of Phone Link through open means, not its protocol.
+2. **No cloud.** Everything is Bluetooth + Wi-Fi + USB. No WNS/cloud fallback.
+3. Deliver the *experience* of AirSync/Phone Link through open means.
+
+Reality limits (don't chase loopholes — all explained to the owner):
+- Mirroring needs adb today (USB/wireless); the **custom APK removes adb** via
+  MediaProjection + AccessibilityService.
+- Bluetooth can't carry video (H.264 bandwidth); BT = companion/control/fallback.
+- True Wi-Fi Direct P2P isn't exposed on macOS → phone hotspot / Internet Sharing.
 
 These are product constraints the owner set; honor them.
 
@@ -28,9 +37,12 @@ These are product constraints the owner set; honor them.
 - **Display plane**: drive `scrcpy-server` over `adb`. Screen capture, per-app
   **virtual displays** (`new_display` + `start_app`), input injection. Native
   VideoToolbox decode + AppKit windows replace scrcpy's SDL client.
-- **Companion plane**: reimplement the **KDE Connect** desktop protocol (no GPL
-  code copied) for notifications, media (MPRIS), ring (findmyphone), battery,
-  clipboard, telephony. Phone side = the KDE Connect Android app.
+- **Companion plane**: notifications, media, ring, battery, clipboard, files.
+  Phone side is the **custom Android app** (NOT KDE Connect — that was the
+  earlier plan, dropped because it's Wi-Fi-only and we want Bluetooth + no-adb).
+  The Mac-side `Companion` module's JSON packet shapes (modeled on KDE Connect)
+  are reused as our transport-agnostic protocol for the custom app. See
+  `docs/ANDROID_APP.md`.
 
 ## Module map (SwiftPM targets)
 
@@ -40,8 +52,14 @@ These are product constraints the owner set; honor them.
 | `AdbBridge` | drive `adb`, push + launch scrcpy-server | Foundation |
 | `VideoPipeline` | Annex-B + VideoToolbox H.264 decode | VideoToolbox |
 | `Streaming` | `DeviceSession`, sockets, de-framing | Network |
-| `Companion` | KDE Connect packets + client. Pure, tested. | portable |
-| `PhoneLink` | AppKit menu-bar app, mirror windows, Now Playing bridge | AppKit, MediaPlayer |
+| `Companion` | Companion packets + client (KDE-Connect-shaped JSON; our protocol). Pure, tested. | portable |
+| `PhoneLink` | **SwiftUI windowed app** + menu-bar extra, mirror windows, apps grid, Now Playing bridge, AppLog | SwiftUI/AppKit, MediaPlayer |
+
+Key `PhoneLink` files: `PhoneLinkApp.swift` (@main, MenuBarExtra, app-window
+WindowGroup), `AppModel.swift` (+ `SessionBox`, `MainTab`), `MainWindow.swift`
+(sidebar + tabs + apps grid + `AppMirrorWindow`), `OnboardingView.swift`,
+`FrameRenderView.swift` (+ `InteractiveFrameView`: input + scroll-as-drag),
+`NowPlayingBridge.swift`, `SessionManager.swift`, `AppLog.swift`.
 
 ## Pinned protocol versions
 
@@ -104,8 +122,9 @@ compile gate — there is no local Swift toolchain in the cloud dev environment.
 
 ## Where to look first
 
+- **The plan (everything): `ROADMAP.md`** (top level) + `docs/PRODUCT.md`
+  (full feature matrix).
 - Current state & next steps: `claude/handoff.md`
+- The Android app: `docs/ANDROID_APP.md`
 - Design: `docs/ARCHITECTURE.md`, `docs/PROTOCOL.md`
-- Feature parity map: `docs/FEATURES.md`
-- Plan: `docs/ROADMAP.md`
 - Credits/licensing: `NOTICE.md`
