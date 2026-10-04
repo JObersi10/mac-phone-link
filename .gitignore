@@ -19,3 +19,8 @@ android/local.properties
 android/.idea/
 android/captures/
 *.apk
+
+# Never commit signing keys — they go in a GitHub Actions secret instead.
+*.jks
+*.keystore
+android/keystore/

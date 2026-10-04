@@ -82,8 +82,28 @@ jobs:
         working-directory: android
         run: gradle wrapper --gradle-version 8.2 --distribution-type bin
 
+      - name: Decode signing keystore (if configured)
+        # Optional: set the ANDROID_KEYSTORE_B64 secret (base64 of your .jks) plus
+        # the password/alias secrets to sign every APK with one stable key, so
+        # updates install over previous ones. Without the secret, the build still
+        # runs with default debug signing. See docs/ANDROID_SIGNING.md.
+        env:
+          ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$ANDROID_KEYSTORE_B64" ]; then
+            echo "$ANDROID_KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/companion.jks"
+            echo "COMPANION_KEYSTORE=$RUNNER_TEMP/companion.jks" >> "$GITHUB_ENV"
+            echo "Signing key configured."
+          else
+            echo "No ANDROID_KEYSTORE_B64 secret set — using default debug signing."
+          fi
+
       - name: Build debug APK
         working-directory: android
+        env:
+          COMPANION_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          COMPANION_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          COMPANION_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Upload APK

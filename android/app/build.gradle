@@ -15,9 +15,34 @@ android {
         versionName "0.1.0"
     }
 
+    // Stable signing so you can install updates over a previous install instead
+    // of uninstalling first. The key is NEVER committed (that would leak it):
+    // it comes from env vars that CI populates from a GitHub Actions secret
+    // (see .github/workflows/build.yml and the one-time setup in
+    // docs/ANDROID_SIGNING.md). When the key is absent (a local build with no
+    // secret), we fall back to the default debug signing so the build still
+    // works — only builds made with your key share one stable signature.
+    def ksPath = System.getenv("COMPANION_KEYSTORE") ?: ""
+    def hasKeystore = !ksPath.isEmpty() && file(ksPath).exists()
+
+    signingConfigs {
+        companion {
+            if (hasKeystore) {
+                storeFile file(ksPath)
+                storePassword System.getenv("COMPANION_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("COMPANION_KEY_ALIAS")
+                keyPassword System.getenv("COMPANION_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
+        debug {
+            if (hasKeystore) signingConfig signingConfigs.companion
+        }
         release {
             minifyEnabled false
+            if (hasKeystore) signingConfig signingConfigs.companion
         }
     }
 

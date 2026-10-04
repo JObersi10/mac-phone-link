@@ -9,6 +9,15 @@
     <uses-permission android:name="android.permission.CAMERA"/>
     <!-- Ring-my-phone needs to override Do Not Disturb / ring at full volume. -->
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
+    <!-- These normal (install-time) permissions qualify the "connectedDevice"
+         foreground-service type on Android 14; without one, startForeground()
+         throws and the app crashes when connecting. -->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+    <!-- Declared for the qualifying FGS gate today and the Bluetooth transport later. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
 
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
 
