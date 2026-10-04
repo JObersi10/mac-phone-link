@@ -122,6 +122,22 @@ public struct Adb {
         try run(["forward", "--remove", "tcp:\(localPort)"])
     }
 
+    /// The phone's display spec "WIDTHxHEIGHT/DENSITY" (e.g. "1080x2400/420").
+    /// Used to create a virtual display that matches the phone's own
+    /// (portrait) aspect ratio — which also avoids Samsung DeX, since DeX only
+    /// kicks in on large landscape displays.
+    public func displaySpec() throws -> String {
+        let sizeOut = try run(["shell", "wm", "size"])
+        let densityOut = (try? run(["shell", "wm", "density"])) ?? ""
+        func firstMatch(_ s: String, _ pattern: String) -> String? {
+            guard let r = s.range(of: pattern, options: .regularExpression) else { return nil }
+            return String(s[r])
+        }
+        let dims = firstMatch(sizeOut, "[0-9]+x[0-9]+") ?? "1080x2400"
+        let dpi = firstMatch(densityOut, "[0-9]+") ?? "420"
+        return "\(dims)/\(dpi)"
+    }
+
     /// Package names of apps that have a launcher entry (the ones a user can
     /// open), via `cmd package query-activities` for the MAIN/LAUNCHER intent.
     public func launchableApps() throws -> [String] {

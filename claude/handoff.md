@@ -3,6 +3,34 @@
 > Update this after any big implementation step and before compaction, so the
 > next session loses nothing crucial. Newest status at top.
 
+## 2026-10-04 — DECISION POINT: AirSync vs. continue
+
+**The owner realized [AirSync](https://github.com/sameerasw/airsync-mac) may
+already be enough** — they only disliked (a) it disconnecting and (b) Wi-Fi not
+Bluetooth. Honest reality given to them: **Bluetooth can't carry mirroring**
+(bandwidth) in AirSync or here; the disconnect is a fixable bug. **Open question:
+use/contribute to AirSync, or keep building this.** Do not assume "keep building"
+— confirm with the owner.
+
+This turn's work (committed so it isn't lost; Mac side only):
+- Mirror window: **back / home / recents** nav buttons (`NavButtonBar`,
+  `SessionBox.press`, `NavKey`).
+- **Phone screen opens in its own window** too (sidebar / Phone tab / menu bar
+  all use `openWindow`), like apps.
+- **App windows use the phone's own resolution** (`Adb.displaySpec` → portrait)
+  so they open at phone aspect ratio AND avoid Samsung DeX (DeX only triggers on
+  large landscape displays). Was hardcoded 1920x1080 landscape = DeX.
+- **Mac updater** (`UpdateChecker`): checks GitHub releases, "Check for Updates…"
+  in app menu + menu bar.
+- **Android app scaffold committed in `android/`** (Gradle project, MainActivity,
+  UpdateChecker) BUT **no CI job wired yet** — held pending the AirSync decision,
+  so CI stays on the macOS job only. If continuing: add an `android` CI job
+  (ubuntu, `gradle wrapper` + `assembleDebug`, install `platforms;android-34`),
+  then build out the companion per docs/ANDROID_APP.md.
+
+Note: user is running an OLD artifact ("looks the same"). Tell them to download
+the `.app`/`.dmg` from the LATEST green run.
+
 ## 2026-10-04 — Consolidation before compaction
 
 - **`ROADMAP.md` (top level) is now the single source of truth** for the whole

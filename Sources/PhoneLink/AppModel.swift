@@ -57,6 +57,23 @@ final class SessionBox: ObservableObject, Identifiable {
         }
         session.onLog = { AppLog.shared.log("[\(title)] \($0)") }
     }
+
+    /// Press an Android hardware/navigation key (down + up).
+    func press(_ key: NavKey) {
+        Task {
+            await session.send(.injectKeycode(action: .down, keycode: key.rawValue,
+                                              repeatCount: 0, metaState: 0))
+            await session.send(.injectKeycode(action: .up, keycode: key.rawValue,
+                                              repeatCount: 0, metaState: 0))
+        }
+    }
+}
+
+/// Android navigation keycodes (AKEYCODE_*).
+enum NavKey: UInt32 {
+    case back = 4
+    case home = 3
+    case recents = 187 // APP_SWITCH
 }
 
 /// The app's shared observable state. UI reads `@Published` properties; actions
@@ -67,6 +84,7 @@ final class AppModel: ObservableObject {
     @Published var adbReady = false
     @Published var installedApps: [String] = []
     @Published var loadingApps = false
+    @Published var phoneDisplaySpec: String?
     @Published var sessions: [SessionBox] = []
     @Published var selectedTab: MainTab = .phone
 
@@ -113,11 +131,17 @@ final class AppModel: ObservableObject {
         let serial = selectedDevice ?? devices.first
         loadingApps = true
         DispatchQueue.global().async {
-            let apps = (try? Adb(serial: serial).launchableApps()) ?? []
+            var apps: [String] = []
+            var spec: String? = nil
+            if let adb = try? Adb(serial: serial) {
+                apps = (try? adb.launchableApps()) ?? []
+                spec = try? adb.displaySpec()
+            }
             DispatchQueue.main.async {
                 self.installedApps = apps
+                self.phoneDisplaySpec = spec
                 self.loadingApps = false
-                AppLog.shared.log("launchable apps: \(apps.count)")
+                AppLog.shared.log("launchable apps: \(apps.count); display: \(spec ?? "unknown")")
             }
         }
     }
@@ -125,18 +149,25 @@ final class AppModel: ObservableObject {
     var fullScreenSession: SessionBox? { sessions.first { $0.isFullScreen } }
     var appSessions: [SessionBox] { sessions.filter { !$0.isFullScreen } }
 
-    func startFullMirror() {
-        if fullScreenSession != nil { return }
-        launch(newDisplay: nil, startApp: nil, title: "Phone Screen", isFullScreen: true)
+    /// Start mirroring the phone's main screen. Returns the session id so the
+    /// caller opens it in its own window (like apps).
+    @discardableResult
+    func startFullMirror() -> UUID? {
+        if let existing = fullScreenSession { return existing.id }
+        return launch(newDisplay: nil, startApp: nil, title: "Phone Screen", isFullScreen: true)
     }
 
     /// Launch an app on its own virtual display and return the session id so the
-    /// caller can open a dedicated window for it.
+    /// caller can open a dedicated window for it. The virtual display uses the
+    /// phone's own resolution (portrait) so the app opens at the phone's aspect
+    /// ratio — and so Samsung DeX (which only triggers on large landscape
+    /// displays) does not take over.
     @discardableResult
     func openApp(_ package: String, title: String? = nil) -> UUID? {
         let pkg = package.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !pkg.isEmpty else { return nil }
-        return launch(newDisplay: "1920x1080/320", startApp: pkg,
+        let display = phoneDisplaySpec ?? "1080x2400/420"
+        return launch(newDisplay: display, startApp: pkg,
                       title: title ?? prettyName(pkg), isFullScreen: false)
     }
 

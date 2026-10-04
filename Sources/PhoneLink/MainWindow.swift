@@ -29,6 +29,7 @@ struct MainWindowView: View {
 
 struct SidebarView: View {
     @EnvironmentObject var model: AppModel
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         List {
@@ -45,7 +46,9 @@ struct SidebarView: View {
             }
 
             Section("Quick Actions") {
-                Button { model.startFullMirror() } label: {
+                Button {
+                    if let id = model.startFullMirror() { openWindow(id: "app-mirror", value: id) }
+                } label: {
                     Label("Mirror Phone Screen", systemImage: "iphone")
                 }
                 Button { model.ringPhone() } label: {
@@ -203,22 +206,22 @@ struct TabBar: View {
 
 struct PhoneScreenTab: View {
     @EnvironmentObject var model: AppModel
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
-        if let box = model.fullScreenSession {
-            MirrorContainer(box: box)
-        } else {
-            VStack(spacing: 14) {
-                Image(systemName: "iphone").font(.system(size: 48)).foregroundStyle(.secondary)
-                Text("Not mirroring").font(.title3)
-                Text("Mirroring needs a connected phone with USB (or wireless) debugging.")
-                    .font(.callout).foregroundStyle(.secondary).multilineTextAlignment(.center)
-                Button("Start Mirroring") { model.startFullMirror() }
-                    .buttonStyle(.borderedProminent)
+        VStack(spacing: 14) {
+            Image(systemName: "iphone").font(.system(size: 48)).foregroundStyle(.secondary)
+            Text(model.fullScreenSession == nil ? "Phone Screen" : "Phone screen is open")
+                .font(.title3)
+            Text("The phone screen opens in its own window — like each app.")
+                .font(.callout).foregroundStyle(.secondary).multilineTextAlignment(.center)
+            Button(model.fullScreenSession == nil ? "Open Phone Screen" : "Focus Phone Screen") {
+                if let id = model.startFullMirror() { openWindow(id: "app-mirror", value: id) }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding()
+            .buttonStyle(.borderedProminent)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
     }
 }
 
@@ -313,14 +316,16 @@ struct MirrorContainer: View {
     @ObservedObject var box: SessionBox
 
     var body: some View {
-        ZStack {
-            Color.black
-            MirrorRepresentable(renderView: box.renderView)
-            if box.state != .streaming {
-                ProgressView(statusText).tint(.white).foregroundStyle(.white)
+        VStack(spacing: 0) {
+            ZStack {
+                Color.black
+                MirrorRepresentable(renderView: box.renderView)
+                if box.state != .streaming {
+                    ProgressView(statusText).tint(.white).foregroundStyle(.white)
+                }
             }
+            NavButtonBar(box: box)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
     private var statusText: String {
@@ -331,6 +336,27 @@ struct MirrorContainer: View {
         case .failed(let m): return "Error: \(m)"
         case .idle: return "Starting…"
         }
+    }
+}
+
+/// Android soft-key bar (back / home / recents) under the mirror.
+struct NavButtonBar: View {
+    @ObservedObject var box: SessionBox
+
+    var body: some View {
+        HStack(spacing: 48) {
+            Button { box.press(.back) } label: { Image(systemName: "arrowtriangle.left.fill") }
+                .help("Back")
+            Button { box.press(.home) } label: { Image(systemName: "circle") }
+                .help("Home")
+            Button { box.press(.recents) } label: { Image(systemName: "square") }
+                .help("Recents")
+        }
+        .buttonStyle(.plain)
+        .font(.system(size: 15))
+        .padding(.vertical, 8)
+        .frame(maxWidth: .infinity)
+        .background(.bar)
     }
 }
 

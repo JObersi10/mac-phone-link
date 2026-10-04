@@ -13,6 +13,7 @@ struct PhoneLinkApp: App {
         }
         .commands {
             CommandGroup(after: .appInfo) {
+                Button("Check for Updates…") { UpdateChecker.shared.checkAndPresent() }
                 Button("Ring My Phone") { model.ringPhone() }
                     .keyboardShortcut("r", modifiers: [.command, .shift])
             }
@@ -42,17 +43,31 @@ struct PhoneLinkApp: App {
         // Menu-bar icon with quick actions (always present, even when the main
         // window is closed).
         MenuBarExtra("mac-phone-link", systemImage: "iphone") {
-            Button("Mirror Phone Screen") { model.startFullMirror() }
-            Button("Ring My Phone") { model.ringPhone() }
-            Divider()
-            Button("Save Log to Downloads") {
-                if let url = try? AppLog.shared.saveToDownloads() {
-                    NSWorkspace.shared.activateFileViewerSelecting([url])
-                }
-            }
-            Divider()
-            Button("Quit mac-phone-link") { NSApplication.shared.terminate(nil) }
+            MenuBarContent().environmentObject(model)
         }
+    }
+}
+
+/// Contents of the menu-bar dropdown. In its own view so it can use
+/// `openWindow` (phone screen opens in its own window, like apps).
+struct MenuBarContent: View {
+    @EnvironmentObject var model: AppModel
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        Button("Mirror Phone Screen") {
+            if let id = model.startFullMirror() { openWindow(id: "app-mirror", value: id) }
+        }
+        Button("Ring My Phone") { model.ringPhone() }
+        Divider()
+        Button("Check for Updates…") { UpdateChecker.shared.checkAndPresent() }
+        Button("Save Log to Downloads") {
+            if let url = try? AppLog.shared.saveToDownloads() {
+                NSWorkspace.shared.activateFileViewerSelecting([url])
+            }
+        }
+        Divider()
+        Button("Quit mac-phone-link") { NSApplication.shared.terminate(nil) }
     }
 }
 

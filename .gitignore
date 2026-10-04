@@ -10,3 +10,12 @@ Package.resolved
 vendor/*.zip
 vendor/*.tar.gz
 vendor/platform-tools/
+
+# Android (companion app)
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+android/captures/
+*.apk
