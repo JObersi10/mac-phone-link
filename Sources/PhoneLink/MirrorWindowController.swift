@@ -169,7 +169,7 @@ final class MirrorContainerView: NSView {
         bar.frame = NSRect(x: 0, y: bounds.height - h, width: bounds.width, height: h)
         // Right-align the aspect button inside the bar.
         for sub in bar.subviews {
-            sub.sizeToFit()
+            (sub as? NSControl)?.sizeToFit()
             let bw = max(sub.frame.width, 56)
             sub.frame = NSRect(x: bar.bounds.width - bw - 8,
                                y: (h - 20) / 2, width: bw, height: 20)
