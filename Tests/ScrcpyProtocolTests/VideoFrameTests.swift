@@ -2,43 +2,64 @@ import XCTest
 @testable import ScrcpyProtocol
 
 final class VideoFrameTests: XCTestCase {
-    private func header(config: Bool, key: Bool, pts: UInt64, size: UInt32) -> [UInt8] {
-        var word = pts
-        if config { word |= 1 << 63 }
-        if key { word |= 1 << 62 }
-        var bytes: [UInt8] = []
-        for shift in stride(from: 56, through: 0, by: -8) {
-            bytes.append(UInt8((word >> UInt64(shift)) & 0xff))
-        }
-        for shift in stride(from: 24, through: 0, by: -8) {
-            bytes.append(UInt8((size >> UInt32(shift)) & 0xff))
-        }
-        return bytes
+    /// Build a 12-byte media packet header (session flag clear).
+    private func mediaHeader(config: Bool, key: Bool, pts: UInt64, size: UInt32) -> [UInt8] {
+        var word = pts & ((1 << 61) - 1)
+        if config { word |= 1 << 62 }
+        if key { word |= 1 << 61 }
+        return beBytes(word) + beBytes32(size)
     }
 
-    func testParseConfigHeader() throws {
-        let h = header(config: true, key: false, pts: 0, size: 4)
-        let parsed = try parseMediaPacketHeader(h[...])
-        XCTAssertTrue(parsed.isConfig)
-        XCTAssertFalse(parsed.isKeyFrame)
-        XCTAssertEqual(parsed.payloadSize, 4)
+    /// Build a 12-byte session packet header (session flag set).
+    private func sessionHeader(width: UInt32, height: UInt32) -> [UInt8] {
+        let word = (UInt64(1) << 63) | UInt64(width)
+        return beBytes(word) + beBytes32(height)
     }
 
-    func testDemuxerYieldsCompletePackets() throws {
+    private func beBytes(_ v: UInt64) -> [UInt8] {
+        stride(from: 56, through: 0, by: -8).map { UInt8((v >> UInt64($0)) & 0xff) }
+    }
+    private func beBytes32(_ v: UInt32) -> [UInt8] {
+        stride(from: 24, through: 0, by: -8).map { UInt8((v >> UInt32($0)) & 0xff) }
+    }
+
+    func testSessionPacketParsed() throws {
+        var demux = VideoDemuxer()
+        demux.append(sessionHeader(width: 1080, height: 2400))
+        guard case let .session(w, h) = try XCTUnwrap(try demux.next()) else {
+            return XCTFail("expected session packet")
+        }
+        XCTAssertEqual(w, 1080)
+        XCTAssertEqual(h, 2400)
+    }
+
+    func testMediaPacketAcrossAppends() throws {
         var demux = VideoDemuxer()
         let payload: [UInt8] = [0xAA, 0xBB, 0xCC]
-        let h = header(config: false, key: true, pts: 123, size: UInt32(payload.count))
+        let header = mediaHeader(config: false, key: true, pts: 123, size: UInt32(payload.count))
 
-        // Feed header and payload split across two appends.
-        demux.append(Array(h[0..<6]))
+        demux.append(Array(header[0..<6]))
         XCTAssertNil(try demux.next())
-        demux.append(Array(h[6..<12]) + payload)
+        demux.append(Array(header[6..<12]) + payload)
 
-        let pkt = try XCTUnwrap(try demux.next())
+        guard case let .media(pkt) = try XCTUnwrap(try demux.next()) else {
+            return XCTFail("expected media packet")
+        }
         XCTAssertTrue(pkt.isKeyFrame)
+        XCTAssertFalse(pkt.isConfig)
         XCTAssertEqual(pkt.pts, 123)
         XCTAssertEqual(pkt.payload, payload)
         XCTAssertNil(try demux.next())
+    }
+
+    func testConfigFlag() throws {
+        var demux = VideoDemuxer()
+        demux.append(mediaHeader(config: true, key: false, pts: 0, size: 2) + [0x01, 0x02])
+        guard case let .media(pkt) = try XCTUnwrap(try demux.next()) else {
+            return XCTFail("expected media packet")
+        }
+        XCTAssertTrue(pkt.isConfig)
+        XCTAssertFalse(pkt.isKeyFrame)
     }
 
     func testDeviceClipboardParse() {

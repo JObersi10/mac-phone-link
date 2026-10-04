@@ -45,6 +45,7 @@ final class SessionBox: ObservableObject, Identifiable {
         session.onStateChange = { [weak self] newState in
             DispatchQueue.main.async { self?.state = newState }
         }
+        session.onLog = { AppLog.shared.log("[\(title)] \($0)") }
     }
 }
 
@@ -52,6 +53,7 @@ final class SessionBox: ObservableObject, Identifiable {
 /// drive the display plane (sessions) and, later, the companion plane.
 final class AppModel: ObservableObject {
     @Published var devices: [String] = []
+    @Published var selectedDevice: String?
     @Published var adbReady = false
     @Published var sessions: [SessionBox] = []
     @Published var selectedTab: MainTab = .phone
@@ -81,9 +83,14 @@ final class AppModel: ObservableObject {
             let adb = try Adb()
             devices = try adb.devices()
             adbReady = true
+            // Keep a valid selection: clear a stale one, auto-pick when single.
+            if let sel = selectedDevice, !devices.contains(sel) { selectedDevice = nil }
+            if selectedDevice == nil, devices.count == 1 { selectedDevice = devices.first }
+            AppLog.shared.log("adb devices: \(devices.isEmpty ? "none" : devices.joined(separator: ", "))")
         } catch {
             devices = []
             adbReady = false
+            AppLog.shared.log("adb unavailable: \(error)")
         }
     }
 
@@ -104,12 +111,16 @@ final class AppModel: ObservableObject {
 
     private func launch(newDisplay: String?, startApp: String?, title: String, isFullScreen: Bool) {
         do {
-            let session = try sessionManager.makeSession(newDisplay: newDisplay, startApp: startApp)
+            AppLog.shared.log("starting session '\(title)' on device \(selectedDevice ?? "(auto)")")
+            let session = try sessionManager.makeSession(
+                newDisplay: newDisplay, startApp: startApp, serial: selectedDevice)
             let box = SessionBox(session: session, title: title, isFullScreen: isFullScreen)
             sessions.append(box)
             Task { await session.start() }
         } catch {
-            lastError = String(describing: error)
+            let message = String(describing: error)
+            lastError = message
+            AppLog.shared.log("failed to start session '\(title)': \(message)")
         }
     }
 

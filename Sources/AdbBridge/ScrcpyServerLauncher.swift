@@ -54,9 +54,11 @@ public struct ScrcpyServerLauncher {
     }
 
     /// Push the jar, set up the forward tunnel, and spawn the server process.
-    /// Returns the running `Process` so the caller can terminate the session.
+    /// Returns a `RunningServer` that captures the server's stdout/stderr — the
+    /// server logs here say exactly why it exits (version mismatch, bad option,
+    /// display errors), which is otherwise invisible.
     @discardableResult
-    public func launch(_ opts: ServerOptions) throws -> Process {
+    public func launch(_ opts: ServerOptions) throws -> RunningServer {
         try adb.push(localPath: serverJarPath, remotePath: remoteJar)
         try adb.forward(localPort: opts.localPort, toAbstract: opts.socketName)
 
@@ -87,11 +89,49 @@ public struct ScrcpyServerLauncher {
         if let serial = adb.serial { argv += ["-s", serial] }
         argv += ["shell"] + serverArgs
         process.arguments = argv
+
+        let outputPipe = Pipe()
+        process.standardOutput = outputPipe
+        process.standardError = outputPipe
+
+        let commandLine = argv.joined(separator: " ")
         try process.run()
-        return process
+        return RunningServer(process: process, output: outputPipe, commandLine: commandLine)
     }
 
     public func tearDown(_ opts: ServerOptions) {
         try? adb.removeForward(localPort: opts.localPort)
+    }
+}
+
+/// A launched scrcpy-server process plus a live capture of its merged
+/// stdout/stderr. The captured text is the authoritative explanation when a
+/// session fails to start or drops immediately.
+public final class RunningServer {
+    public let process: Process
+    public let commandLine: String
+    private let lock = NSLock()
+    private var buffer = Data()
+
+    init(process: Process, output: Pipe, commandLine: String) {
+        self.process = process
+        self.commandLine = commandLine
+        output.fileHandleForReading.readabilityHandler = { [weak self] handle in
+            let data = handle.availableData
+            guard !data.isEmpty, let self else { return }
+            self.lock.lock(); self.buffer.append(data); self.lock.unlock()
+        }
+    }
+
+    /// Everything the server has printed so far.
+    public var log: String {
+        lock.lock(); defer { lock.unlock() }
+        return String(decoding: buffer, as: UTF8.self)
+    }
+
+    public var isRunning: Bool { process.isRunning }
+
+    public func terminate() {
+        process.terminate()
     }
 }

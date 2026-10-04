@@ -19,24 +19,33 @@ and connect to `127.0.0.1:<port>`. The client opens sockets in order: **video**,
 then **control** (audio disabled here). The control socket is the only
 bidirectional one.
 
-### Video socket
+### Connection handshake (forward tunnel, v4.1)
+
+Verified against scrcpy v4.1 `server.c` / `demuxer.c`:
 
 ```
-[ codec id : u32 ]            e.g. "h264" = 0x68323634
-[ width    : u32 ]
-[ height   : u32 ]
-then, repeatedly, media packets:
-[ header : 12 bytes ][ payload : N bytes ]
+video socket connects → read 1 dummy byte  (confirms server is listening)
+control socket connects
+read 64 bytes  (device name, nul-padded)   ← on the video socket
+read 4 bytes   (codec id, u32)              0 = disabled, 1 = device error
+then repeatedly: 12-byte header units
 ```
 
-Media packet header (big-endian):
+### Header units (12 bytes, big-endian)
+
+The first 8 bytes are a flags+PTS word; byte 0's top bits are flags:
 
 ```
-bits 63     : config packet flag (SPS/PPS, no displayable frame)
-bits 62     : key frame flag
-bits 61..0  : PTS in microseconds
-next 4 bytes: payload size (u32)
+bit 63 : SESSION packet marker  → bytes 4..7 = width, bytes 8..11 = height,
+                                   no payload (sent at start + on rotation)
+bit 62 : config packet (SPS/PPS, no displayable frame)
+bit 61 : key frame
+bits 60..0 : PTS (microseconds)
+last 4 bytes : payload size (u32)   [media packets only]
 ```
+
+`VideoDemuxer` yields a `DemuxedUnit` — `.session(width,height)` or
+`.media(MediaPacket)` — handling both from the same stream.
 
 Config packets carry Annex-B SPS/PPS used to build the VideoToolbox format
 description; frame packets are converted Annex-B → AVCC before decode.

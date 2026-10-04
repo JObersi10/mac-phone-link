@@ -1,13 +1,13 @@
 import Foundation
 
-/// One media packet carved out of the video socket, plus the flags from its
-/// 12-byte header.
+/// One media packet carved out of the video socket, plus its flags.
 ///
-/// Header layout (scrcpy \(ScrcpyServer.pinnedVersion), `demuxer.c`):
-///   - 8 bytes: flags + PTS. The two most-significant bits are flags:
-///       bit 63 = config packet (codec setup: SPS/PPS, no displayable frame)
-///       bit 62 = key frame
-///     the remaining low bits are the presentation timestamp in microseconds.
+/// Header layout (scrcpy \(ScrcpyServer.pinnedVersion), `demuxer.c`), 12 bytes:
+///   - 8 bytes: flags + PTS (big-endian). Top bits of byte 0:
+///       bit 63 = session packet marker (see `DemuxedUnit.session`)
+///       bit 62 = config packet (codec setup: SPS/PPS, no displayable frame)
+///       bit 61 = key frame
+///     the remaining low 61 bits are the presentation timestamp in microseconds.
 ///   - 4 bytes: payload length (big-endian u32)
 ///   - N bytes: the raw bitstream payload
 public struct MediaPacket: Equatable, Sendable {
@@ -24,40 +24,29 @@ public struct MediaPacket: Equatable, Sendable {
     }
 }
 
+/// A unit pulled from the video socket: either a media packet, or a *session*
+/// packet (sent at the start and on each rotation) carrying the current video
+/// dimensions and no payload.
+public enum DemuxedUnit: Equatable, Sendable {
+    case session(width: UInt32, height: UInt32)
+    case media(MediaPacket)
+}
+
 public enum VideoFrameError: Error, Equatable {
     case shortHeader
-    case shortPayload(expected: Int, got: Int)
 }
 
-/// Header size for a media packet.
 public let mediaPacketHeaderSize = 12
 
-private let configFlag: UInt64 = 1 << 63
-private let keyFrameFlag: UInt64 = 1 << 62
-private let ptsMask: UInt64 = (1 << 62) - 1
+private let sessionFlag: UInt64 = 1 << 63
+private let configFlag: UInt64 = 1 << 62
+private let keyFrameFlag: UInt64 = 1 << 61
+private let ptsMask: UInt64 = (1 << 61) - 1
 
-/// Parse a 12-byte media-packet header. Does not consume payload.
-public func parseMediaPacketHeader(_ header: ArraySlice<UInt8>) throws
-    -> (isConfig: Bool, isKeyFrame: Bool, pts: UInt64, payloadSize: Int)
-{
-    guard header.count >= mediaPacketHeaderSize else { throw VideoFrameError.shortHeader }
-    let b = Array(header.prefix(mediaPacketHeaderSize))
-
-    var ptsWord: UInt64 = 0
-    for i in 0..<8 { ptsWord = (ptsWord << 8) | UInt64(b[i]) }
-
-    let isConfig = (ptsWord & configFlag) != 0
-    let isKeyFrame = (ptsWord & keyFrameFlag) != 0
-    let pts = ptsWord & ptsMask
-
-    var size: UInt32 = 0
-    for i in 8..<12 { size = (size << 8) | UInt32(b[i]) }
-
-    return (isConfig, isKeyFrame, pts, Int(size))
-}
-
-/// Incremental de-framer for the video socket. Feed it bytes as they arrive
-/// off the TCP stream; it yields complete `MediaPacket`s as they complete.
+/// Incremental de-framer for the video socket. Feed it bytes as they arrive;
+/// it yields complete `DemuxedUnit`s. Note: it must be fed starting at the
+/// first packet header — i.e. after the dummy byte, device name and codec id
+/// have already been consumed (see `DeviceSession`).
 public struct VideoDemuxer {
     private var buffer: [UInt8] = []
 
@@ -67,17 +56,31 @@ public struct VideoDemuxer {
         buffer.append(contentsOf: data)
     }
 
-    /// Pull the next complete packet, or nil if more bytes are needed.
-    public mutating func next() throws -> MediaPacket? {
+    public mutating func next() throws -> DemuxedUnit? {
         guard buffer.count >= mediaPacketHeaderSize else { return nil }
-        let (isConfig, isKeyFrame, pts, payloadSize) =
-            try parseMediaPacketHeader(buffer[0..<mediaPacketHeaderSize])
-        let total = mediaPacketHeaderSize + payloadSize
+
+        var ptsWord: UInt64 = 0
+        for i in 0..<8 { ptsWord = (ptsWord << 8) | UInt64(buffer[i]) }
+        var sizeField: UInt32 = 0
+        for i in 8..<12 { sizeField = (sizeField << 8) | UInt32(buffer[i]) }
+
+        if ptsWord & sessionFlag != 0 {
+            // Session packet: bytes 4..7 = width, bytes 8..11 = height. No payload.
+            let width = UInt32(ptsWord & 0xFFFF_FFFF)
+            let height = sizeField
+            buffer.removeFirst(mediaPacketHeaderSize)
+            return .session(width: width, height: height)
+        }
+
+        let total = mediaPacketHeaderSize + Int(sizeField)
         guard buffer.count >= total else { return nil }
 
+        let isConfig = ptsWord & configFlag != 0
+        let isKeyFrame = ptsWord & keyFrameFlag != 0
+        let pts = ptsWord & ptsMask
         let payload = Array(buffer[mediaPacketHeaderSize..<total])
         buffer.removeFirst(total)
-        return MediaPacket(isConfig: isConfig, isKeyFrame: isKeyFrame,
-                           pts: pts, payload: payload)
+        return .media(MediaPacket(isConfig: isConfig, isKeyFrame: isKeyFrame,
+                                  pts: pts, payload: payload))
     }
 }

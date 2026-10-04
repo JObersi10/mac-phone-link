@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 @main
 struct PhoneLinkApp: App {
@@ -14,6 +15,21 @@ struct PhoneLinkApp: App {
             CommandGroup(after: .appInfo) {
                 Button("Ring My Phone") { model.ringPhone() }
                     .keyboardShortcut("r", modifiers: [.command, .shift])
+            }
+            CommandMenu("Developer") {
+                Button("Save Log to Downloads") {
+                    if let url = try? AppLog.shared.saveToDownloads() {
+                        NSWorkspace.shared.activateFileViewerSelecting([url])
+                    }
+                }
+                .keyboardShortcut("l", modifiers: [.command, .shift])
+
+                Button("Reveal Log Folder in Finder") {
+                    if let dir = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask)
+                        .first?.appendingPathComponent("Logs/mac-phone-link") {
+                        NSWorkspace.shared.open(dir)
+                    }
+                }
             }
         }
     }

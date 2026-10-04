@@ -32,7 +32,17 @@ struct SidebarView: View {
 
     var body: some View {
         List {
-            Section("Device") { DeviceHeaderView() }
+            Section("Device") {
+                DeviceHeaderView()
+                if model.devices.count > 1 {
+                    Picker("Target device", selection: Binding(
+                        get: { model.selectedDevice ?? "" },
+                        set: { model.selectedDevice = $0.isEmpty ? nil : $0 })) {
+                        ForEach(model.devices, id: \.self) { Text($0).tag($0) }
+                    }
+                    .pickerStyle(.menu)
+                }
+            }
 
             Section("Quick Actions") {
                 Button { model.startFullMirror() } label: {

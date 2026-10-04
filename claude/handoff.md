@@ -3,6 +3,36 @@
 > Update this after any big implementation step and before compaction, so the
 > next session loses nothing crucial. Newest status at top.
 
+## 2026-10-04 — Mirroring fixes + logging + device picker
+
+The windowed build runs. User hit: (a) "Multiple devices" error, (b) session
+disconnects immediately. Fixed/addressed:
+
+- **Handshake corrected for v4.1** (was the silent breakage): video reader now
+  consumes dummy byte → connects control → reads 64-byte device name → 4-byte
+  codec id → then demuxes. `VideoDemuxer` now returns `DemuxedUnit`
+  (`.session(w,h)` / `.media`). **Packet flag bits fixed**: session=bit63,
+  config=bit62, keyFrame=bit61, pts=low 61 (was 63/62). Tests updated.
+- **Server output captured** (`RunningServer` in AdbBridge): merged stdout/stderr
+  of scrcpy-server is captured and included in the `.failed` message + logged.
+  This is how we'll finally see WHY it drops (version mismatch / bad option /
+  display error). Connect now retries ~15×200ms waiting for the dummy byte.
+- **Device picker**: `AppModel.selectedDevice`; `makeSession(serial:)` binds to
+  it; sidebar shows a Picker when >1 device. No more hard "multiple devices"
+  fail for a dev with several adb targets.
+- **Logging + Developer menu**: `AppLog` opens a startup log at
+  `~/Library/Logs/mac-phone-link/session-*.log`; menu bar → Developer → "Save
+  Log to Downloads" exports it (and reveals in Finder). **Ask the user to run,
+  reproduce the disconnect, and send this log — it will contain the scrcpy
+  server error.**
+
+### Still TODO (asked by user, not yet done)
+- **"Phone apps" folder**: next to the .app, a folder with per-launchable-app
+  launchers that open each app as a mirror (via a `phonelink://open?pkg=` URL
+  scheme). List LAUNCHABLE apps only (`adb shell cmd package query-activities`
+  / pm list with launcher intent). Needs mirroring confirmed working first.
+- Companion transport (custom Android app, BT+Wi-Fi+USB) — the big milestone.
+
 ## 2026-10-04 — Windowed SwiftUI UI + onboarding
 
 ### Done

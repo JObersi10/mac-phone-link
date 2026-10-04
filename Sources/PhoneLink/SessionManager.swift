@@ -26,10 +26,13 @@ final class SessionManager {
     private var nextPort: Int = 27_183 // scrcpy's default base port
     private var active: [DeviceSession] = []
 
-    func makeSession(newDisplay: String?, startApp: String?) throws -> DeviceSession {
+    func makeSession(newDisplay: String?, startApp: String?, serial: String?) throws -> DeviceSession {
         let jar = try locateServerJar()
-        let adb = try Adb()
-        _ = try adb.requireSingleDevice() // fail early with a clear message
+        // Bind to the chosen device if given; otherwise require exactly one so a
+        // developer with several adb targets gets a clear message instead of a
+        // wrong target.
+        let adb = try Adb(serial: serial)
+        if serial == nil { _ = try adb.requireSingleDevice() }
 
         let launcher = ScrcpyServerLauncher(
             adb: adb, serverJarPath: jar, serverVersion: ScrcpyServer.pinnedVersion)
