@@ -45,7 +45,10 @@ final class SessionManager {
             maxFps: 60,
             newDisplay: newDisplay,
             startApp: startApp,
-            control: true)
+            control: true,
+            // For a single app, hide the virtual-display system UI (Samsung DeX
+            // launcher/taskbar) so the app fills the window instead of DeX.
+            noVdSystemDecorations: startApp != nil)
         nextScid += 1
         nextPort += 1
 

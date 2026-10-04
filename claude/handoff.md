@@ -3,6 +3,38 @@
 > Update this after any big implementation step and before compaction, so the
 > next session loses nothing crucial. Newest status at top.
 
+## 2026-10-04 — UX batch + full product spec
+
+### Done (Mac side)
+- **Menu-bar icon restored** (`MenuBarExtra`): Mirror, Ring, Save Log, Quit.
+- **Apps open in their own macOS windows** (second `WindowGroup(for: UUID)`),
+  not cards inside a tab. `no_vd_system_decorations=true` for app sessions so a
+  started app fills the window instead of showing **Samsung DeX**.
+- **Apps tab lists the phone's launchable apps** (grid of tiles) via
+  `Adb.launchableApps()`; click opens the app in its own window. (Real
+  icons/labels still TODO — currently generic icon + prettified package.)
+- **Scroll = touch-drag**: scrolling now emulates a finger swipe (down→move→up)
+  instead of injecting scroll-wheel events, to fix the over-sensitivity. Sign
+  of the direction may need inverting per user feedback (`scrollFactor` tunable).
+- **adb hidden**: device auto-selected; sidebar picker only appears with >1.
+- Tab bar redesigned with icons; small cleanups.
+
+### Product direction locked (docs/PRODUCT.md + docs/ANDROID_APP.md)
+- The product is an **open AirSync** (Android⇄Mac, no Microsoft/cloud). Full
+  feature checklist in `docs/PRODUCT.md` (26 items incl. notification sync, 2-way
+  media, battery/volume, clipboard, file share, wallpaper/album art, desktop
+  mode, AES E2E, QR pairing, QS tile, widgets, Material 3, Mac-battery
+  notification, Wi-Fi Direct/hotspot).
+- **APK removes adb**: MediaProjection (capture) + AccessibilityService (input)
+  + Bluetooth/Wi-Fi/USB + AES/QR pairing. Architecture in `docs/ANDROID_APP.md`.
+- Wi-Fi Direct: true P2P isn't exposed on macOS → use phone hotspot / Mac
+  Internet Sharing for the no-router link.
+
+### Next
+1. CI green on this UX batch.
+2. "Phone apps" folder (launchers) + real app icons/labels.
+3. Start the Android app (`android/`) + its CI APK job (the big milestone).
+
 ## 2026-10-04 — Mirroring fixes + logging + device picker
 
 The windowed build runs. User hit: (a) "Multiple devices" error, (b) session

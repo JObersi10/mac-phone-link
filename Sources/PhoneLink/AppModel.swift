@@ -14,6 +14,16 @@ enum MainTab: String, CaseIterable, Identifiable {
     case calls = "Calls"
     case photos = "Photos"
     var id: String { rawValue }
+
+    var icon: String {
+        switch self {
+        case .phone: return "iphone"
+        case .apps: return "square.grid.2x2"
+        case .messages: return "message"
+        case .calls: return "phone"
+        case .photos: return "photo.on.rectangle"
+        }
+    }
 }
 
 /// One running mirror session plus the view that renders it. Owned by AppModel
@@ -55,6 +65,8 @@ final class AppModel: ObservableObject {
     @Published var devices: [String] = []
     @Published var selectedDevice: String?
     @Published var adbReady = false
+    @Published var installedApps: [String] = []
+    @Published var loadingApps = false
     @Published var sessions: [SessionBox] = []
     @Published var selectedTab: MainTab = .phone
 
@@ -83,14 +95,30 @@ final class AppModel: ObservableObject {
             let adb = try Adb()
             devices = try adb.devices()
             adbReady = true
-            // Keep a valid selection: clear a stale one, auto-pick when single.
+            // Keep adb invisible: auto-pick a device so the user never has to
+            // choose. The sidebar picker only matters when there are several.
             if let sel = selectedDevice, !devices.contains(sel) { selectedDevice = nil }
-            if selectedDevice == nil, devices.count == 1 { selectedDevice = devices.first }
+            if selectedDevice == nil { selectedDevice = devices.first }
             AppLog.shared.log("adb devices: \(devices.isEmpty ? "none" : devices.joined(separator: ", "))")
+            if !devices.isEmpty { refreshApps() }
         } catch {
             devices = []
             adbReady = false
             AppLog.shared.log("adb unavailable: \(error)")
+        }
+    }
+
+    /// Load the phone's launchable apps for the Apps tab (off the main thread).
+    func refreshApps() {
+        let serial = selectedDevice ?? devices.first
+        loadingApps = true
+        DispatchQueue.global().async {
+            let apps = (try? Adb(serial: serial).launchableApps()) ?? []
+            DispatchQueue.main.async {
+                self.installedApps = apps
+                self.loadingApps = false
+                AppLog.shared.log("launchable apps: \(apps.count)")
+            }
         }
     }
 
@@ -102,14 +130,23 @@ final class AppModel: ObservableObject {
         launch(newDisplay: nil, startApp: nil, title: "Phone Screen", isFullScreen: true)
     }
 
-    func openApp(_ package: String) {
+    /// Launch an app on its own virtual display and return the session id so the
+    /// caller can open a dedicated window for it.
+    @discardableResult
+    func openApp(_ package: String, title: String? = nil) -> UUID? {
         let pkg = package.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !pkg.isEmpty else { return }
-        launch(newDisplay: "1920x1080/320", startApp: pkg, title: pkg, isFullScreen: false)
-        selectedTab = .apps
+        guard !pkg.isEmpty else { return nil }
+        return launch(newDisplay: "1920x1080/320", startApp: pkg,
+                      title: title ?? prettyName(pkg), isFullScreen: false)
     }
 
-    private func launch(newDisplay: String?, startApp: String?, title: String, isFullScreen: Bool) {
+    /// Prettify a package name for display, e.g. "org.videolan.vlc" → "Vlc".
+    func prettyName(_ package: String) -> String {
+        (package.split(separator: ".").last.map(String.init) ?? package).capitalized
+    }
+
+    @discardableResult
+    private func launch(newDisplay: String?, startApp: String?, title: String, isFullScreen: Bool) -> UUID? {
         do {
             AppLog.shared.log("starting session '\(title)' on device \(selectedDevice ?? "(auto)")")
             let session = try sessionManager.makeSession(
@@ -117,12 +154,16 @@ final class AppModel: ObservableObject {
             let box = SessionBox(session: session, title: title, isFullScreen: isFullScreen)
             sessions.append(box)
             Task { await session.start() }
+            return box.id
         } catch {
             let message = String(describing: error)
             lastError = message
             AppLog.shared.log("failed to start session '\(title)': \(message)")
+            return nil
         }
     }
+
+    func session(id: UUID) -> SessionBox? { sessions.first { $0.id == id } }
 
     func close(_ box: SessionBox) {
         box.session.stop()

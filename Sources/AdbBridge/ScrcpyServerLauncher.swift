@@ -20,11 +20,15 @@ public struct ServerOptions {
     public var startApp: String?
     /// Enable the control channel (input + clipboard).
     public var control: Bool
+    /// Disable the virtual display's system decorations (e.g. Samsung DeX's
+    /// launcher/taskbar) so a started app fills the display instead of showing
+    /// the DeX desktop.
+    public var noVdSystemDecorations: Bool
 
     public init(scid: UInt32, localPort: Int, maxSize: Int = 0,
                 videoBitRate: Int = 8_000_000, maxFps: Int = 60,
                 newDisplay: String? = nil, startApp: String? = nil,
-                control: Bool = true) {
+                control: Bool = true, noVdSystemDecorations: Bool = false) {
         self.scid = scid
         self.localPort = localPort
         self.maxSize = maxSize
@@ -33,6 +37,7 @@ public struct ServerOptions {
         self.newDisplay = newDisplay
         self.startApp = startApp
         self.control = control
+        self.noVdSystemDecorations = noVdSystemDecorations
     }
 
     var socketName: String { String(format: "scrcpy_%08x", scid) }
@@ -82,6 +87,7 @@ public struct ScrcpyServerLauncher {
         ]
         if let newDisplay = opts.newDisplay { serverArgs.append("new_display=\(newDisplay)") }
         if let startApp = opts.startApp { serverArgs.append("start_app=\(startApp)") }
+        if opts.noVdSystemDecorations { serverArgs.append("no_vd_system_decorations=true") }
 
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/env")

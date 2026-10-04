@@ -154,12 +154,7 @@ struct DetailView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Picker("", selection: $model.selectedTab) {
-                ForEach(MainTab.allCases) { Text($0.rawValue).tag($0) }
-            }
-            .pickerStyle(.segmented)
-            .labelsHidden()
-            .padding(10)
+            TabBar()
             Divider()
             tabContent
         }
@@ -179,6 +174,30 @@ struct DetailView: View {
             ComingSoonView(icon: "photo.on.rectangle", title: "Photos",
                            detail: "Recent photos browsing arrives with the companion transport.")
         }
+    }
+}
+
+struct TabBar: View {
+    @EnvironmentObject var model: AppModel
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(MainTab.allCases) { tab in
+                Button { model.selectedTab = tab } label: {
+                    Label(tab.rawValue, systemImage: tab.icon)
+                        .labelStyle(.titleAndIcon)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(model.selectedTab == tab
+                                    ? Color.accentColor.opacity(0.18) : Color.clear)
+                        .clipShape(RoundedRectangle(cornerRadius: 7))
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(model.selectedTab == tab ? Color.accentColor : Color.primary)
+            }
+            Spacer()
+        }
+        .padding(10)
     }
 }
 
@@ -205,59 +224,86 @@ struct PhoneScreenTab: View {
 
 struct AppsTab: View {
     @EnvironmentObject var model: AppModel
-    @State private var package = ""
+    @Environment(\.openWindow) private var openWindow
+
+    private let columns = [GridItem(.adaptive(minimum: 96, maximum: 140), spacing: 16)]
 
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                TextField("Android package, e.g. org.videolan.vlc", text: $package)
-                    .textFieldStyle(.roundedBorder)
-                    .onSubmit { launch() }
-                Button("Open in Window") { launch() }
-                    .disabled(package.trimmingCharacters(in: .whitespaces).isEmpty)
+                Text(model.installedApps.isEmpty ? "Apps" : "\(model.installedApps.count) apps")
+                    .foregroundStyle(.secondary).font(.callout)
+                Spacer()
+                if model.loadingApps { ProgressView().controlSize(.small) }
+                Button { model.refreshApps() } label: { Label("Refresh", systemImage: "arrow.clockwise") }
             }
             .padding(10)
             Divider()
-            if model.appSessions.isEmpty {
-                ComingSoonView(icon: "square.grid.2x2",
-                               title: "No app windows open",
-                               detail: "Each app opens on its own virtual display, so your phone stays free.")
+            if model.installedApps.isEmpty {
+                ComingSoonView(
+                    icon: "square.grid.2x2",
+                    title: model.loadingApps ? "Loading apps…" : "No apps yet",
+                    detail: model.devices.isEmpty
+                        ? "Connect your phone to see its apps here."
+                        : "Tap Refresh to load your phone's apps.")
             } else {
                 ScrollView {
-                    LazyVStack(spacing: 12) {
-                        ForEach(model.appSessions) { box in
-                            AppWindowCard(box: box)
+                    LazyVGrid(columns: columns, spacing: 16) {
+                        ForEach(model.installedApps, id: \.self) { pkg in
+                            AppIconButton(package: pkg) { open(pkg) }
                         }
                     }
-                    .padding(10)
+                    .padding(16)
                 }
             }
         }
     }
 
-    private func launch() {
-        model.openApp(package)
-        package = ""
+    private func open(_ pkg: String) {
+        if let id = model.openApp(pkg) {
+            openWindow(id: "app-mirror", value: id)
+        }
     }
 }
 
-struct AppWindowCard: View {
+/// A launcher tile for one phone app. Opens the app in its own window.
+struct AppIconButton: View {
     @EnvironmentObject var model: AppModel
-    @ObservedObject var box: SessionBox
+    let package: String
+    let action: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                Text(box.title).font(.headline).lineLimit(1)
-                Spacer()
-                Button { model.close(box) } label: { Image(systemName: "xmark.circle.fill") }
-                    .buttonStyle(.borderless)
+        Button(action: action) {
+            VStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.accentColor.opacity(0.15))
+                    .frame(width: 60, height: 60)
+                    .overlay(Image(systemName: "app.dashed").font(.system(size: 26)).foregroundStyle(.tint))
+                Text(model.prettyName(package)).font(.caption).lineLimit(1)
             }
-            MirrorContainer(box: box)
-                .frame(height: 360)
+            .frame(maxWidth: .infinity)
         }
-        .padding(10)
-        .background(RoundedRectangle(cornerRadius: 10).fill(Color.black.opacity(0.06)))
+        .buttonStyle(.plain)
+        .help(package)
+    }
+}
+
+/// Contents of a dedicated per-app window (opened via `openWindow`).
+struct AppMirrorWindow: View {
+    @EnvironmentObject var model: AppModel
+    let sessionID: UUID?
+
+    var body: some View {
+        Group {
+            if let id = sessionID, let box = model.session(id: id) {
+                MirrorContainer(box: box)
+                    .navigationTitle(box.title)
+                    .onDisappear { model.close(box) }
+            } else {
+                Text("This app window is closed.").foregroundStyle(.secondary)
+            }
+        }
+        .frame(minWidth: 320, minHeight: 520)
     }
 }
 

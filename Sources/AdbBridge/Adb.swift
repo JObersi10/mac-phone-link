@@ -121,4 +121,21 @@ public struct Adb {
     public func removeForward(localPort: Int) throws {
         try run(["forward", "--remove", "tcp:\(localPort)"])
     }
+
+    /// Package names of apps that have a launcher entry (the ones a user can
+    /// open), via `cmd package query-activities` for the MAIN/LAUNCHER intent.
+    public func launchableApps() throws -> [String] {
+        let out = try run([
+            "shell", "cmd", "package", "query-activities", "--brief",
+            "-a", "android.intent.action.MAIN",
+            "-c", "android.intent.category.LAUNCHER"
+        ])
+        var packages = Set<String>()
+        for token in out.split(whereSeparator: { $0 == "\n" || $0 == " " || $0 == "\t" }) {
+            guard token.contains("/") else { continue }
+            let pkg = token.split(separator: "/").first.map(String.init) ?? ""
+            if pkg.contains(".") { packages.insert(pkg) }
+        }
+        return packages.sorted()
+    }
 }

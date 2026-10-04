@@ -43,6 +43,15 @@ final class InteractiveFrameView: FrameRenderView {
     var onControlMessage: ((ControlMessage) -> Void)?
     var deviceSizeProvider: (() -> (UInt16, UInt16)?)?
 
+    // Scroll-as-touch-drag state. We translate wheel/trackpad scrolling into a
+    // synthetic finger swipe so it feels like a touchscreen (and avoids the
+    // over-sensitive scroll-wheel injection).
+    private var scrollActive = false
+    private var scrollFinger: CGPoint = .zero
+    private var scrollEndWork: DispatchWorkItem?
+    /// Device pixels moved per point of scroll. Tune for feel.
+    private let scrollFactor: CGFloat = 1.0
+
     override var acceptsFirstResponder: Bool { true }
 
     private func mapper() -> InputMapper? {
@@ -66,9 +75,27 @@ final class InteractiveFrameView: FrameRenderView {
     }
     override func scrollWheel(with event: NSEvent) {
         guard let m = mapper() else { return }
-        onControlMessage?(m.scroll(at: point(event),
-                                   deltaX: event.scrollingDeltaX,
-                                   deltaY: event.scrollingDeltaY))
+        if !scrollActive {
+            scrollActive = true
+            scrollFinger = point(event)
+            onControlMessage?(m.touch(.down, at: scrollFinger))
+        }
+        // Move the synthetic finger by the scroll delta → the phone sees a swipe.
+        scrollFinger.x += event.scrollingDeltaX * scrollFactor
+        scrollFinger.y += event.scrollingDeltaY * scrollFactor
+        onControlMessage?(m.touch(.move, at: scrollFinger))
+
+        // Lift the finger shortly after scrolling stops.
+        scrollEndWork?.cancel()
+        let work = DispatchWorkItem { [weak self] in self?.endScroll() }
+        scrollEndWork = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: work)
+    }
+
+    private func endScroll() {
+        defer { scrollActive = false }
+        guard scrollActive, let m = mapper() else { return }
+        onControlMessage?(m.touch(.up, at: scrollFinger))
     }
     override func keyDown(with event: NSEvent) {
         guard let m = mapper() else { return }

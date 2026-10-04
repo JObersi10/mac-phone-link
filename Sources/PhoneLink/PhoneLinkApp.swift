@@ -32,6 +32,27 @@ struct PhoneLinkApp: App {
                 }
             }
         }
+
+        // Each phone app opens in its own window (opened via openWindow).
+        WindowGroup(id: "app-mirror", for: UUID.self) { $sessionID in
+            AppMirrorWindow(sessionID: sessionID)
+                .environmentObject(model)
+        }
+
+        // Menu-bar icon with quick actions (always present, even when the main
+        // window is closed).
+        MenuBarExtra("mac-phone-link", systemImage: "iphone") {
+            Button("Mirror Phone Screen") { model.startFullMirror() }
+            Button("Ring My Phone") { model.ringPhone() }
+            Divider()
+            Button("Save Log to Downloads") {
+                if let url = try? AppLog.shared.saveToDownloads() {
+                    NSWorkspace.shared.activateFileViewerSelecting([url])
+                }
+            }
+            Divider()
+            Button("Quit mac-phone-link") { NSApplication.shared.terminate(nil) }
+        }
     }
 }
 
