@@ -3,6 +3,25 @@
 > Update this after any big implementation step and before compaction, so the
 > next session loses nothing crucial. Newest status at top.
 
+## 2026-10-04 — PAIRING STATUS (asked by user)
+
+**There is NO pairing yet.** The built APK is a placeholder (launcher + updater);
+no transport, no pairing. The Mac `Companion` module has packet models + a
+`CompanionTransport` protocol but no concrete transport. So the two apps cannot
+connect today. Do not fake a pairing UI.
+
+**Build pairing next, in this order (NEXT TASK):**
+1. **USB-first (fastest, do this first):** Android foreground service runs a
+   `ServerSocket` on a fixed port speaking the companion JSON-line protocol
+   (reuse `Sources/Companion` packet shapes). Mac: a `CompanionTransport` impl
+   that does `adb forward tcp:<port> tcp:<port>` and connects to
+   127.0.0.1:<port>. No QR/pairing needed (adb provides trust). Wire into
+   `AppModel` (set `self.companion`), add a "Connect" action, verify with a ping
+   + battery packet. This proves the whole companion plane end-to-end.
+2. **Wi-Fi + Bluetooth** transports behind the same `CompanionTransport`.
+3. **QR + AES pairing** (dagronf/QRCode on Mac; scan on phone) — see
+   docs/ANDROID_APP.md.
+
 ## 2026-10-04 — DECISION: keep building (Bluetooth focus)
 
 **Owner weighed [AirSync](https://github.com/sameerasw/airsync-mac) and chose to
