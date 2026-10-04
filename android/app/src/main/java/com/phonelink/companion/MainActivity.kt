@@ -1,6 +1,7 @@
 package com.phonelink.companion
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -91,13 +92,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        val filter = android.content.IntentFilter(CompanionService.ACTION_STATUS)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(statusReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
-        } else {
-            @Suppress("UnspecifiedRegisterReceiverFlag")
-            registerReceiver(statusReceiver, filter)
-        }
+        ContextCompat.registerReceiver(
+            this,
+            statusReceiver,
+            android.content.IntentFilter(CompanionService.ACTION_STATUS),
+            ContextCompat.RECEIVER_NOT_EXPORTED)
         refresh()
     }
 
