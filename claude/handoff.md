@@ -3,6 +3,66 @@
 > Update this after any big implementation step and before compaction, so the
 > next session loses nothing crucial. Newest status at top.
 
+## 2026-10-04 — PAIRING BUILT (Wi-Fi + QR) + DeX reality + portrait "open app"
+
+**Pairing now exists and is wired end-to-end** (Mac ↔ Android), modeled on the
+AirSync backend but **reimplemented as our own code** — AirSync-mac is MPL-2.0
+*plus a no-modified-redistribution clause*, so **none of its source may be
+copied into our shipped build**; we only adopted the protocol *design* (Mac =
+server, QR carries IP+port+AES key, encrypted JSON frames).
+
+- **Mac (commit 8130202, CI GREEN):** `CompanionCrypto` (AES-256-GCM, CryptoKit),
+  `PairingCode` (`maclink://host:port?name=&key=`), `TCPCompanionServer`
+  (Network.framework NWListener, Mac = server, newline base64(AES-GCM) frames →
+  existing `{id,type,body}` JSON → `CompanionClient.handle`). `AppModel` starts
+  the server on fixed port **8787**, persists the AES key (UserDefaults — TODO
+  Keychain), builds the pairing code, routes packets to battery/media/
+  notifications, writes phone clipboard → Mac pasteboard. `PairingView` = QR via
+  **CoreImage** (no QR dependency). Entry: sidebar "Pair Phone (QR)" + sheet.
+- **Android (commit efae898):** real companion app replacing the placeholder:
+  `CompanionCrypto` (javax.crypto GCM, nonce12||ct||tag16 — matches CryptoKit),
+  `CompanionConnection` (TCP client), `CompanionService` (foreground; battery via
+  ACTION_BATTERY_CHANGED, ring = alarm ringtone w/ DND override + 30s auto-stop,
+  identity, clipboard write, media requests), `NotifListener`
+  (NotificationListenerService → notifications + dismissals + remote cancel),
+  `MediaRelay` (MediaSessionManager → now-playing + play/pause/next/prev),
+  `MainActivity` (scan-QR-to-pair via **zxing-android-embedded**, notif-access
+  prompt, live status). Manifest + gradle updated. **APK CI building on efae898.**
+
+**Transport status:** **Wi-Fi works** (QR has LAN IP). **USB fallback NOT wired
+yet** — plan: Mac runs `adb reverse tcp:8787 tcp:8787` + a "USB connect" that
+tells the phone to use 127.0.0.1 (needs a QR/host variant). **Bluetooth NOT built**
+— add an RFCOMM transport behind `CompanionConnection`/`CompanionTransport`
+later; BT still cannot carry mirroring (companion/control only).
+
+### DeX — RESOLVED AS A HARD LIMITATION (do not keep "fixing" it)
+On the user's Samsung (**One UI 8 / Android 16**), **every scrcpy virtual display
+becomes Samsung DeX by design** — confirmed from scrcpy issues + Samsung docs;
+`--new-display` is literally how people *launch* DeX. `no_vd_system_decorations`
+only strips the DeX taskbar; `flex_display` only makes it resizable. **No scrcpy
+flag makes an app render as a normal portrait phone app on a virtual display on
+One UI 8.** Phone Link avoids this only via privileged Samsung system APIs we
+can't use. **User decision: "for now do portrait mirror"** → `AppModel.openApp`
+now launches the app on the phone's REAL screen (`adb shell monkey ... LAUNCHER`)
+and shows the single portrait phone-screen mirror. No virtual display, no DeX,
+one app at a time. The virtual-display/`flex_display` path is kept in code for a
+future opt-in "DeX desktop window" mode. Mirror window also now locks to the
+stream aspect ratio with a 16:9 toggle button.
+
+### Known perf item (not yet done)
+User reports mirroring is **laggy**. Our render path is CALayer/NSView; AirSync
+uses **Metal** (`MetalVideoView`). The real perf fix is a Metal render path in
+`FrameRenderView`/`H264Decoder`. Deferred — big, and can't be device-tested here.
+
+### Still TODO / next
+1. Verify APK build green (zxing dep resolves on CI).
+2. USB fallback (adb reverse) + Bluetooth transport.
+3. Real app icons/labels in the Apps grid (pull from phone).
+4. Metal render path for mirroring lag.
+5. Move AES key to Keychain.
+
+---
+
 ## 2026-10-04 — PAIRING STATUS (asked by user)
 
 **There is NO pairing yet.** The built APK is a placeholder (launcher + updater);
