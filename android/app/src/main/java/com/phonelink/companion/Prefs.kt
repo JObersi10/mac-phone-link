@@ -10,6 +10,7 @@ object Prefs {
     private const val KEY_KEY = "key"
     private const val KEY_NAME = "name"
     private const val KEY_CONNECTED = "connected"
+    private const val KEY_STATUS = "status"
 
     private fun prefs(c: Context) = c.getSharedPreferences(FILE, Context.MODE_PRIVATE)
 
@@ -34,4 +35,10 @@ object Prefs {
     }
 
     fun isConnected(c: Context): Boolean = prefs(c).getBoolean(KEY_CONNECTED, false)
+
+    fun setStatus(c: Context, status: String) {
+        prefs(c).edit().putString(KEY_STATUS, status).apply()
+    }
+
+    fun status(c: Context): String? = prefs(c).getString(KEY_STATUS, null)
 }

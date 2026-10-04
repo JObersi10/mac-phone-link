@@ -134,6 +134,12 @@ final class AppModel: ObservableObject {
         nowPlayingBridge.onCommand = { [weak self] action in
             self?.mediaCommand(action)
         }
+        // Start listening immediately so the phone can connect the moment it's
+        // paired — not only while the QR sheet is open.
+        startCompanionServer()
+        let ip = LocalNetwork.primaryIPv4Address() ?? "no LAN IPv4"
+        AppLog.shared.log("companion: this Mac's LAN address is \(ip):\(Self.companionPort) "
+            + "(the phone must be able to reach this)")
     }
 
     // MARK: - Display plane

@@ -24,6 +24,10 @@ class CompanionService : Service(), CompanionConnection.Listener {
 
     private var conn: CompanionConnection? = null
     private var ringtone: android.media.Ringtone? = null
+    @Volatile private var pendingCode: Triple<String, Int, String>? = null
+    @Volatile private var attempts = 0
+    private val handler by lazy { android.os.Handler(mainLooper) }
+    private val maxAttempts = 5
 
     private val batteryReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) { sendBattery() }
@@ -46,15 +50,28 @@ class CompanionService : Service(), CompanionConnection.Listener {
                 val key = intent.getStringExtra(EXTRA_KEY) ?: return START_STICKY
                 connect(host, port, key)
             }
-            ACTION_DISCONNECT -> { stopSelf() }
+            ACTION_DISCONNECT -> {
+                pendingCode = null
+                handler.removeCallbacksAndMessages(null)
+                stopSelf()
+            }
         }
         return START_STICKY
     }
 
     private fun connect(host: String, port: Int, key: String) {
-        val crypto = CompanionCrypto.fromBase64Key(key) ?: run {
+        if (CompanionCrypto.fromBase64Key(key) == null) {
+            broadcastStatus("Pairing key looks invalid (not a 256-bit base64 key)")
             Log.e(TAG, "bad key"); return
         }
+        pendingCode = Triple(host, port, key)
+        attempts = 0
+        openConnection()
+    }
+
+    private fun openConnection() {
+        val (host, port, key) = pendingCode ?: return
+        val crypto = CompanionCrypto.fromBase64Key(key) ?: return
         conn?.stop()
         val c = CompanionConnection(host, port, crypto)
         c.listener = this
@@ -62,10 +79,23 @@ class CompanionService : Service(), CompanionConnection.Listener {
         c.start()
     }
 
+    /** Broadcast a human-readable status to the UI + store it + show in notification. */
+    private fun broadcastStatus(status: String) {
+        Prefs.setStatus(this, status)
+        updateNotification(status)
+        sendBroadcast(Intent(ACTION_STATUS).setPackage(packageName).putExtra(EXTRA_STATUS, status))
+    }
+
     // MARK: CompanionConnection.Listener
 
+    override fun onConnecting() {
+        val (host, port, _) = pendingCode ?: return
+        broadcastStatus("Connecting to $host:$port" + if (attempts > 0) " (retry $attempts)" else "")
+    }
+
     override fun onConnected() {
-        updateNotification("Connected")
+        attempts = 0
+        broadcastStatus("Connected")
         Prefs.setConnected(this, true)
         // Announce identity + push an initial battery snapshot.
         conn?.send(Packets.IDENTITY, JSONObject()
@@ -76,9 +106,17 @@ class CompanionService : Service(), CompanionConnection.Listener {
         MediaRelay.instance?.resend()
     }
 
-    override fun onDisconnected() {
-        updateNotification("Disconnected")
+    override fun onDisconnected(reason: String?) {
         Prefs.setConnected(this, false)
+        if (pendingCode != null && attempts < maxAttempts) {
+            attempts++
+            val why = reason ?: "connection closed"
+            broadcastStatus("Not connected — $why. Retrying ($attempts/$maxAttempts)…")
+            handler.postDelayed({ openConnection() }, 3000)
+        } else {
+            broadcastStatus("Not connected" + (reason?.let { " — $it" } ?: "") +
+                ". Check same Wi-Fi + allow the Mac app through the macOS firewall, then re-pair.")
+        }
     }
 
     override fun onPacket(type: String, body: JSONObject) {
@@ -131,6 +169,8 @@ class CompanionService : Service(), CompanionConnection.Listener {
     }
 
     override fun onDestroy() {
+        pendingCode = null
+        handler.removeCallbacksAndMessages(null)
         conn?.stop()
         ringtone?.stop()
         try { unregisterReceiver(batteryReceiver) } catch (_: Exception) {}
@@ -167,9 +207,11 @@ class CompanionService : Service(), CompanionConnection.Listener {
 
         const val ACTION_CONNECT = "com.phonelink.companion.CONNECT"
         const val ACTION_DISCONNECT = "com.phonelink.companion.DISCONNECT"
+        const val ACTION_STATUS = "com.phonelink.companion.STATUS"
         const val EXTRA_HOST = "host"
         const val EXTRA_PORT = "port"
         const val EXTRA_KEY = "key"
+        const val EXTRA_STATUS = "status"
 
         /** Live instance so providers (NotifListener, MediaRelay) can push packets. */
         @Volatile var instance: CompanionService? = null

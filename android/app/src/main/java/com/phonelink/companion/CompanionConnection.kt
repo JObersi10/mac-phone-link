@@ -24,8 +24,10 @@ class CompanionConnection(
     private val crypto: CompanionCrypto,
 ) {
     interface Listener {
+        fun onConnecting() {}
         fun onConnected() {}
-        fun onDisconnected() {}
+        /** Disconnected; `reason` is the error message, or null for a clean close. */
+        fun onDisconnected(reason: String?) {}
         /** A decoded incoming packet. `body` may be empty. */
         fun onPacket(type: String, body: JSONObject) {}
     }
@@ -51,12 +53,16 @@ class CompanionConnection(
     val isConnected: Boolean get() = socket?.isConnected == true && running
 
     private fun runLoop() {
+        var reason: String? = null
         try {
+            listener?.onConnecting()
+            Log.i(TAG, "connecting to $host:$port")
             val s = Socket()
             s.tcpNoDelay = true
             s.connect(InetSocketAddress(host, port), 8000)
             socket = s
             out = s.getOutputStream()
+            Log.i(TAG, "connected to $host:$port")
             listener?.onConnected()
 
             val input = BufferedInputStream(s.getInputStream())
@@ -76,13 +82,14 @@ class CompanionConnection(
                 }
             }
         } catch (e: Exception) {
-            Log.w(TAG, "connection ended: ${e.message}")
+            reason = "${e.javaClass.simpleName}: ${e.message}"
+            Log.w(TAG, "connection ended: $reason")
         } finally {
             running = false
             try { socket?.close() } catch (_: Exception) {}
             socket = null
             out = null
-            listener?.onDisconnected()
+            listener?.onDisconnected(reason)
         }
     }
 

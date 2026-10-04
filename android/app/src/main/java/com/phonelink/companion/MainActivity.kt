@@ -25,6 +25,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var status: TextView
 
+    private val statusReceiver = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) { refresh() }
+    }
+
     private val scan = registerForActivityResult(ScanContract()) { result ->
         val contents = result.contents
         if (contents == null) {
@@ -85,7 +89,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() { super.onResume(); refresh() }
+    override fun onResume() {
+        super.onResume()
+        val filter = android.content.IntentFilter(CompanionService.ACTION_STATUS)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(statusReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            @Suppress("UnspecifiedRegisterReceiverFlag")
+            registerReceiver(statusReceiver, filter)
+        }
+        refresh()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        try { unregisterReceiver(statusReceiver) } catch (_: Exception) {}
+    }
 
     private fun startScan() {
         scan.launch(ScanOptions().apply {
@@ -114,12 +133,14 @@ class MainActivity : AppCompatActivity() {
     private fun refresh() {
         val paired = Prefs.lastPairing(this)
         val notif = if (hasNotificationAccess()) "granted" else "not granted"
+        val live = Prefs.status(this)
         status.text = buildString {
             append(if (Prefs.isConnected(this@MainActivity)) "● Connected" else "○ Not connected")
             append("\n")
             append(if (paired != null) "Paired with ${paired.name} (${paired.host}:${paired.port})"
                    else "Not paired yet")
-            append("\nNotification access: ")
+            if (!live.isNullOrEmpty()) { append("\n\n"); append(live) }
+            append("\n\nNotification access: ")
             append(notif)
         }
     }
