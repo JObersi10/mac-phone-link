@@ -3,6 +3,32 @@
 > Update this after any big implementation step and before compaction, so the
 > next session loses nothing crucial. Newest status at top.
 
+## 2026-10-04 — Windowed SwiftUI UI + onboarding
+
+### Done
+- Replaced the menu-bar-only AppKit app with a **windowed SwiftUI app** (Phone
+  Link-style). Deleted `main.swift`, `AppController.swift`,
+  `MirrorWindowController.swift`; removed `LSUIElement`.
+- New files: `PhoneLinkApp.swift` (@main + onboarding gate), `AppModel.swift`
+  (ObservableObject + `SessionBox`), `OnboardingView.swift`, `MainWindow.swift`
+  (NavigationSplitView: sidebar with device header / quick actions / now-playing
+  / notifications; detail with Phone Screen / Apps / Messages / Calls / Photos
+  tabs; `MirrorRepresentable` embeds the decode view). `InteractiveFrameView`
+  moved into `FrameRenderView.swift`.
+- Mirroring (full screen + per-app windows) renders inside the window. Companion
+  panels (media, notifications, battery) are wired to `AppModel` and fill in once
+  the transport lands.
+
+### Committed transport decision (user)
+- Build a **custom Android companion app** (own repo/dir) doing **Bluetooth +
+  Wi-Fi with USB fallback**. This is the next big milestone and includes the
+  Mac-side CoreBluetooth transport. KDE Connect is Wi-Fi-only so we're rolling
+  our own phone app (this is the APK the user wanted; build it in CI).
+
+### Next
+1. Get this UI rewrite green on CI (first SwiftUI build — expect a few fixes).
+2. Custom Android app + Mac BT/Wi-Fi/USB transport.
+
 ## 2026-10-04 — Bundle tools (v4.1) + transport reality
 
 ### Done

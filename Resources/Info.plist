@@ -18,9 +18,6 @@
     <string>PhoneLink</string>
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
-    <!-- Menu-bar accessory app: no Dock icon, no default window. -->
-    <key>LSUIElement</key>
-    <true/>
     <key>NSHumanReadableCopyright</key>
     <string>MIT licensed. Bundles no third-party code; see NOTICE.md.</string>
 </dict>
