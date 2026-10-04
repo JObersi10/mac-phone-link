@@ -25,6 +25,16 @@ Legend: ✅ implemented · 🟡 partial / scaffolded · ⬜ planned
 | **Sync over mobile data** | — | N/A — we are LAN/USB, not cloud | ❌ not applicable |
 | **File transfer** | companion | KDE Connect `kdeconnect.share` | ⬜ planned |
 
+## Native macOS integrations (the "seamless, all-in-one" goals)
+
+These go beyond Phone Link parity — they make the phone feel native to macOS.
+
+| Integration | How | State |
+| --- | --- | --- |
+| **Now Playing on Control Center / lock screen / media keys** | Phone MPRIS → `MPNowPlayingInfoCenter`; media keys / Control Center → `MPRemoteCommandCenter` → phone (`NowPlayingBridge`) | 🟡 bridge implemented, needs companion transport for live data |
+| **Click a notification → screen-mirror of that app** | Companion notification → `AppController.openAppMirror(forPackage:)` opens a per-app virtual-display window | 🟡 hook implemented; appName→package resolution + native-notification surfacing pending |
+| **Live aspect-ratio toggle (Native ↔ 16:9)** | Top-bar button: relocks `window.contentAspectRatio` instantly; for virtual displays also sends scrcpy `RESIZE_DISPLAY` so the device relayouts live, no reopen | 🟡 client-side framing works any version; device resize needs scrcpy ≥ 4.0 |
+
 ## Notes on parity gaps
 
 - **Instant Hotspot** and **Sync over mobile data** are cloud/vendor features

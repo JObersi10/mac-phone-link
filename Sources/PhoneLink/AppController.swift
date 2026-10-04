@@ -14,6 +14,11 @@ final class AppController: NSObject, NSApplicationDelegate {
     // this stays nil and the related menu items explain how to finish setup.
     private var companion: CompanionClient?
 
+    // Publishes the phone's playback to macOS Control Center / media keys.
+    private let nowPlaying = NowPlayingBridge()
+    private var activeMediaPlayer = ""
+    private var latestNotifications: [NotificationBody] = []
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = statusItem.button {
@@ -23,6 +28,13 @@ final class AppController: NSObject, NSApplicationDelegate {
                 button.title = "📱" // fallback if SF Symbol is unavailable
             }
         }
+
+        // Media keys / Control Center → forward to the phone's active player.
+        nowPlaying.onCommand = { [weak self] action in
+            guard let self, let companion = self.companion else { return }
+            Task { try? await companion.mediaCommand(player: self.activeMediaPlayer, action: action) }
+        }
+
         rebuildMenu()
     }
 
@@ -154,6 +166,17 @@ final class AppController: NSObject, NSApplicationDelegate {
         NSApp.activate(ignoringOtherApps: true)
     }
 
+    /// Open a per-app mirror window for a package. This is the target of the
+    /// "click a notification → mirror that app" flow. The companion plane
+    /// delivers an app *name*, not a package; `resolvePackage` is the remaining
+    /// gap (see claude/handoff.md).
+    func openAppMirror(forPackage package: String, title: String? = nil) {
+        guard !package.isEmpty else { return }
+        launchSession(newDisplay: "1920x1080/320", startApp: package,
+                      title: title ?? package)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
     @objc private func quit() {
         sessions.stopAll()
         NSApp.terminate(nil)
@@ -180,5 +203,31 @@ final class AppController: NSObject, NSApplicationDelegate {
         alert.messageText = "Could not start session"
         alert.informativeText = String(describing: error)
         alert.runModal()
+    }
+}
+
+// MARK: - Companion plane callbacks
+//
+// Wired once the companion transport is live (Milestone 3). The handlers are
+// ready now so the feature lights up as soon as packets start arriving.
+extension AppController: CompanionDelegate {
+    func companionDidUpdateMedia(_ media: MprisBody) {
+        if let player = media.player, !player.isEmpty { activeMediaPlayer = player }
+        DispatchQueue.main.async { [weak self] in self?.nowPlaying.update(from: media) }
+    }
+
+    func companionDidReceiveNotification(_ notification: NotificationBody) {
+        if notification.isCancel == true {
+            latestNotifications.removeAll { $0.id == notification.id }
+        } else {
+            latestNotifications.append(notification)
+        }
+        // Surfacing these as native macOS notifications whose click calls
+        // `openAppMirror(forPackage:)` is the remaining wire (needs
+        // appName→package resolution + UNUserNotificationCenter). See handoff.
+    }
+
+    func companionDidUpdateBattery(_ battery: BatteryBody) {
+        // TODO: reflect in the menu-bar title/tooltip.
     }
 }

@@ -57,7 +57,15 @@ CompanionClient (Companion)
 
 The phone side is the **KDE Connect Android app**, which already implements all
 of these features and is widely installed. We implement the *desktop* peer of
-its protocol. The transport (mDNS discovery of `_kdeconnect._udp`, a TLS channel
+its protocol.
+
+**macOS-native surfacing.** `NowPlayingBridge` (in `PhoneLink`, using the public
+MediaPlayer framework) turns incoming MPRIS state into a real macOS Now Playing
+entry — Control Center, lock screen, and the media keys — and routes those
+remote commands back to the phone. Incoming notifications flow to
+`AppController` (a `CompanionDelegate`), which can open a per-app mirror window
+for the originating app via `openAppMirror(forPackage:)` — the "click a
+notification, see the app" behavior. The transport (mDNS discovery of `_kdeconnect._udp`, a TLS channel
 on port 1716, and certificate-pinned pairing) is the remaining piece; the packet
 layer and client logic are done and tested with an in-memory transport.
 

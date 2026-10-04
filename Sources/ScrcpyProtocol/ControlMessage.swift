@@ -25,7 +25,9 @@ public enum ControlMessageType: UInt8 {
     case openHardKeyboardSettings = 15
     case startApp = 16
     case resetVideo = 17
-    // 18..=22: camera torch/zoom, resize display, scan file (not implemented)
+    // 18..20: camera torch / zoom in / zoom out (not implemented)
+    case resizeDisplay = 21
+    // 22: scan file (not implemented)
 }
 
 /// Android `KeyEvent` action.
@@ -63,6 +65,11 @@ public enum ControlMessage {
     case getClipboard(copyKey: UInt8)
     case setClipboard(sequence: UInt64, paste: Bool, text: String)
     case startApp(name: String)
+    /// Live-resize the (virtual) display. scrcpy serializes this as
+    /// type(1) + width(2, BE) + height(2, BE) = 5 bytes, with no display id.
+    /// Requires scrcpy >= 4.0 (resizable virtual display); on a mirror of the
+    /// physical screen it has no effect.
+    case resizeDisplay(width: UInt16, height: UInt16)
 
     /// Serialize to the exact bytes scrcpy-server expects on the control socket.
     public func serialize() -> [UInt8] {
@@ -110,6 +117,11 @@ public enum ControlMessage {
         case let .startApp(name):
             w.u8(ControlMessageType.startApp.rawValue)
             w.lengthPrefixedString(name, lengthBytes: 1)
+
+        case let .resizeDisplay(width, height):
+            w.u8(ControlMessageType.resizeDisplay.rawValue)
+            w.u16(width)
+            w.u16(height)
         }
         return w.bytes
     }

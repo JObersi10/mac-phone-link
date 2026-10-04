@@ -50,6 +50,24 @@ final class ControlMessageTests: XCTestCase {
         XCTAssertEqual(Array(bytes[14..<16]), Array("hi".utf8))
     }
 
+    func testResizeDisplayLayout() {
+        let bytes = ControlMessage.resizeDisplay(width: 1920, height: 1080).serialize()
+        // type(1) + width(2) + height(2) = 5
+        XCTAssertEqual(bytes.count, 5)
+        XCTAssertEqual(bytes[0], ControlMessageType.resizeDisplay.rawValue)
+        XCTAssertEqual(Array(bytes[1..<3]), [0x07, 0x80]) // 1920
+        XCTAssertEqual(Array(bytes[3..<5]), [0x04, 0x38]) // 1080
+    }
+
+    func testStartAppUsesSingleByteLengthPrefix() {
+        let bytes = ControlMessage.startApp(name: "vlc").serialize()
+        // type(1) + len(1) + "vlc"(3) = 5
+        XCTAssertEqual(bytes.count, 5)
+        XCTAssertEqual(bytes[0], ControlMessageType.startApp.rawValue)
+        XCTAssertEqual(bytes[1], 3)
+        XCTAssertEqual(Array(bytes[2..<5]), Array("vlc".utf8))
+    }
+
     func testFixedPointPressure() {
         XCTAssertEqual(FixedPoint.u16(0), 0)
         XCTAssertEqual(FixedPoint.u16(1), 0xFFFF)
