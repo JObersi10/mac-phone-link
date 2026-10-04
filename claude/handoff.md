@@ -26,8 +26,18 @@
   - Docs updated (FEATURES, ROADMAP, ARCHITECTURE) + libraries recorded in
     claude.md.
 
+### Build status
+- **CI is GREEN on macOS** as of commit `216533b` (runs #7/#8). It compiles on
+  the macOS 26 / Swift 6.3 runner, `swift test` passes, and the workflow
+  packages `PhoneLink.app` + `mac-phone-link.dmg` and uploads them as artifacts.
+- Two first-build errors were found and fixed: `FrameRenderView` was `final`
+  while being subclassed (`cfe6470`), and `sizeToFit()` was called on `NSView`
+  instead of `NSControl` (`216533b`).
+- Green means it *builds and unit-tests pass* — NOT that end-to-end mirroring
+  works. That still needs a real device + scrcpy-server + the companion
+  transport.
+
 ### Not done / still true from before
-- **Never compiled on macOS.** CI is the first real build; expect errors.
 - Companion **encrypted transport** (mDNS + TLS pairing on :1716) not
   implemented. Until it is, `companion` is nil, Now Playing has no data source,
   notifications don't arrive, and companion menu items show a setup notice.
@@ -52,9 +62,11 @@
   place; resolution is a TODO.
 
 ### Known risks / gotchas
-- `NWEndpoint.Host(host)` with a String variable — verify it compiles (vs. a
-  string-literal-only init). One-line fix if CI complains.
+- `NWEndpoint.Host(host)` with a String variable — RESOLVED: compiles fine on
+  Swift 6.3.
+- `MPNowPlayingInfoCenter.playbackState` — RESOLVED: compiles fine on macOS 26.
 - VideoToolbox async decode: block buffers must OWN their memory (fixed in
   `H264Decoder.decodeAVCC` — copies into an assured block buffer).
-- `MPNowPlayingInfoCenter` from an `LSUIElement` accessory app: verify it still
-  registers as a Now Playing source on macOS.
+- `MPNowPlayingInfoCenter` from an `LSUIElement` accessory app: compiles, but
+  whether it registers as a Now Playing source at runtime is unverified (no
+  device/runtime test yet).
