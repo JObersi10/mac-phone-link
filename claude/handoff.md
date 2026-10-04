@@ -3,14 +3,15 @@
 > Update this after any big implementation step and before compaction, so the
 > next session loses nothing crucial. Newest status at top.
 
-## 2026-10-04 — DECISION POINT: AirSync vs. continue
+## 2026-10-04 — DECISION: keep building (Bluetooth focus)
 
-**The owner realized [AirSync](https://github.com/sameerasw/airsync-mac) may
-already be enough** — they only disliked (a) it disconnecting and (b) Wi-Fi not
-Bluetooth. Honest reality given to them: **Bluetooth can't carry mirroring**
-(bandwidth) in AirSync or here; the disconnect is a fixable bug. **Open question:
-use/contribute to AirSync, or keep building this.** Do not assume "keep building"
-— confirm with the owner.
+**Owner weighed [AirSync](https://github.com/sameerasw/airsync-mac) and chose to
+KEEP BUILDING this** — the edge is the **Bluetooth companion/control plane** +
+the no-adb APK path. (Reality reconfirmed: Bluetooth can't do mirroring in any
+app; mirroring stays Wi-Fi/USB. Bluetooth is for the companion/control features.)
+**Android CI job is now wired** (ubuntu: `gradle wrapper` + `assembleDebug`,
+installs `platforms;android-34`) → produces a `companion-apk` artifact. First
+Android build may need fixes — iterate via the Android job logs.
 
 This turn's work (committed so it isn't lost; Mac side only):
 - Mirror window: **back / home / recents** nav buttons (`NavButtonBar`,
