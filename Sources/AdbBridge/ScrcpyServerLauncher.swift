@@ -24,11 +24,16 @@ public struct ServerOptions {
     /// launcher/taskbar) so a started app fills the display instead of showing
     /// the DeX desktop.
     public var noVdSystemDecorations: Bool
+    /// Make a virtual display resizable/adjustable (scrcpy `flex_display`). This
+    /// lets the display relayout to the window size — useful for the desktop/DeX
+    /// framing — and matches the flag the user verified (`--flex-display`).
+    public var flexDisplay: Bool
 
     public init(scid: UInt32, localPort: Int, maxSize: Int = 0,
                 videoBitRate: Int = 8_000_000, maxFps: Int = 60,
                 newDisplay: String? = nil, startApp: String? = nil,
-                control: Bool = true, noVdSystemDecorations: Bool = false) {
+                control: Bool = true, noVdSystemDecorations: Bool = false,
+                flexDisplay: Bool = false) {
         self.scid = scid
         self.localPort = localPort
         self.maxSize = maxSize
@@ -38,6 +43,7 @@ public struct ServerOptions {
         self.startApp = startApp
         self.control = control
         self.noVdSystemDecorations = noVdSystemDecorations
+        self.flexDisplay = flexDisplay
     }
 
     var socketName: String { String(format: "scrcpy_%08x", scid) }
@@ -88,6 +94,7 @@ public struct ScrcpyServerLauncher {
         if let newDisplay = opts.newDisplay { serverArgs.append("new_display=\(newDisplay)") }
         if let startApp = opts.startApp { serverArgs.append("start_app=\(startApp)") }
         if opts.noVdSystemDecorations { serverArgs.append("no_vd_system_decorations=true") }
+        if opts.flexDisplay { serverArgs.append("flex_display=true") }
 
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/env")

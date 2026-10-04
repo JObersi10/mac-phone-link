@@ -35,6 +35,19 @@ final class SessionBox: ObservableObject, Identifiable {
     let isFullScreen: Bool
     @Published var title: String
     @Published var state: DeviceSession.State = .idle
+    /// The decoded video dimensions, published once the first frame arrives so
+    /// the window can lock itself to the phone's real aspect ratio.
+    @Published var streamSize: CGSize?
+    /// When true, the window is framed 16:9 (desktop/DeX-style) instead of the
+    /// phone's native portrait aspect.
+    @Published var preferLandscape = false
+
+    /// The aspect ratio the window should hold: the live stream size, or 16:9
+    /// if the user asked for desktop framing. Nil until the first frame.
+    var windowAspect: CGSize? {
+        if preferLandscape { return CGSize(width: 16, height: 9) }
+        return streamSize
+    }
 
     init(session: DeviceSession, title: String, isFullScreen: Bool) {
         self.session = session
@@ -49,8 +62,14 @@ final class SessionBox: ObservableObject, Identifiable {
         renderView.onControlMessage = { [weak session] message in
             Task { await session?.send(message) }
         }
-        session.onFrame = { [weak self] imageBuffer, _ in
+        session.onFrame = { [weak self, weak session] imageBuffer, _ in
             self?.renderView.render(imageBuffer) // render marshals to main
+            if let size = session?.videoSize {
+                let cg = CGSize(width: Int(size.width), height: Int(size.height))
+                DispatchQueue.main.async {
+                    if self?.streamSize != cg { self?.streamSize = cg }
+                }
+            }
         }
         session.onStateChange = { [weak self] newState in
             DispatchQueue.main.async { self?.state = newState }
@@ -96,9 +115,20 @@ final class AppModel: ObservableObject {
 
     @Published var lastError: String?
 
+    // Pairing / companion transport.
+    @Published var pairingCode: PairingCode?
+    @Published var showPairing = false
+
     let nowPlayingBridge = NowPlayingBridge()
     private let sessionManager = SessionManager()
     private var companion: CompanionClient?
+    private var companionServer: TCPCompanionServer?
+    private var companionCrypto: CompanionCrypto?
+
+    /// Fixed companion port. Deterministic so the QR is stable and the USB
+    /// fallback (`adb reverse tcp:<port> tcp:<port>`) is predictable.
+    static let companionPort: UInt16 = 8787
+    private let keyDefaultsKey = "companionAESKeyBase64"
 
     init() {
         nowPlayingBridge.onCommand = { [weak self] action in
@@ -203,21 +233,73 @@ final class AppModel: ObservableObject {
 
     func stopAll() { sessions.forEach { $0.session.stop() }; sessions.removeAll() }
 
-    // MARK: - Companion plane (wired once transport exists)
+    // MARK: - Companion plane
+
+    /// Start the TCP companion server (Mac = server) and show the pairing QR.
+    /// Idempotent: if already running, just re-presents the code.
+    func startPairing() {
+        if companionServer == nil { startCompanionServer() }
+        pairingCode = makePairingCode()
+        showPairing = true
+    }
+
+    private func startCompanionServer() {
+        let crypto = loadOrCreateCrypto()
+        let server = TCPCompanionServer(crypto: crypto)
+        let client = CompanionClient(transport: server)
+        client.delegate = self
+        server.onLine = { [weak client] line in client?.handle(line: line) }
+        server.onConnected = { [weak self] connected in
+            self?.companionConnected = connected
+            if connected { self?.showPairing = false }
+            AppLog.shared.log("companion \(connected ? "connected" : "disconnected")")
+        }
+        do {
+            try server.start(preferredPort: Self.companionPort)
+            self.companionServer = server
+            self.companionCrypto = crypto
+            self.companion = client
+            AppLog.shared.log("companion server listening on :\(Self.companionPort)")
+        } catch {
+            lastError = "Couldn't start the companion server on port \(Self.companionPort): \(error)"
+            AppLog.shared.log("companion server failed: \(error)")
+        }
+    }
+
+    private func makePairingCode() -> PairingCode? {
+        guard let crypto = companionCrypto else { return nil }
+        let host = LocalNetwork.primaryIPv4Address() ?? "127.0.0.1"
+        let name = Host.current().localizedName ?? "Mac"
+        return PairingCode(host: host, port: Self.companionPort, name: name,
+                           base64Key: crypto.base64Key)
+    }
+
+    /// Load the persisted AES key, or generate and persist a new one. Stored in
+    /// UserDefaults for now (TODO: move to Keychain — tracked in ROADMAP).
+    private func loadOrCreateCrypto() -> CompanionCrypto {
+        if let b64 = UserDefaults.standard.string(forKey: keyDefaultsKey),
+           let crypto = CompanionCrypto(base64Key: b64) {
+            return crypto
+        }
+        let crypto = CompanionCrypto(key: CompanionCrypto.generateKey())
+        UserDefaults.standard.set(crypto.base64Key, forKey: keyDefaultsKey)
+        return crypto
+    }
 
     func ringPhone() {
-        guard let companion else { companionUnavailable(); return }
+        guard let companion, companionConnected else { companionUnavailable(); return }
         Task { try? await companion.ringPhone() }
     }
 
     func mediaCommand(_ action: String) {
-        guard let companion else { companionUnavailable(); return }
+        guard let companion, companionConnected else { companionUnavailable(); return }
         Task { try? await companion.mediaCommand(player: nowPlaying?.player ?? "", action: action) }
     }
 
     private func companionUnavailable() {
-        lastError = "Companion features (notifications, media, ring, battery) need the "
-            + "companion app + transport, which is the next milestone. Mirroring works now."
+        startPairing()
+        lastError = "No phone is paired yet. Scan this QR code with the companion app "
+            + "to connect notifications, media, ring and battery over Wi-Fi (or USB)."
     }
 }
 
@@ -239,6 +321,13 @@ extension AppModel: CompanionDelegate {
             } else {
                 self.notifications.insert(n, at: 0)
             }
+        }
+    }
+    func companionDidUpdateClipboard(_ text: String) {
+        DispatchQueue.main.async {
+            let pb = NSPasteboard.general
+            pb.clearContents()
+            pb.setString(text, forType: .string)
         }
     }
 }

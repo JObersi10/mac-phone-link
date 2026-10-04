@@ -22,6 +22,9 @@ struct MainWindowView: View {
         } message: {
             Text(model.lastError ?? "")
         }
+        .sheet(isPresented: $model.showPairing) {
+            PairingView().environmentObject(model)
+        }
     }
 }
 
@@ -53,6 +56,10 @@ struct SidebarView: View {
                 }
                 Button { model.ringPhone() } label: {
                     Label("Ring My Phone", systemImage: "bell.badge")
+                }
+                Button { model.startPairing() } label: {
+                    Label(model.companionConnected ? "Phone Paired" : "Pair Phone (QR)",
+                          systemImage: model.companionConnected ? "checkmark.circle" : "qrcode")
                 }
             }
 
@@ -320,6 +327,9 @@ struct MirrorContainer: View {
             ZStack {
                 Color.black
                 MirrorRepresentable(renderView: box.renderView)
+                // Keeps the window glued to the phone's real aspect ratio
+                // (portrait) — or 16:9 when the user chooses desktop framing.
+                WindowAspectConfigurator(aspect: box.windowAspect)
                 if box.state != .streaming {
                     ProgressView(statusText).tint(.white).foregroundStyle(.white)
                 }
@@ -351,12 +361,45 @@ struct NavButtonBar: View {
                 .help("Home")
             Button { box.press(.recents) } label: { Image(systemName: "square") }
                 .help("Recents")
+            Button { box.preferLandscape.toggle() } label: {
+                Image(systemName: box.preferLandscape
+                      ? "rectangle.portrait" : "rectangle.landscape.rotate")
+            }
+            .help(box.preferLandscape ? "Phone aspect ratio" : "Desktop (16:9) framing")
         }
         .buttonStyle(.plain)
         .font(.system(size: 15))
         .padding(.vertical, 8)
         .frame(maxWidth: .infinity)
         .background(.bar)
+    }
+}
+
+/// Invisible helper that pins its hosting `NSWindow` to a given aspect ratio so
+/// the mirror window keeps the phone's shape when the user resizes it. Honest
+/// limitation: this reframes the Mac window only — it does not stop Samsung DeX
+/// from taking over a virtual display on One UI 8 (that is device-side).
+struct WindowAspectConfigurator: NSViewRepresentable {
+    let aspect: CGSize?
+
+    func makeNSView(context: Context) -> NSView { NSView(frame: .zero) }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        let aspect = aspect
+        DispatchQueue.main.async {
+            guard let window = nsView.window else { return }
+            guard let aspect, aspect.width > 0, aspect.height > 0 else {
+                window.resizeIncrements = NSSize(width: 1, height: 1) // clear constraint
+                return
+            }
+            if window.contentAspectRatio != aspect {
+                window.contentAspectRatio = aspect
+                // Snap current size to the new ratio, preserving width.
+                let contentSize = window.contentRect(forFrameRect: window.frame).size
+                let newHeight = contentSize.width * aspect.height / aspect.width
+                window.setContentSize(NSSize(width: contentSize.width, height: newHeight))
+            }
+        }
     }
 }
 

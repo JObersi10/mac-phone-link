@@ -69,4 +69,57 @@ final class CompanionTests: XCTestCase {
         XCTAssertEqual(spy.media?.title, "Lift Me Up")
         XCTAssertEqual(spy.media?.isPlaying, true)
     }
+
+    // MARK: - Crypto
+
+    func testCryptoRoundTrip() throws {
+        let crypto = CompanionCrypto(key: CompanionCrypto.generateKey())
+        let plaintext = Data(#"{"type":"kdeconnect.ping","body":{}}"#.utf8)
+        let sealed = try crypto.seal(plaintext)
+        XCTAssertNotEqual(sealed, plaintext)
+        XCTAssertEqual(try crypto.open(sealed), plaintext)
+    }
+
+    func testCryptoBase64FrameRoundTrip() throws {
+        let crypto = CompanionCrypto(key: CompanionCrypto.generateKey())
+        let plaintext = Data("hello companion".utf8)
+        let frame = try crypto.sealToBase64(plaintext)
+        XCTAssertEqual(try crypto.openFromBase64(frame), plaintext)
+    }
+
+    func testCryptoKeyBase64RoundTrips() throws {
+        let original = CompanionCrypto(key: CompanionCrypto.generateKey())
+        let restored = CompanionCrypto(base64Key: original.base64Key)
+        XCTAssertNotNil(restored)
+        let plaintext = Data("shared key works".utf8)
+        let sealed = try original.seal(plaintext)
+        XCTAssertEqual(try restored?.open(sealed), plaintext)
+    }
+
+    func testCryptoRejectsBadKeyLength() {
+        XCTAssertNil(CompanionCrypto(base64Key: Data("too short".utf8).base64EncodedString()))
+        XCTAssertNil(CompanionCrypto(base64Key: "not base64 @@@"))
+    }
+
+    func testCryptoOpenRejectsGarbage() {
+        let crypto = CompanionCrypto(key: CompanionCrypto.generateKey())
+        XCTAssertThrowsError(try crypto.openFromBase64("###"))
+    }
+
+    // MARK: - Pairing code
+
+    func testPairingCodeRoundTrip() throws {
+        let key = CompanionCrypto(key: CompanionCrypto.generateKey()).base64Key
+        let code = PairingCode(host: "192.168.1.42", port: 8787, name: "Johns Mac", base64Key: key)
+        let parsed = try XCTUnwrap(PairingCode(parsing: code.encoded()))
+        XCTAssertEqual(parsed.host, "192.168.1.42")
+        XCTAssertEqual(parsed.port, 8787)
+        XCTAssertEqual(parsed.name, "Johns Mac")
+        XCTAssertEqual(parsed.base64Key, key) // base64 '+' / '=' survive the URL round-trip
+    }
+
+    func testPairingCodeRejectsWrongScheme() {
+        XCTAssertNil(PairingCode(parsing: "https://192.168.1.42:8787?key=abc"))
+        XCTAssertNil(PairingCode(parsing: "maclink://192.168.1.42:8787")) // no key
+    }
 }

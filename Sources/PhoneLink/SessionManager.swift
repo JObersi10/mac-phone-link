@@ -48,7 +48,10 @@ final class SessionManager {
             control: true,
             // For a single app, hide the virtual-display system UI (Samsung DeX
             // launcher/taskbar) so the app fills the window instead of DeX.
-            noVdSystemDecorations: startApp != nil)
+            noVdSystemDecorations: startApp != nil,
+            // Make the virtual display adjustable so it relayouts to the window
+            // (verified: `--flex-display`). Only meaningful for virtual displays.
+            flexDisplay: newDisplay != nil)
         nextScid += 1
         nextPort += 1
 
