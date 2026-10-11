@@ -24,3 +24,6 @@ Package.resolved
 
 # ---- Local-only analysis holding verbatim vendor text (NOT for public repo) ----
 protos/EXTRACTED_SCHEMAS.md
+
+# ---- Packaged app output ----
+/dist/

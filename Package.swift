@@ -13,6 +13,7 @@ let package = Package(
         .library(name: "PhoneLinkUI", targets: ["PhoneLinkUI"]),
         .library(name: "PhoneLinkVideo", targets: ["PhoneLinkVideo"]),
         .executable(name: "proto-check", targets: ["ProtoCheck"]),
+        .executable(name: "PhoneLinkApp", targets: ["PhoneLinkApp"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.28.2"),
@@ -48,6 +49,11 @@ let package = Package(
             name: "PhoneLinkVideo",
             dependencies: [],
             path: "Sources/PhoneLinkVideo"
+        ),
+        .executableTarget(
+            name: "PhoneLinkApp",
+            dependencies: ["PhoneLinkUI"],
+            path: "Sources/PhoneLinkApp"
         ),
         .executableTarget(
             name: "ProtoCheck",
