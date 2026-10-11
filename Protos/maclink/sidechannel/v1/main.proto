@@ -1,0 +1,46 @@
+// Clean-room interoperability schema for the mac-phone-link project.
+// Independently authored from observed wire behavior; no vendor source text,
+// headers, or comments are reproduced. Field numbers and types reflect the
+// on-the-wire protobuf layout (interface facts) required for compatibility.
+// SPDX-License-Identifier: MIT
+syntax = "proto3";
+package maclink.sidechannel.v1;
+
+import "maclink/sidechannel/v1/trace_context.proto";
+import "maclink/sidechannel/v1/error.proto";
+import "maclink/sidechannel/v1/authorization.proto";
+import "maclink/sidechannel/v1/capability.proto";
+import "maclink/sidechannel/v1/wake.proto";
+import "maclink/sidechannel/v1/hotspot.proto";
+
+message ClientRequest {
+  TraceContext context = 1;
+  oneof request {
+    WakeRequest wake_request = 2;
+    CapabilityRequest capability_request = 3;
+    HotspotRequest hotspot_request = 5;
+    InstantHotspotRequest instant_hotspot_request = 6;
+  }
+  optional Authorization authorization = 4;
+}
+
+message ServerResponse {
+  bool ok = 1;
+  Error error = 2;
+  oneof response {
+    WakeResponse wake_response = 3;
+    CapabilityResponse capability_response = 4;
+    HotspotResponse hotspot_response = 5;
+    HotspotEncryptedResponse hotspot_encrypted_response = 8;
+    InstantHotspotResponse instant_hotspot_response = 9;
+    InstantHotspotEncryptedResponse instant_hotspot_encrypted_response = 10;
+  }
+  optional Authorization authorization = 6;
+  TraceContext context = 7;
+}
+
+message ServerMessage {
+  oneof body {
+    ServerResponse request_response = 1;
+  }
+}

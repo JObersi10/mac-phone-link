@@ -1,0 +1,26 @@
+// Clean-room interoperability schema for the mac-phone-link project.
+// Independently authored from observed wire behavior; no vendor source text,
+// headers, or comments are reproduced. Field numbers and types reflect the
+// on-the-wire protobuf layout (interface facts) required for compatibility.
+// SPDX-License-Identifier: MIT
+syntax = "proto3";
+package maclink.files.v1;
+
+import "maclink/files/v1/status.proto";
+
+message BatchedDeleteRequest { string target_uri = 1; int64 target_checksum = 2; }
+message BatchedDeleteResponse { string target_uri = 1; FilesResponseStatus status = 2; }
+
+message FilesDeleteRequest {
+  string target_uri = 1;
+  int64 target_checksum = 2;
+  bool is_batch = 3;
+  repeated BatchedDeleteRequest batch_requests = 4;
+}
+
+message FilesDeleteResponse {
+  FilesResponseStatus status = 1;
+  string target_uri = 2;
+  bool is_batch = 3;
+  repeated BatchedDeleteResponse batch_responses = 4;
+}

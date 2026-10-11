@@ -1,0 +1,26 @@
+# ---- Proprietary Microsoft app packages (DO NOT COMMIT) ----
+# Decompiled/extracted vendor binaries used only for local analysis.
+YourPhone.Package_*/
+com.microsoft.appmanager_*/
+*.apk
+*.msix
+*.msixbundle
+*.appx
+*.zip
+
+# ---- Swift / SwiftPM ----
+.build/
+.swiftpm/
+*.xcodeproj
+*.xcworkspace
+Package.resolved
+
+# ---- Generated protobuf Swift (produced by CI; uncomment to also ignore locally) ----
+# Sources/PhoneLinkProtos/Generated/*.swift
+
+# ---- macOS / scratch ----
+.DS_Store
+/scratch/
+
+# ---- Local-only analysis holding verbatim vendor text (NOT for public repo) ----
+protos/EXTRACTED_SCHEMAS.md

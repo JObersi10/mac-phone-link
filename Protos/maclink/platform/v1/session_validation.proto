@@ -1,0 +1,24 @@
+// Clean-room interoperability schema for the mac-phone-link project.
+// Independently authored from observed wire behavior; no vendor source text,
+// headers, or comments are reproduced. Field numbers and types reflect the
+// on-the-wire protobuf layout (interface facts) required for compatibility.
+// SPDX-License-Identifier: MIT
+syntax = "proto3";
+package maclink.platform.v1;
+
+enum PlatformCapability {
+  PLATFORM_CAPABILITY_UNSPECIFIED = 0;
+  PLATFORM_CAPABILITY_SESSION_VALIDATION = 1;
+  PLATFORM_CAPABILITY_PERSISTENT_MESSAGE_CHANNEL = 2;
+  PLATFORM_CAPABILITY_NANO_TRANSPORT_PREFERENCE = 3;
+}
+
+message SessionValidationRequest {
+  repeated PlatformCapability platform_capabilities = 1;
+}
+
+message SessionValidationResponse {
+  repeated PlatformCapability platform_capabilities = 1;
+  int32 persistent_messaging_channel_version = 2;
+  int32 nano_transport_preference_version = 3;
+}

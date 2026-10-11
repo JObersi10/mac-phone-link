@@ -1,0 +1,65 @@
+// Clean-room interoperability schema for the mac-phone-link project.
+// Independently authored from observed wire behavior; no vendor source text,
+// headers, or comments are reproduced. Field numbers and types reflect the
+// on-the-wire protobuf layout (interface facts) required for compatibility.
+// SPDX-License-Identifier: MIT
+syntax = "proto3";
+package maclink.clipboard.v1;
+
+import "google/protobuf/timestamp.proto";
+
+enum RequestType {
+  REQUEST_TYPE_UNSPECIFIED = 0;
+  REQUEST_TYPE_CONTENT = 1;
+  REQUEST_TYPE_FEATURE_ON = 2;
+  REQUEST_TYPE_FEATURE_OFF = 3;
+  REQUEST_TYPE_FEATURE_DISABLE = 4;
+  REQUEST_TYPE_STATUS = 5;
+}
+
+enum ResponseStatus {
+  RESPONSE_STATUS_UNSPECIFIED = 0;
+  RESPONSE_STATUS_OK = 1;
+  RESPONSE_STATUS_INVALID_DEVICE_RESOURCE_REQUEST_TYPE = 2;
+  RESPONSE_STATUS_INVALID_DEVICE_RESOURCE_REQUEST_PATH = 3;
+  RESPONSE_STATUS_INVALID_CLIPBOARD_REQUEST_TYPE = 4;
+  RESPONSE_STATUS_UNRECOGNIZED_PAYLOAD = 5;
+  RESPONSE_STATUS_CLIPBOARD_CHANGE = 6;
+  RESPONSE_STATUS_INVALID_CONTENT = 7;
+  RESPONSE_STATUS_FEATURE_ON = 8;
+  RESPONSE_STATUS_FEATURE_OFF = 9;
+  RESPONSE_STATUS_FEATURE_DISABLE = 10;
+}
+
+enum ItemType {
+  ITEM_TYPE_UNSPECIFIED = 0;
+  ITEM_TYPE_IMAGE = 1;
+  ITEM_TYPE_TEXT_PLAIN = 2;
+  ITEM_TYPE_TEXT_HTML = 3;
+}
+
+enum ErrorType {
+  ERROR_TYPE_UNSPECIFIED = 0;
+  ERROR_TYPE_REJECT = 1;
+  ERROR_TYPE_FAIL = 2;
+}
+
+message RequestMessage {
+  RequestType request_type = 1;
+  string correlation_id = 2;
+}
+
+message Item {
+  ItemType item_type = 1;
+  optional string text = 2;
+  optional bytes image_bytes = 3;
+  google.protobuf.Timestamp created_time = 4;
+}
+
+message ResponseMessage {
+  repeated Item clipboard_item = 1;
+  ResponseStatus status = 2;
+  string correlation_id = 3;
+  ErrorType error_type = 4;
+  string error_detail = 5;
+}

@@ -1,0 +1,54 @@
+name: Build Swift (protobuf)
+
+on:
+  push:
+    branches: [ main, "feature/**" ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: |
+          swift --version
+          sw_vers
+
+      - name: Install protoc + swift-protobuf plugin (Homebrew)
+        run: |
+          brew update
+          brew install protobuf swift-protobuf
+          echo "protoc:            $(protoc --version)"
+          echo "protoc-gen-swift:  $(which protoc-gen-swift)"
+
+      - name: Generate Swift from .proto
+        run: |
+          set -euo pipefail
+          OUT="Sources/PhoneLinkProtos/Generated"
+          mkdir -p "$OUT"
+          # -I Protos makes the app-relative imports (e.g. platform_sdk/v1/trace_context.proto)
+          # resolve; google/protobuf well-knowns ship with protoc's include path.
+          find Protos -name '*.proto' -print0 \
+            | xargs -0 protoc \
+                --proto_path=Protos \
+                --plugin=protoc-gen-swift="$(which protoc-gen-swift)" \
+                --swift_opt=Visibility=Public,FileNaming=PathToUnderscores \
+                --swift_out="$OUT"
+          echo "Generated files:"
+          find "$OUT" -name '*.pb.swift' | sort
+          test "$(find "$OUT" -name '*.pb.swift' | wc -l)" -gt 0
+
+      - name: Build Swift package
+        run: swift build -v
+
+      - name: Run tests (round-trip serialization + DCG framing)
+        run: swift test -v
+
+      - name: Run proto-check
+        run: swift run proto-check

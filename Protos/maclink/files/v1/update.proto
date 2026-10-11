@@ -1,0 +1,31 @@
+// Clean-room interoperability schema for the mac-phone-link project.
+// Independently authored from observed wire behavior; no vendor source text,
+// headers, or comments are reproduced. Field numbers and types reflect the
+// on-the-wire protobuf layout (interface facts) required for compatibility.
+// SPDX-License-Identifier: MIT
+syntax = "proto3";
+package maclink.files.v1;
+
+import "maclink/files/v1/status.proto";
+import "maclink/files/v1/metadata.proto";
+
+message CreateFileRequest { string folder_uri = 1; int64 folder_checksum = 2; string file_name = 3; }
+message CreateFolderRequest { string folder_uri = 1; int64 folder_checksum = 2; string folder_name = 3; }
+message RenameRequest { string target_uri = 1; int64 target_checksum = 2; string target_path = 3; }
+message MoveFileRequest { string src_file_uri = 1; int64 src_file_checksum = 2; string target_folder_uri = 3; }
+message MoveFolderRequest { string src_folder_uri = 1; int64 src_folder_checksum = 2; string target_folder_uri = 3; }
+
+message FilesUpdateRequest {
+  oneof request {
+    CreateFileRequest create_file_request = 1;
+    CreateFolderRequest create_folder_request = 2;
+    RenameRequest rename_request = 3;
+    MoveFileRequest move_file_request = 4;
+    MoveFolderRequest move_folder_request = 5;
+  }
+}
+
+message FilesUpdateResponse {
+  FilesResponseStatus status = 1;
+  optional FileMetadata target_metadata = 2;
+}
