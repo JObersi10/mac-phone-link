@@ -136,13 +136,27 @@ secrets: `MACOS_CERTIFICATE` (base64 Developer ID .p12), `MACOS_CERTIFICATE_PWD`
 - `@main` app (`Sources/PhoneLinkApp/App.swift`) builds `connection` +
   `onboarding` StateObjects and hosts `AppRootView`.
 
+## Nano/QUIC transport (`NanoTransport` target)
+The direct high-bandwidth path. Scaffolded:
+- `NanoFraming` — 4-byte big-endian length prefix per message; `NanoFrameDecoder`
+  reassembles split/coalesced chunks. Pure + unit-tested.
+- `NanoTransport` protocol (`state`/`onFrame`/`onStateChange`/`send`/`cancel`) +
+  `LoopbackNanoTransport` for tests/wiring.
+- `QUICNanoConnection` — Network.framework QUIC (`NWProtocolQUIC.Options(alpn:)`,
+  one bidirectional stream), `@available(macOS 12)`, `#if canImport(Network)`.
+  Insecure-cert verify block by default (direct peer uses a device-trust cert,
+  not web PKI) — pin the expected cert there for production.
+- `NanoHandshake` — context_source exchange (Initialize → IdentityResponse →
+  OpenDeviceConnectionRequest) over the clean-room `ContextSourceMessage`.
+- **Wire to video**: `transport.onFrame = { try? controller.feed(frame: $0) }`
+  (`VideoStreamController.feed(frame:) throws -> CMSampleBuffer?`).
+Still TODO: confirm the real frame container (Annex B vs AVCC, SPS/PPS
+signaling) against live bytes, Wi-Fi Direct/instant-hotspot negotiation via the
+side channel, cert pinning, and multi-stream (control vs media) if needed.
+
 ## Next work (priority order)
-1. **Merge #3** to `main` (user action).
-2. **Nano/QUIC transport** — the direct path screen-mirroring video actually
-   flows over. Needs: QUIC (Network.framework `NWConnection` w/ QUIC, or msquic),
-   the `context_source` identity-challenge handshake, Wi-Fi Direct/instant-
-   hotspot negotiation via side-channel. Biggest remaining piece; it feeds frame
-   bytes into `VideoStreamController.feed(frame:)`.
+1. **Nano transport live bring-up** — verify framing + handshake against real
+   traffic; connect `QUICNanoConnection.onFrame` → `VideoStreamController`.
 3. **Device-trust provisioning** — pairing-proxy cert issuance (we can sign but
    assume a key/cert already exists). Study `pairingproxyclient`.
 4. **Wire video to a real screen** — connect `VideoStreamController` →
