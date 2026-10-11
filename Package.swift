@@ -11,6 +11,7 @@ let package = Package(
         .library(name: "DCGAuth", targets: ["DCGAuth"]),
         .library(name: "DCGTransport", targets: ["DCGTransport"]),
         .library(name: "PhoneLinkUI", targets: ["PhoneLinkUI"]),
+        .library(name: "PhoneLinkVideo", targets: ["PhoneLinkVideo"]),
         .executable(name: "proto-check", targets: ["ProtoCheck"]),
     ],
     dependencies: [
@@ -43,6 +44,11 @@ let package = Package(
             dependencies: ["PhoneLinkProtos", "DCGTransport"],
             path: "Sources/PhoneLinkUI"
         ),
+        .target(
+            name: "PhoneLinkVideo",
+            dependencies: [],
+            path: "Sources/PhoneLinkVideo"
+        ),
         .executableTarget(
             name: "ProtoCheck",
             dependencies: ["PhoneLinkProtos"],
@@ -50,7 +56,7 @@ let package = Package(
         ),
         .testTarget(
             name: "PhoneLinkProtosTests",
-            dependencies: ["PhoneLinkProtos", "DCGTransport", "PhoneLinkUI"],
+            dependencies: ["PhoneLinkProtos", "DCGTransport", "PhoneLinkUI", "PhoneLinkVideo"],
             path: "Tests/PhoneLinkProtosTests"
         ),
     ]
