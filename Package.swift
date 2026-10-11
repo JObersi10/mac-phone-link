@@ -44,7 +44,7 @@ let package = Package(
         ),
         .target(
             name: "PhoneLinkUI",
-            dependencies: ["PhoneLinkProtos", "DCGTransport"],
+            dependencies: ["PhoneLinkProtos", "DCGTransport", "PhoneLinkVideo", "NanoTransport", "PhoneLinkPairing"],
             path: "Sources/PhoneLinkUI"
         ),
         .target(

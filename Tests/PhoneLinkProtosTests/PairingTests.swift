@@ -7,21 +7,40 @@ import XCTest
 
 final class PairingTests: XCTestCase {
 
-    func testParsesUaidAndCode() {
-        let p = QRPairingPayload(parsing: "uaid=00000000ABCD1234EF567890&code=M.R3_BAY.abc123")
-        XCTAssertNotNil(p)
-        XCTAssertEqual(p?.uaid, "00000000ABCD1234EF567890")
-        XCTAssertEqual(p?.msaCode, "M.R3_BAY.abc123")
+    func testEncodesValidDynamicLinkURL() {
+        let p = QRPairingPayload(uaid: "sess0001ABCD1234EF567890",
+                                 traceId: "11111111-1111-1111-1111-111111111111")
+        let s = p.encoded()
+        XCTAssertTrue(s.hasPrefix("https://dcg.microsoft.com/?"), s)
+        XCTAssertTrue(s.contains("vm=5"))
+        XCTAssertTrue(s.contains("uaid=sess0001ABCD1234EF567890"))
+        XCTAssertTrue(s.contains("ti=11111111-1111-1111-1111-111111111111"))
+        XCTAssertTrue(s.contains("r=5"))
+        XCTAssertTrue(s.contains("apn=com.microsoft.appmanager"))
+        // Must be a URI with scheme AND host (what the scanner validates).
+        let u = URL(string: s)
+        XCTAssertEqual(u?.scheme, "https")
+        XCTAssertEqual(u?.host, "dcg.microsoft.com")
     }
 
-    func testParsesFromFullURI() {
-        let p = QRPairingPayload(parsing: "ms-phone-link://pair?uaid=XXXX1234567890ABCDEF&code=zzz")
+    func testParsesDynamicLinkURL() {
+        let p = QRPairingPayload(parsing:
+            "https://dcg-df.microsoft.com/?vm=5&uaid=XXXX1234567890ABCDEF&ti=abc&r=4&apn=com.microsoft.appmanager&tsft=T.token")
         XCTAssertEqual(p?.uaid, "XXXX1234567890ABCDEF")
-        XCTAssertEqual(p?.msaCode, "zzz")
+        XCTAssertEqual(p?.environment, .dogfood)
+        XCTAssertEqual(p?.ring, .beta)
+        XCTAssertEqual(p?.mode, .idealFlow)
+        XCTAssertEqual(p?.transferToken, "T.token")
+    }
+
+    func testRejectsBareQueryAndNonDCGHost() {
+        // The old bad payload: no scheme / host → invalid.
+        XCTAssertNil(QRPairingPayload(parsing: "uaid=maclink-15885620TKFWFGV9WFF00KQI"))
+        // Wrong host → not a DCG dynamic link.
+        XCTAssertNil(QRPairingPayload(parsing: "https://example.com/?uaid=abcdef&vm=5"))
     }
 
     func testYppPairingCodeIsLast16() {
-        // 8-char prefix + 16-char code.
         let p = QRPairingPayload(uaid: "PREFIX00ABCD1234EF567890")
         XCTAssertEqual(p.uaid.count, 24)
         XCTAssertEqual(p.yppPairingCode, "ABCD1234EF567890")
@@ -39,14 +58,11 @@ final class PairingTests: XCTestCase {
     }
 
     func testBuildFromPairingCodeRoundTrips() {
-        let p = QRPairingPayload(pairingCode: "ABCD1234EF567890", prefix: "sess01", msaCode: "M.code")
+        let p = QRPairingPayload(pairingCode: "ABCD1234EF567890", prefix: "sess01",
+                                 traceId: "fixed-ti")
         XCTAssertEqual(p.yppPairingCode, "ABCD1234EF567890")
         let reparsed = QRPairingPayload(parsing: p.encoded())
         XCTAssertEqual(reparsed, p)
-    }
-
-    func testEncodeOmitsMissingCode() {
-        XCTAssertEqual(QRPairingPayload(uaid: "abc").encoded(), "uaid=abc")
     }
 
     func testEndpointsUnderDCGHost() {
