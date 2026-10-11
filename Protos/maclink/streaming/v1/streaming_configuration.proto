@@ -1,0 +1,26 @@
+// Clean-room interoperability schema for the mac-phone-link project.
+// Independently authored from observed wire behavior; no vendor source text,
+// headers, or comments are reproduced. Field numbers and types reflect the
+// on-the-wire protobuf layout (interface facts) required for compatibility.
+// SPDX-License-Identifier: MIT
+syntax = "proto3";
+package maclink.streaming.v1;
+
+enum StreamingCapabilityMask {
+  STREAMING_CAPABILITY_MASK_UNSPECIFIED = 0;
+  STREAMING_CAPABILITY_MASK_CAMERA = 1;
+}
+enum StreamingPermissionMask {
+  STREAMING_PERMISSION_MASK_UNSPECIFIED = 0;
+  STREAMING_PERMISSION_MASK_CAMERA = 1;
+}
+enum CorePermissionMask {
+  CORE_PERMISSION_MASK_UNSPECIFIED = 0;
+  CORE_PERMISSION_MASK_POST_NOTIFICATION = 1;
+}
+message StreamingConfigurationMessage {
+  uint32 is_capable = 1;
+  uint32 permissions_granted = 2;
+  uint32 core_permissions_granted = 3;
+  bool permissions_permanently_denied = 4;
+}

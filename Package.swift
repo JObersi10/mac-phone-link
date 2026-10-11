@@ -11,7 +11,9 @@ let package = Package(
         .library(name: "DCGAuth", targets: ["DCGAuth"]),
         .library(name: "DCGTransport", targets: ["DCGTransport"]),
         .library(name: "PhoneLinkUI", targets: ["PhoneLinkUI"]),
+        .library(name: "PhoneLinkVideo", targets: ["PhoneLinkVideo"]),
         .executable(name: "proto-check", targets: ["ProtoCheck"]),
+        .executable(name: "PhoneLinkApp", targets: ["PhoneLinkApp"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.28.2"),
@@ -43,6 +45,16 @@ let package = Package(
             dependencies: ["PhoneLinkProtos", "DCGTransport"],
             path: "Sources/PhoneLinkUI"
         ),
+        .target(
+            name: "PhoneLinkVideo",
+            dependencies: [],
+            path: "Sources/PhoneLinkVideo"
+        ),
+        .executableTarget(
+            name: "PhoneLinkApp",
+            dependencies: ["PhoneLinkUI"],
+            path: "Sources/PhoneLinkApp"
+        ),
         .executableTarget(
             name: "ProtoCheck",
             dependencies: ["PhoneLinkProtos"],
@@ -50,7 +62,7 @@ let package = Package(
         ),
         .testTarget(
             name: "PhoneLinkProtosTests",
-            dependencies: ["PhoneLinkProtos", "DCGTransport", "PhoneLinkUI"],
+            dependencies: ["PhoneLinkProtos", "DCGTransport", "PhoneLinkUI", "PhoneLinkVideo"],
             path: "Tests/PhoneLinkProtosTests"
         ),
     ]
