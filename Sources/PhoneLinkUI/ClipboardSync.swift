@@ -51,7 +51,11 @@ public enum ClipboardCodec {
 
 #if canImport(AppKit)
 @MainActor
-public final class ClipboardSync {
+public final class ClipboardSync: FeatureHandler {
+    public let handlerType = "clipboard"
+    /// FeatureHub injects the outbound sender here (same as setting `sink`).
+    public func bindSend(_ send: @escaping (Data) -> Void) { self.sink = send }
+
     /// Called with a serialized ResponseMessage when the local clipboard changes.
     public var sink: ((Data) -> Void)?
 

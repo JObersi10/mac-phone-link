@@ -51,6 +51,12 @@ public final class MirroringViewModel: ObservableObject {
     /// the pipeline is exercised without a phone present.
     public func connect(host: String, port: UInt16) {
         disconnect()
+        #if canImport(CoreGraphics)
+        // Track the real stream resolution for accurate cursor mapping.
+        controller.onDimensions = { [weak self] d in
+            Task { @MainActor in self?.videoSize = CGSize(width: d.width, height: d.height) }
+        }
+        #endif
         let isDemo = host.trimmingCharacters(in: .whitespaces).isEmpty
         let t: NanoTransport = isDemo ? LoopbackNanoTransport() : transportFactory(host, port)
         transport = t

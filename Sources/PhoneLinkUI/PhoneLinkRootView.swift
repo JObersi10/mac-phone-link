@@ -13,12 +13,15 @@ import SwiftUI
 public struct PhoneLinkRootView: View {
     @ObservedObject private var viewModel: ConnectionViewModel
     @StateObject private var mirroring: MirroringViewModel
+    @StateObject private var features: FeaturesViewModel
 
     @MainActor
     public init(viewModel: ConnectionViewModel,
-                mirroring: MirroringViewModel? = nil) {
+                mirroring: MirroringViewModel? = nil,
+                features: FeaturesViewModel? = nil) {
         self.viewModel = viewModel
         _mirroring = StateObject(wrappedValue: mirroring ?? MirroringViewModel())
+        _features = StateObject(wrappedValue: features ?? FeaturesViewModel())
     }
 
     public var body: some View {
@@ -27,6 +30,8 @@ public struct PhoneLinkRootView: View {
                 .tabItem { Label("Notifications", systemImage: "bell") }
             MirroringView(model: mirroring)
                 .tabItem { Label("Screen Mirroring", systemImage: "display") }
+            MessagesView(client: features.messaging)
+                .tabItem { Label("Messages", systemImage: "message") }
         }
         .frame(minWidth: 480, minHeight: 440)
     }

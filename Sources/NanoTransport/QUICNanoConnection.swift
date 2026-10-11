@@ -12,6 +12,8 @@
 #if canImport(Network)
 import Foundation
 import Network
+import Security
+import CryptoKit
 
 public struct QUICNanoConfig {
     public var host: String
@@ -21,6 +23,10 @@ public struct QUICNanoConfig {
     /// Skip server-certificate verification (direct peer uses a self-signed /
     /// device-trust cert, not a web PKI chain). Default true for the P2P path.
     public var allowInsecureCertificates: Bool
+    /// If set, pin the peer's leaf certificate to this SHA-256 (DER). Takes
+    /// precedence over `allowInsecureCertificates`: the handshake succeeds only
+    /// when the presented leaf hashes to this value.
+    public var pinnedCertificateSHA256: Data?
     /// Idle timeout in milliseconds.
     public var idleTimeoutMs: Int
 
@@ -28,11 +34,13 @@ public struct QUICNanoConfig {
                 port: UInt16,
                 alpn: [String] = ["nano"],
                 allowInsecureCertificates: Bool = true,
+                pinnedCertificateSHA256: Data? = nil,
                 idleTimeoutMs: Int = 30_000) {
         self.host = host
         self.port = port
         self.alpn = alpn
         self.allowInsecureCertificates = allowInsecureCertificates
+        self.pinnedCertificateSHA256 = pinnedCertificateSHA256
         self.idleTimeoutMs = idleTimeoutMs
     }
 }
@@ -60,10 +68,14 @@ public final class QUICNanoConnection: NanoTransport {
         options.idleTimeout = config.idleTimeoutMs
         // QUIC mandates TLS 1.3; configure the sec_protocol layer.
         let sec = options.securityProtocolOptions
-        if config.allowInsecureCertificates {
+        if let pinned = config.pinnedCertificateSHA256 {
+            sec_protocol_options_set_verify_block(sec, { _, trust, complete in
+                let secTrust = sec_trust_copy_ref(trust).takeRetainedValue()
+                complete(Self.leafMatches(secTrust, sha256: pinned))
+            }, queue)
+        } else if config.allowInsecureCertificates {
             sec_protocol_options_set_verify_block(sec, { _, _, complete in
                 // Direct peer presents a device-trust cert, not a web chain.
-                // A production build pins the expected cert here instead.
                 complete(true)
             }, queue)
         }
@@ -132,6 +144,15 @@ public final class QUICNanoConnection: NanoTransport {
     public func cancel() {
         connection?.cancel()
         connection = nil
+    }
+
+    /// True when the trust's leaf certificate's DER SHA-256 equals `sha256`.
+    static func leafMatches(_ trust: SecTrust, sha256: Data) -> Bool {
+        guard let chain = SecTrustCopyCertificateChain(trust) as? [SecCertificate],
+              let leaf = chain.first else { return false }
+        let der = SecCertificateCopyData(leaf) as Data
+        let digest = Data(SHA256.hash(data: der))
+        return digest == sha256
     }
 }
 #endif
