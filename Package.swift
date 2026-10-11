@@ -32,6 +32,7 @@ let package = Package(
             name: "DCGTransport",
             dependencies: [
                 "PhoneLinkProtos",
+                "DCGAuth",
                 .product(name: "SignalRClient", package: "SignalR-Client-Swift"),
             ],
             path: "Sources/DCGTransport"
