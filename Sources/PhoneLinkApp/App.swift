@@ -14,14 +14,15 @@ struct PhoneLinkApp: App {
     @StateObject private var onboarding: OnboardingViewModel
 
     init() {
-        // Build a QR payload in the real grammar the phone scanner expects
-        // (uaid=<prefix><16-char code>&code=<msa>). Backed by a locally-generated
-        // session code, NOT a real cloud PinSession yet — so a phone won't fully
-        // pair until the first-party-gated PinSession create is solved. Still, the
-        // QR is now structurally valid instead of a made-up URI.
+        // Build a QR payload in the real grammar the phone scanner expects: an
+        // HTTPS dynamic link to a DCG host with vm/uaid/ti/r/apn. (A bare
+        // "uaid=..." string is rejected by the scanner's validateUri — no scheme
+        // or host.) Backed by a locally-generated code, NOT a real cloud
+        // PinSession yet, so a phone will accept the scan but can't complete the
+        // first-party-gated pairing. The QR is now structurally valid.
         let sample = QRPairingPayload(
             pairingCode: Self.randomPairingCode(),
-            prefix: "maclink-\(UInt32.random(in: 0..<0xFFFFFF))"
+            prefix: "maclink\(UInt32.random(in: 0..<0xFFFFFF))"
         )
         let model = OnboardingViewModel(
             permissions: PermissionsManager(),

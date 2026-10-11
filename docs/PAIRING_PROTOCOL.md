@@ -18,20 +18,29 @@ zxing scanner — `QrCodeScanScreenKt`, `QrCodeImageDecoder`,
 `OnboardingBaseViewModel.handleQrCodeScanResult`). To interoperate our Mac must
 **emit a QR the Android scanner accepts.**
 
-## CONFIRMED — the QR payload grammar
-`FreQrCodeManager` parses the scanned string as a **query string** with two keys:
+## CONFIRMED — the QR payload grammar (it's a URL, not a bare query)
+The scanner (`DeeplinkResolver.validateUri`) **rejects any string without a
+scheme AND host** — so a bare `uaid=...` reads as "invalid". The real QR is an
+**HTTPS dynamic link to a DCG host** parsed by `FreParseDynamicLinkManager`:
 ```
-uaid=<prefix><16-char YPP pairing code>   &   code=<MSA authorization code>
+https://dcg.microsoft.com/?vm=5&uaid=<prefix><16-char code>&ti=<guid>
+                          &r=5&apn=com.microsoft.appmanager
 ```
-- The **YPP pairing code is the last 16 characters of `uaid`**
-  (`getYPPPairingCode` = `extractUaidFromScanResult(scan).substring(len - 16)`).
-- The leading prefix is a zero-paddable field; a non-all-zeros prefix drives the
-  telemetry result code to 1 (i.e. "a real session is encoded").
-- `code=` is read by `extractMSACodeFromScanResult` (value terminated by `&`),
-  the MSA auth code that moves the account onto the paired device.
+- Host MUST be a DCG host (`isDcgHost`: `dcg.microsoft.com` / `dcg-df` /
+  `dcg-beta`), else the link is discarded.
+- `vm` — flow mode (`DynamicLinkModeType`): `5` = ideal flow, `1`/`2` = OOBE,
+  `101`/`102` = minimalism OOBE.
+- `uaid` — the **YPP pairing code is the last 16 characters**
+  (`FreQrCodeManager.getYPPPairingCode`); a non-all-zeros prefix marks a real
+  session.
+- `ti` — trace id (GUID). `r` — ring (`RingDefinition`: `5` = PROD).
+- `apn` — android package (`com.microsoft.appmanager`); `patchIdealFlowMissingParams`
+  injects `apn`/`r` if absent.
+- `tsft` — MSA transfer token, `cpsi` — cloud pin-session id (transfer modes).
 
-Modeled in `QRPairingPayload` — parses a full URI or a bare query and exposes
-`yppPairingCode` (the last-16 slice) and `hasMeaningfulPrefix`.
+Modeled in `QRPairingPayload` — builds the full HTTPS URL (`url()`/`encoded()`),
+parses one (`init(parsing:)`, DCG-host-checked), exposes `yppPairingCode`,
+`DynamicLinkMode`, `RingDefinition`.
 
 ## CONFIRMED — pairing proxy base host + paths
 The Device Pairing Proxy is hosted under the **DCG domain**; the REST path root

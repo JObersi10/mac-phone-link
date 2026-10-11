@@ -154,9 +154,25 @@ Still TODO: confirm the real frame container (Annex B vs AVCC, SPS/PPS
 signaling) against live bytes, Wi-Fi Direct/instant-hotspot negotiation via the
 side channel, cert pinning, and multi-stream (control vs media) if needed.
 
+## Screen mirroring UI (wired)
+`PhoneLinkRootView` is now a `TabView`: **Notifications** (DCG connection) +
+**Screen Mirroring**. `MirroringViewModel` (PhoneLinkUI) drives a `NanoTransport`
+— `connect(host:port:)` builds a `QUICNanoConnection` (empty host → loopback
+self-test), routes `onFrame` into `VideoStreamController.feed` → the
+`AVSampleBufferDisplayLayer` in `MirroringView`, and publishes `state` +
+`framesReceived`. So there's a runnable Connect action end to end.
+
+## QR payload (fixed — was rejected as "invalid")
+The phone's `DeeplinkResolver.validateUri` rejects any string without a scheme +
+host, so the old bare `uaid=...` was invalid. `QRPairingPayload` now emits the
+real **HTTPS DCG dynamic link** (`https://dcg.microsoft.com/?vm=5&uaid=…&ti=…&r=5&
+apn=com.microsoft.appmanager`). The phone will now accept the scan; it still
+can't complete pairing (the `uaid`/session isn't a real cloud PinSession — the
+first-party gate). See `docs/PAIRING_PROTOCOL.md`.
+
 ## Next work (priority order)
 1. **Nano transport live bring-up** — verify framing + handshake against real
-   traffic; connect `QUICNanoConnection.onFrame` → `VideoStreamController`.
+   traffic; the UI Connect action already routes frames to the display layer.
 3. **Device-trust provisioning** — pairing-proxy cert issuance (we can sign but
    assume a key/cert already exists). Study `pairingproxyclient`.
 4. **Wire video to a real screen** — connect `VideoStreamController` →
