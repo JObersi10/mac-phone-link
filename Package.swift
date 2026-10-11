@@ -12,6 +12,7 @@ let package = Package(
         .library(name: "DCGTransport", targets: ["DCGTransport"]),
         .library(name: "PhoneLinkUI", targets: ["PhoneLinkUI"]),
         .library(name: "PhoneLinkVideo", targets: ["PhoneLinkVideo"]),
+        .library(name: "PhoneLinkPairing", targets: ["PhoneLinkPairing"]),
         .executable(name: "proto-check", targets: ["ProtoCheck"]),
         .executable(name: "PhoneLinkApp", targets: ["PhoneLinkApp"]),
     ],
@@ -55,9 +56,15 @@ let package = Package(
             dependencies: [
                 "PhoneLinkUI",
                 "DCGAuth",
+                "PhoneLinkPairing",
                 .product(name: "MSAL", package: "microsoft-authentication-library-for-objc"),
             ],
             path: "Sources/PhoneLinkApp"
+        ),
+        .target(
+            name: "PhoneLinkPairing",
+            dependencies: [],
+            path: "Sources/PhoneLinkPairing"
         ),
         .executableTarget(
             name: "ProtoCheck",
@@ -66,7 +73,7 @@ let package = Package(
         ),
         .testTarget(
             name: "PhoneLinkProtosTests",
-            dependencies: ["PhoneLinkProtos", "DCGTransport", "PhoneLinkUI", "PhoneLinkVideo"],
+            dependencies: ["PhoneLinkProtos", "DCGTransport", "PhoneLinkUI", "PhoneLinkVideo", "PhoneLinkPairing"],
             path: "Tests/PhoneLinkProtosTests"
         ),
     ]
