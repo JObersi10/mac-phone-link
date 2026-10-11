@@ -15,7 +15,27 @@ rm -rf "$APP"
 mkdir -p "$MACOS" "$RES"
 
 cp "$BIN" "$MACOS/PhoneLink"
-chmod +x "$MACOS/PhoneLink"
+# Executable bit required inside the bundle (755), else Launch Services rejects it.
+chmod 755 "$MACOS/PhoneLink"
+
+# Embed dynamic frameworks the binary links via @rpath (e.g. MSAL.framework).
+# Without this the app aborts at launch: "Library not loaded: @rpath/…".
+BIN_DIR="$(cd "$(dirname "$BIN")" && pwd)"
+FRAMEWORKS="$APP/Contents/Frameworks"
+shopt -s nullglob 2>/dev/null || true
+embedded=0
+for fw in "$BIN_DIR"/*.framework; do
+  mkdir -p "$FRAMEWORKS"
+  cp -R "$fw" "$FRAMEWORKS/"
+  embedded=$((embedded+1))
+  echo "embedded framework: $(basename "$fw")"
+done
+if [ "$embedded" -gt 0 ]; then
+  # Make sure dyld looks inside the bundle for the embedded frameworks.
+  if ! otool -l "$MACOS/PhoneLink" | grep -q "@executable_path/../Frameworks"; then
+    install_name_tool -add_rpath "@executable_path/../Frameworks" "$MACOS/PhoneLink"
+  fi
+fi
 
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -35,5 +55,24 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 </dict>
 </plist>
 PLIST
+
+# Ad-hoc code sign so Launch Services sees a (self-)signed bundle. This does NOT
+# notarize — downloaded copies still carry the com.apple.quarantine attribute,
+# but an ad-hoc signature turns the fatal "is damaged and can't be opened" into
+# the recoverable "unidentified developer" (right-click → Open). Proper Developer
+# ID signing/notarization is wired in CI when the secrets are present (see
+# claude/claude.md). `codesign` only runs on macOS; skip gracefully elsewhere.
+if command -v codesign >/dev/null 2>&1; then
+  # Sign embedded frameworks first, then the app bundle (deep as a backstop).
+  if [ -d "$FRAMEWORKS" ]; then
+    for fw in "$FRAMEWORKS"/*.framework; do
+      codesign --force --sign - --timestamp=none "$fw"
+    done
+  fi
+  codesign --force --deep --sign - --timestamp=none "$APP"
+  codesign --verify --deep --strict "$APP" && echo "ad-hoc signed: $APP"
+else
+  echo "warning: codesign not found; bundle left unsigned" >&2
+fi
 
 echo "Built: $APP"

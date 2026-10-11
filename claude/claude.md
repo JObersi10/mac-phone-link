@@ -118,3 +118,38 @@ Two local vendor artifacts (used for analysis only, **never committed** — see
   mirroring protos + `PhoneLinkVideo` + `PhoneLinkApp` + `build-app.yml`.
 - `v0.1.0` tagged from the PR #3 branch tip to exercise the Release upload.
 - Commit attribution footer: `Co-Authored-By: Claude Opus 4.8`.
+
+---
+
+## Packaging, signing & Gatekeeper
+- **Embed dynamic frameworks.** `PhoneLinkApp` links **MSAL as a dynamic
+  framework** (`@rpath/MSAL.framework`). v0.1.0's hand-rolled bundle shipped only
+  the executable → it aborted at launch: `Library not loaded:
+  @rpath/MSAL.framework` (DYLD, Code 1). Fix in `scripts/package-app.sh`: copy
+  every `*.framework` from the SwiftPM products dir into
+  `PhoneLink.app/Contents/Frameworks/` and
+  `install_name_tool -add_rpath "@executable_path/../Frameworks"` on the binary.
+  Any future dynamic dep is picked up automatically by the same glob.
+- **Perms:** `Contents/MacOS/PhoneLink` is `chmod 755` before zipping.
+- **Ad-hoc signing:** `codesign --force --deep --sign -` signs embedded
+  frameworks first, then the bundle; `--verify --deep --strict` gates it. Ad-hoc
+  is NOT notarization.
+- **Gatekeeper on un-notarized downloads:** a downloaded ad-hoc/unsigned app
+  carries `com.apple.quarantine`, so macOS shows *"is damaged and can't be
+  opened"*. Workaround for testers:
+  - right-click the app → **Open** (then Open in the dialog), or
+  - `xattr -dr com.apple.quarantine /path/to/PhoneLink.app`
+  Ad-hoc signing downgrades the hard "damaged" failure toward the recoverable
+  "unidentified developer" path; it does not remove the quarantine prompt.
+- **Proper Developer ID signing/notarization (CI, TODO).** Add repo secrets and
+  a signing step in `build-app.yml`:
+  - `APPLE_DEVELOPER_ID` — "Developer ID Application: …" identity (and the signing
+    cert/key imported into a CI keychain).
+  - `PROVISIONING_PROFILE` — base64 provisioning profile, decoded at build time.
+  - (also needed for notarization: an App Store Connect API key or
+    `notarytool` creds.) Then `codesign` with the real identity + `xcrun
+    notarytool submit --wait` + `xcrun stapler staple` — which removes the
+    Gatekeeper prompt entirely.
+- **Actions:** `actions/checkout@v5` (Node 24). `upload-artifact@v4` and
+  `softprops/action-gh-release@v2` are the latest majors (GitHub's Node-20
+  deprecation notice is upstream; runner force-runs them on Node 24).

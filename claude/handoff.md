@@ -91,8 +91,24 @@ BIN="$(swift build -c release --product PhoneLinkApp --show-bin-path)/PhoneLinkA
 scripts/package-app.sh "$BIN" dist 0.1.0   # -> dist/PhoneLink.app
 ```
 CI (`build-app.yml`) does the same, zips with `ditto`, and on a `v*` tag uploads
-the zip to GitHub Releases. App is **unsigned** (Gatekeeper prompt until a
-Developer ID cert is wired into CI secrets).
+the zip to GitHub Releases.
+
+**Packaging does three things that matter (`scripts/package-app.sh`):**
+1. Embeds dynamic frameworks (`MSAL.framework`) into `Contents/Frameworks/` and
+   adds rpath `@executable_path/../Frameworks`. Without this the app crashes at
+   launch: `Library not loaded: @rpath/MSAL.framework` (the v0.1.0 bug).
+2. `chmod 755` on `Contents/MacOS/PhoneLink`.
+3. Ad-hoc code-signs (`codesign --force --deep --sign -`), frameworks first.
+
+**Gatekeeper (un-notarized):** downloaded copies are quarantined → "is damaged".
+Testers: right-click → Open, or `xattr -dr com.apple.quarantine PhoneLink.app`.
+**Proper signing (TODO in CI):** repo secrets `APPLE_DEVELOPER_ID` (Developer ID
+Application identity + cert) and `PROVISIONING_PROFILE` (base64, decoded at
+build), then real `codesign` + `xcrun notarytool submit --wait` + `stapler
+staple`. That removes the prompt.
+
+**v0.1.0 release asset is the BROKEN (pre-embed) build** — re-cut the release
+(e.g. v0.1.1, or delete+retag v0.1.0) after this fix lands so the asset works.
 
 ## Next work (priority order)
 1. **Merge #3** to `main` (user action).
