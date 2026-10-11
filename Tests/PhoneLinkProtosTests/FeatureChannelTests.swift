@@ -77,7 +77,7 @@ final class FeatureChannelTests: XCTestCase {
         XCTAssertEqual(c.results[0].numbers, ["+1 555 000 1111"])
     }
 
-    func testHubRoutesInboundByType() {
+    func testHubRoutesInboundByType() async {
         let t = LoopbackFeatureTransport()
         let hub = FeatureHub(transport: t)
         let m = MessagingClient()
@@ -86,6 +86,9 @@ final class FeatureChannelTests: XCTestCase {
         var resp = Maclink_Messaging_V1_SendMessageResponseMessage()
         resp.status = .ok; resp.messageID = "routed"
         t.send(handlerType: "messaging", try! resp.serializedData())
+        // The hub hops to the main actor via a Task, so inbound delivery is
+        // asynchronous even over the loopback transport — yield until it lands.
+        for _ in 0..<100 where m.sendState == .idle { await Task.yield() }
         XCTAssertEqual(m.sendState, .sent(messageID: "routed"))
     }
 
