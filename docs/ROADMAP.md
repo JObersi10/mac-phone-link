@@ -23,6 +23,13 @@ static reverse-engineering cannot open. See `docs/FINDINGS.md` for the evidence.
 - Screen-mirror UI with **cursor/keyboard control** (letterbox-mapped, coalesced).
 - Clipboard sync (NSPasteboard ↔ proto, both directions).
 - Notifications decode into the list.
+- **Feature channel backbone** (`FeatureHub`/`FeatureTransport`/`FeatureHandler`):
+  routes payloads by handler-type over any byte channel; loopback for tests.
+- **Messaging** send (`MessagingClient` + Messages tab) over the feature channel.
+- **Contacts** search (`ContactsClient`) over the feature channel.
+- **Clipboard as a live handler** (`ClipboardSync: FeatureHandler`).
+- **H.264 SPS parse** → real video dimensions feed the cursor mapping.
+- **QUIC cert pinning** (`pinnedCertificateSHA256`, SHA-256 leaf match).
 
 ---
 
@@ -30,13 +37,16 @@ static reverse-engineering cannot open. See `docs/FINDINGS.md` for the evidence.
 These need only a live byte channel (the Nano/DCG transport) to attach to; the
 logic is buildable and testable now.
 
-1. **Attach clipboard to a live channel** (⬜) — wire `ClipboardSync.sink` →
-   transport `send`, and route incoming clipboard frames → `handleIncoming`.
+1. **Attach clipboard to a live channel** (✅) — `ClipboardSync` is a
+   `FeatureHandler`; `FeatureHub` wires its `send`/`handleIncoming` to the
+   transport. Still needs a real transport attached via `FeaturesViewModel.attach`.
 2. **Notification actions** (⬜) — dismiss / mute / inline reply. Extend
    `ConnectionViewModel` + a notification request message; UI buttons per item.
-3. **Messaging (SMS/RCS)** (⬜) — `maclink.messaging.v1`: thread list, message
-   list, send. New `MessagingViewModel` + views.
-4. **Contacts** (⬜) — `maclink.contacts.v1`: sync + lookup for message/call UIs.
+   (Needs a proto op beyond `.get` — the one Phase-1 item still fully open.)
+3. **Messaging (SMS/RCS)** (⚠️) — send is done (`MessagingClient` + Messages tab);
+   thread list + message history still to add once a live channel feeds inbound.
+4. **Contacts** (⚠️) — search is done (`ContactsClient`); bulk sync + lookup
+   wiring into the message/call UIs still to add.
 5. **Phone files / photos** (⬜) — `maclink.files.v1`: browse, thumbnail, pull.
 6. **Richer input** (⬜) — drag-and-drop (protos exist: `Drag*Message`),
    two-finger gestures, full key map, `BringToForeground` / `LaunchApp`.
@@ -45,10 +55,10 @@ logic is buildable and testable now.
 
 ## Phase 2 — Nano transport live bring-up (⚠️)
 Make the direct path actually carry media once a peer exists.
-1. **Frame container** — confirm Annex B vs AVCC and SPS/PPS/VPS signaling
-   against real bytes; set `VideoStreamController`/`videoSize` from the SPS.
-2. **QUIC specifics** — ALPN value, cert pinning (replace the insecure verify
-   block in `QUICNanoConnection`), multi-stream (control vs media) if needed.
+1. **Frame container** — SPS parse now sets `videoSize` (✅); still confirm
+   Annex B vs AVCC and PPS/VPS signaling against real bytes from a peer.
+2. **QUIC specifics** — cert pinning added (`pinnedCertificateSHA256`, ✅); still
+   need the real ALPN value and multi-stream (control vs media) if required.
 3. **Handshake on the wire** — drive `NanoHandshake` (context_source) end to end;
    confirm message framing (netty codec) of the pairing-channel ceremony.
 4. **Transport negotiation** — Wi-Fi Direct / instant-hotspot selection via the
