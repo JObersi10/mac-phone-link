@@ -196,9 +196,20 @@ apn=com.microsoft.appmanager`). The phone will now accept the scan; it still
 can't complete pairing (the `uaid`/session isn't a real cloud PinSession — the
 first-party gate). See `docs/PAIRING_PROTOCOL.md`.
 
-## Next work (priority order)
-1. **Nano transport live bring-up** — verify framing + handshake against real
-   traffic; the UI Connect action already routes frames to the display layer.
+## Next work — see `docs/ROADMAP.md` (full phased plan) and `docs/FINDINGS.md`
+   (consolidated RE evidence). Short version:
+1. **Phase 1 (buildable now):** attach clipboard to a live channel, notification
+   actions, messaging (SMS), contacts, phone files, richer input (drag/gestures),
+   audio. Each needs only a live byte channel to attach to.
+2. **Phase 2:** Nano transport live bring-up — confirm frame container
+   (Annex B vs AVCC) + SPS-derived video size, QUIC ALPN + cert pinning, drive
+   the context_source handshake end to end. The UI Connect action already routes
+   frames to the display layer.
+3. **Phase 3:** Developer-ID signing/notarization (needs paid Apple account),
+   universal binary, settings UI.
+4. **Blocked (first-party wall):** completing a real pair (cloud PinSession /
+   `cpsi` / Microsoft-minted `uaid`), DCG consent, device-trust cert issuance —
+   not solvable client-side; documented in both docs.
 3. **Device-trust provisioning** — pairing-proxy cert issuance (we can sign but
    assume a key/cert already exists). Study `pairingproxyclient`.
 4. **Wire video to a real screen** — connect `VideoStreamController` →
