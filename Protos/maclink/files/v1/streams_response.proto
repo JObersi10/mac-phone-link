@@ -1,0 +1,21 @@
+// Clean-room interoperability schema for the mac-phone-link project.
+// Independently authored from observed wire behavior; no vendor source text,
+// headers, or comments are reproduced. Field numbers and types reflect the
+// on-the-wire protobuf layout (interface facts) required for compatibility.
+// SPDX-License-Identifier: MIT
+syntax = "proto3";
+package maclink.files.v1;
+option swift_prefix = "MLFiles";
+
+enum StreamMessageStatus {
+  STREAM_MESSAGE_STATUS_UNSPECIFIED = 0;
+  STREAM_MESSAGE_STATUS_SUCCESS = 1;
+  STREAM_MESSAGE_STATUS_ERROR_FILE_NOT_FOUND = 2;
+  STREAM_MESSAGE_STATUS_ERROR_GENERIC = 3;
+}
+
+message FilesStreamsMessage {
+  string file_uri = 1;
+  StreamMessageStatus stream_message_status = 2;
+  string content = 3;
+}

@@ -1,0 +1,19 @@
+// Clean-room interoperability schema for the mac-phone-link project.
+// Independently authored from observed wire behavior; no vendor source text,
+// headers, or comments are reproduced. Field numbers and types reflect the
+// on-the-wire protobuf layout (interface facts) required for compatibility.
+// SPDX-License-Identifier: MIT
+syntax = "proto3";
+package maclink.files.v1;
+option swift_prefix = "MLFiles";
+
+message BatchedSyncContinuationToken {
+  int32 version = 1;
+  string volume = 2;
+  int64 snapshot_seq_no = 3;
+  int64 max_id_at_start = 4;
+  int64 last_id = 5;
+  int32 next_batch_index = 6;
+  int32 estimated_total_items = 7;
+  string session_id = 8;
+}

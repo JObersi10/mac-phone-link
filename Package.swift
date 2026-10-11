@@ -4,16 +4,17 @@ import PackageDescription
 let package = Package(
     name: "PhoneLinkProtos",
     platforms: [
-        .macOS(.v12)
+        .macOS(.v13)
     ],
     products: [
         .library(name: "PhoneLinkProtos", targets: ["PhoneLinkProtos"]),
+        .library(name: "DCGAuth", targets: ["DCGAuth"]),
         .executable(name: "proto-check", targets: ["ProtoCheck"]),
     ],
     dependencies: [
-        // Apple's runtime + plugin. CI invokes the `protoc-gen-swift` plugin via Homebrew;
-        // this package dependency provides the SwiftProtobuf runtime the generated code needs.
         .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.28.2"),
+        // Microsoft Authentication Library (official) for MSA / Entra token acquisition.
+        .package(url: "https://github.com/AzureAD/microsoft-authentication-library-for-objc.git", from: "1.5.0"),
     ],
     targets: [
         .target(
@@ -22,7 +23,13 @@ let package = Package(
                 .product(name: "SwiftProtobuf", package: "swift-protobuf"),
             ],
             path: "Sources/PhoneLinkProtos"
-            // Generated *.pb.swift land in Sources/PhoneLinkProtos/Generated/ (CI step).
+        ),
+        .target(
+            name: "DCGAuth",
+            dependencies: [
+                .product(name: "MSAL", package: "microsoft-authentication-library-for-objc"),
+            ],
+            path: "Sources/DCGAuth"
         ),
         .executableTarget(
             name: "ProtoCheck",
