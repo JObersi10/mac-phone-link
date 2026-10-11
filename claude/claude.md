@@ -120,7 +120,24 @@ Two local vendor artifacts (used for analysis only, **never committed** — see
   is the **broken pre-embed build** (crashes: missing MSAL.framework).
 - **`v0.1.1`** tagged after the framework-embedding fix → first launchable
   release asset (`PhoneLink.app.zip`, ad-hoc signed, arm64). Use this one.
+- **PR #3 merged to `main`** (squash) — onboarding + VideoToolbox + app bundle +
+  release workflow are now the baseline on `main`. `feature/screen-mirroring`
+  retired.
 - Commit attribution footer: `Co-Authored-By: Claude Opus 4.8`.
+
+## Pairing protocol (next big work) — see `docs/PAIRING_PROTOCOL.md`
+Placeholder QR payload must be replaced with the real handshake. Findings so far:
+- **Host shows the QR; the phone scans it** (Android is a zxing scanner only).
+  So we must emit a QR the official app accepts — exact payload is TBD (#1 to
+  extract via jadx on `OnboardingScanResultHandler`).
+- Cloud **Device Pairing Proxy**: QR path uses `PinSessions`
+  (`/QRScanned`,`/PINTyped`,`/ValidateTrustInfo`,`/AccountTransferred`); crypto
+  ceremony uses `PairingSessions/{id}/Complete`. MSA-token auth (not plain DCG).
+- Ceremony over a netty `PairingChannel`: JoinChannelWithMsa → DeviceInfoExchange
+  → CryptoInfoExchange → Nonce → commit crypto trust (`PairingStateMachine`).
+- QR likely carries `{pin_session_id, session_key/seed, env, name, version}`
+  (session key = AES-GCM, Android KeyStore). Account moves via MSA `TransferToken`.
+- Likely first-party-gated (confirm early). Full plan in the doc.
 
 ## Onboarding / pairing (PhoneLinkUI)
 First-run flow gated by `@AppStorage("didCompleteOnboarding")` in `AppRootView`
