@@ -1,0 +1,28 @@
+// Clean-room interoperability schema for the mac-phone-link project.
+// Independently authored from observed wire behavior; no vendor source text,
+// headers, or comments are reproduced. Field numbers and types reflect the
+// on-the-wire protobuf layout (interface facts) required for compatibility.
+// SPDX-License-Identifier: MIT
+syntax = "proto3";
+package maclink.platform.v1;
+option swift_prefix = "MLPlatform";
+
+import "maclink/platform/v1/trace_context.proto";
+
+enum OffloadAvailability {
+  OFFLOAD_AVAILABILITY_UNSPECIFIED = 0;
+  OFFLOAD_AVAILABILITY_ENABLED = 1;
+  OFFLOAD_AVAILABILITY_DISABLED = 2;
+  OFFLOAD_AVAILABILITY_NO_PROVISIONED_ACCOUNT = 3;
+  OFFLOAD_AVAILABILITY_TRUST_FAILURE = 4;
+  OFFLOAD_AVAILABILITY_MORE_THAN_ONE_PARTNER = 5;
+}
+
+message ChannelValidation {
+  TraceContext trace_context = 1;
+  bool is_offload_enabled = 2;
+  OffloadAvailability offload_availability = 3;
+  int32 offload_version = 4;
+  bool support_multiple_partners = 5;
+  bool support_device_proxy = 6;
+}

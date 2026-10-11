@@ -1,0 +1,17 @@
+// Clean-room interoperability schema for the mac-phone-link project.
+// Independently authored from observed wire behavior; no vendor source text,
+// headers, or comments are reproduced. Field numbers and types reflect the
+// on-the-wire protobuf layout (interface facts) required for compatibility.
+// SPDX-License-Identifier: MIT
+syntax = "proto3";
+package maclink.platform.v1;
+option swift_prefix = "MLPlatform";
+
+message MsaepMessage {
+  int32 message_tag = 1;
+  string dcg_client_id = 2;
+  string message_id = 3;
+  bytes payload = 4;
+  int32 platform_major_version = 5;
+  int32 platform_minor_version = 6;
+}

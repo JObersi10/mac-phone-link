@@ -1,0 +1,24 @@
+// Clean-room interoperability schema for the mac-phone-link project.
+// Independently authored from observed wire behavior; no vendor source text,
+// headers, or comments are reproduced. Field numbers and types reflect the
+// on-the-wire protobuf layout (interface facts) required for compatibility.
+// SPDX-License-Identifier: MIT
+syntax = "proto3";
+package maclink.sidechannel.v1;
+option swift_prefix = "MLSideChannel";
+
+enum ErrorType {
+  ERROR_TYPE_UNSPECIFIED = 0;
+  ERROR_TYPE_OTHER_SERVER_ERROR = 1;
+  ERROR_TYPE_UNKNOWN_REQUEST_TYPE = 2;
+  ERROR_TYPE_SCENARIO_SERVICE_ERROR = 3;
+  ERROR_TYPE_CRYPTO_VALIDATION_ERROR = 4;
+  ERROR_TYPE_CLIENT_INFO_MISSING = 5;
+  ERROR_TYPE_CRYPTO_TRUST_ERROR = 6;
+  ERROR_TYPE_CRYPTO_TRUST_TIMEOUT = 7;
+}
+
+message Error {
+  ErrorType type = 1;
+  string msg = 2;
+}

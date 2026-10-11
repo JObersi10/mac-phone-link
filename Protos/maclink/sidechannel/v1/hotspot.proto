@@ -1,0 +1,96 @@
+// Clean-room interoperability schema for the mac-phone-link project.
+// Independently authored from observed wire behavior; no vendor source text,
+// headers, or comments are reproduced. Field numbers and types reflect the
+// on-the-wire protobuf layout (interface facts) required for compatibility.
+// SPDX-License-Identifier: MIT
+syntax = "proto3";
+package maclink.sidechannel.v1;
+option swift_prefix = "MLSideChannel";
+
+enum HotspotRequestType {
+  HOTSPOT_REQUEST_TYPE_UNSPECIFIED = 0;
+  HOTSPOT_REQUEST_TYPE_CAPABLE_STATUS = 1;
+  HOTSPOT_REQUEST_TYPE_CREDENTIALS = 2;
+  HOTSPOT_REQUEST_TYPE_ENCRYPTED_CREDENTIALS = 3;
+}
+
+enum HotspotResponseStatus {
+  HOTSPOT_RESPONSE_STATUS_UNSPECIFIED = 0;
+  HOTSPOT_RESPONSE_STATUS_SUCCESS = 1;
+  HOTSPOT_RESPONSE_STATUS_ERROR_OTHER = 2;
+  HOTSPOT_RESPONSE_STATUS_UNTRUSTED = 3;
+  HOTSPOT_RESPONSE_STATUS_UNKNOWN_COMMAND = 4;
+  HOTSPOT_RESPONSE_STATUS_NOT_HOTSPOT_CAPABLE = 5;
+}
+
+enum HotspotCapableStatus {
+  HOTSPOT_CAPABLE_STATUS_UNSPECIFIED = 0;
+  HOTSPOT_CAPABLE_STATUS_UNKNOWN = 1;
+  HOTSPOT_CAPABLE_STATUS_SUPPORTED = 2;
+  HOTSPOT_CAPABLE_STATUS_AIRPLANE_MODE = 3;
+  HOTSPOT_CAPABLE_STATUS_BLOCKED_BY_POLICY = 4;
+  HOTSPOT_CAPABLE_STATUS_DATA_NOT_ALLOWED = 5;
+  HOTSPOT_CAPABLE_STATUS_DATA_SAVER_ENABLED = 6;
+  HOTSPOT_CAPABLE_STATUS_PASSWORD_NOT_SET = 7;
+  HOTSPOT_CAPABLE_STATUS_NO_SUPPORT_ON_PHONE = 8;
+  HOTSPOT_CAPABLE_STATUS_SIM_NOT_READY = 9;
+  HOTSPOT_CAPABLE_STATUS_SCREEN_SHARE_IN_USE = 10;
+  HOTSPOT_CAPABLE_STATUS_UNSUPPORTED_DATA_PLAN = 11;
+  HOTSPOT_CAPABLE_STATUS_WIFI_DIRECT_IN_USE = 12;
+  HOTSPOT_CAPABLE_STATUS_WIRELESS_DESKTOP_IN_USE = 13;
+  HOTSPOT_CAPABLE_STATUS_LINK_NOT_ENABLED = 14;
+  HOTSPOT_CAPABLE_STATUS_BLUETOOTH_PERMISSION_NOT_GRANTED = 15;
+  HOTSPOT_CAPABLE_STATUS_MANAGER_IS_NULL = 16;
+  HOTSPOT_CAPABLE_STATUS_UNKNOWN_MAPPING = 17;
+}
+
+message HotspotRequest {
+  HotspotRequestType type = 1;
+}
+
+message InstantHotspotRequest {
+  HotspotRequestType type = 1;
+}
+
+message HotspotEncryptedCredentials {
+  bytes ciphertext = 1;
+  bytes iv = 2;
+  optional bytes tag = 3;
+}
+
+message HotspotReservation {
+  reserved 2;
+  HotspotCapableStatus status = 1;
+  string nonce = 3;
+}
+
+message HotspotResponse {
+  HotspotResponseStatus status = 1;
+  HotspotReservation reservation = 2;
+  HotspotRequestType type = 3;
+}
+
+message InstantHotspotResponse {
+  HotspotResponseStatus status = 1;
+  HotspotRequestType type = 2;
+  oneof payload {
+    HotspotCapableStatus capable_status = 3;
+    HotspotEncryptedCredentials encrypted_credentials = 4;
+  }
+}
+
+message HotspotEncryptedResponse {
+  HotspotResponseStatus status = 1;
+  HotspotRequestType type = 2;
+  oneof credentials {
+    HotspotEncryptedCredentials encrypted_credentials = 3;
+  }
+}
+
+message InstantHotspotEncryptedResponse {
+  HotspotResponseStatus status = 1;
+  HotspotRequestType type = 2;
+  oneof credentials {
+    HotspotEncryptedCredentials encrypted_credentials = 3;
+  }
+}

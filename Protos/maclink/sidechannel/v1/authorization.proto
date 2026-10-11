@@ -1,0 +1,14 @@
+// Clean-room interoperability schema for the mac-phone-link project.
+// Independently authored from observed wire behavior; no vendor source text,
+// headers, or comments are reproduced. Field numbers and types reflect the
+// on-the-wire protobuf layout (interface facts) required for compatibility.
+// SPDX-License-Identifier: MIT
+syntax = "proto3";
+package maclink.sidechannel.v1;
+option swift_prefix = "MLSideChannel";
+
+// Per-message device-trust authorization: a signed JWT carried alongside
+// each request/response.
+message Authorization {
+  string signed_jwt_payload = 1;
+}

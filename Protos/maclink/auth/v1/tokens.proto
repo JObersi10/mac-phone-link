@@ -1,0 +1,28 @@
+// Clean-room interoperability schema for the mac-phone-link project.
+// Independently authored from observed wire behavior; no vendor source text,
+// headers, or comments are reproduced. Field numbers and types reflect the
+// on-the-wire protobuf layout (interface facts) required for compatibility.
+// SPDX-License-Identifier: MIT
+syntax = "proto3";
+package maclink.auth.v1;
+option swift_prefix = "MLAuth";
+
+// Observed broker token-transfer structure (originally proto2 required fields;
+// modeled here in proto3).
+message TransferToken {
+  string raw_transfer_token = 1;
+  uint64 expires_in_millis = 2;
+  uint64 token_received_time_millis = 3;
+}
+
+// Primary Refresh Token structure.
+message Prt {
+  string refresh_token = 1;
+  string id_token = 2;
+  string home_authority = 3;
+  uint64 acquisition_time_millis = 4;
+  bool is_registered_device_prt = 5;
+  string prt_protocol_version = 6;
+  optional string client_info = 7;
+  optional string device_id = 8;
+}

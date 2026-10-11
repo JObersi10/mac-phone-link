@@ -1,0 +1,21 @@
+// Clean-room interoperability schema for the mac-phone-link project.
+// Independently authored from observed wire behavior; no vendor source text,
+// headers, or comments are reproduced. Field numbers and types reflect the
+// on-the-wire protobuf layout (interface facts) required for compatibility.
+// SPDX-License-Identifier: MIT
+syntax = "proto3";
+package maclink.sidechannel.v1;
+option swift_prefix = "MLSideChannel";
+
+enum Capability {
+  CAPABILITY_UNSPECIFIED = 0;
+  CAPABILITY_WAKE = 1;
+  CAPABILITY_HOTSPOT = 2;
+  CAPABILITY_ENCRYPTED_HOTSPOT = 3;
+}
+
+message CapabilityRequest {}
+
+message CapabilityResponse {
+  repeated Capability capabilities = 1;
+}
