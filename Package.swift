@@ -52,7 +52,11 @@ let package = Package(
         ),
         .executableTarget(
             name: "PhoneLinkApp",
-            dependencies: ["PhoneLinkUI"],
+            dependencies: [
+                "PhoneLinkUI",
+                "DCGAuth",
+                .product(name: "MSAL", package: "microsoft-authentication-library-for-objc"),
+            ],
             path: "Sources/PhoneLinkApp"
         ),
         .executableTarget(

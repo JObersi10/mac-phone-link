@@ -52,6 +52,20 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>LSMinimumSystemVersion</key><string>13.0</string>
   <key>NSHighResolutionCapable</key><true/>
   <key>LSApplicationCategoryType</key><string>public.app-category.utilities</string>
+  <!-- MSAL redirect: ASWebAuthenticationSession returns to this custom scheme. -->
+  <key>CFBundleURLTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleURLName</key><string>com.maclink.phonelink.msauth</string>
+      <key>CFBundleURLSchemes</key>
+      <array><string>msauth.com.maclink.phonelink</string></array>
+    </dict>
+  </array>
+  <!-- Local-network (Bonjour) discovery prompt used by onboarding permissions. -->
+  <key>NSLocalNetworkUsageDescription</key>
+  <string>Phone Link discovers and connects to your phone over the local network.</string>
+  <key>NSBonjourServices</key>
+  <array><string>_maclink._tcp</string></array>
 </dict>
 </plist>
 PLIST

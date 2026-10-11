@@ -115,6 +115,10 @@ private struct PermissionRow: View {
 
 private struct SignInStep: View {
     @ObservedObject var model: OnboardingViewModel
+    // Same key MicrosoftSignIn reads in the app layer. Lets a user paste the
+    // client id of their own Entra registration without env vars or Info.plist.
+    @AppStorage("PhoneLinkMSALClientId") private var clientId = ""
+
     var body: some View {
         VStack(spacing: 14) {
             Image(systemName: "person.badge.key").font(.system(size: 40)).foregroundStyle(.tint)
@@ -122,6 +126,15 @@ private struct SignInStep: View {
             if let user = model.signedInUser {
                 Label(user, systemImage: "checkmark.seal.fill").foregroundStyle(.green)
             } else {
+                VStack(spacing: 6) {
+                    TextField("Entra app client id (GUID)", text: $clientId)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(maxWidth: 320)
+                    Text("Register your own Entra app with redirect "
+                         + "`msauth.com.maclink.phonelink://auth`, then paste its client id.")
+                        .font(.caption2).foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center).frame(maxWidth: 320)
+                }
                 Button {
                     Task { await model.signIn() }
                 } label: {
@@ -129,7 +142,7 @@ private struct SignInStep: View {
                     else { Text("Sign in with Microsoft") }
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(model.isSigningIn)
+                .disabled(model.isSigningIn || clientId.trimmingCharacters(in: .whitespaces).isEmpty)
             }
             if let err = model.signInError {
                 Text(err).font(.caption).foregroundStyle(.red).multilineTextAlignment(.center)

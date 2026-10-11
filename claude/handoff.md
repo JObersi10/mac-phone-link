@@ -116,8 +116,15 @@ staple`. That removes the prompt.
 - `OnboardingViewModel` steps: welcome → permissions → signIn → pairing → done.
 - `PermissionsManager` (@MainActor): `requestNotifications()` (UserNotifications),
   `requestLocalNetwork()` (NWBrowser Bonjour → macOS prompt).
-- Sign-in is injected: set `onboarding.signInAction = { try await
-  authenticator.acquireToken…; return username }` in the app (wire DCGAuthenticator).
+- Sign-in is **wired** (`Sources/PhoneLinkApp/MicrosoftSignIn.swift`):
+  `App.init()` sets `onboarding.signInAction = MicrosoftSignIn.makeSignInAction()`,
+  which builds a `DCGAuthenticator` (redirect `msauth.com.maclink.phonelink://auth`)
+  and runs a real MSAL interactive sign-in with diagnostic scopes. Client id is
+  caller-supplied (env `PHONELINK_MSAL_CLIENT_ID` → onboarding text field →
+  Info.plist `PhoneLinkMSALClientId`), never embedded. `package-app.sh` now
+  registers the `msauth.com.maclink.phonelink` URL scheme + local-network
+  (Bonjour `_maclink._tcp`) Info.plist keys. Setup + the keychain/signing caveat:
+  `docs/MICROSOFT_SIGNIN.md`.
 - `QRCode.image(from:)` renders the pairing payload (CoreImage). Payload is a
   **placeholder** until the real DCG pairing handshake exists — that's the next
   protocol task (study pairing-proxy + the QR the Windows app shows).
