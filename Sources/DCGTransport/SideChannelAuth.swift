@@ -33,6 +33,16 @@ public final class DeviceTrustAuthorizer {
         self.lifetime = lifetime
     }
 
+    /// Fetch a fresh DRS nonce for `tenant` and mint an authorization bound to it.
+    /// This is the full join: acquire nonce -> sign device-trust JWT -> wrap.
+    public func makeAuthorization(
+        fetchingNonceFor tenant: String,
+        using nonceClient: DRSNonceClient
+    ) async throws -> Maclink_Sidechannel_V1_Authorization {
+        let nonce = try await nonceClient.requestNonce(tenant: tenant)
+        return try makeAuthorization(nonce: nonce)
+    }
+
     /// Sign a fresh JWT (optionally binding a server-issued nonce) and wrap it
     /// as a `SideChannelAuthorization`.
     public func makeAuthorization(nonce: String? = nil) throws -> Maclink_Sidechannel_V1_Authorization {
