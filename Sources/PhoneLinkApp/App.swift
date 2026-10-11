@@ -1,6 +1,5 @@
-// PhoneLinkApp — the runnable macOS app entry point. Hosts the SwiftUI scene
-// from PhoneLinkUI. Kept as its own executable target so the libraries stay
-// headless-buildable while this produces the .app binary.
+// PhoneLinkApp — runnable macOS app entry point. Hosts the onboarding/pairing
+// flow and main window from PhoneLinkUI.
 //
 // SPDX-License-Identifier: MIT
 
@@ -10,12 +9,17 @@ import PhoneLinkUI
 
 @main
 struct PhoneLinkApp: App {
-    @StateObject private var viewModel = ConnectionViewModel()
+    @StateObject private var connection = ConnectionViewModel()
+    @StateObject private var onboarding = OnboardingViewModel(
+        permissions: PermissionsManager(),
+        // Placeholder pairing payload until the real DCG pairing handshake is wired.
+        pairingPayload: "ms-phone-link://pair?v=1"
+    )
 
     var body: some Scene {
         WindowGroup("Phone Link") {
-            PhoneLinkRootView(viewModel: viewModel)
-                .frame(minWidth: 360, minHeight: 420)
+            AppRootView(connection: connection, onboarding: onboarding)
+                .frame(minWidth: 460, minHeight: 520)
         }
     }
 }

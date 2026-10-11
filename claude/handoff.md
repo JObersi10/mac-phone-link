@@ -107,8 +107,22 @@ Application identity + cert) and `PROVISIONING_PROFILE` (base64, decoded at
 build), then real `codesign` + `xcrun notarytool submit --wait` + `stapler
 staple`. That removes the prompt.
 
-**v0.1.0 release asset is the BROKEN (pre-embed) build** — re-cut the release
-(e.g. v0.1.1, or delete+retag v0.1.0) after this fix lands so the asset works.
+**Releases:** `v0.1.0` asset is BROKEN (pre-embed, crashes on missing MSAL).
+**`v0.1.1`** is the first launchable asset (framework embedded + ad-hoc signed).
+
+## Onboarding / pairing (PhoneLinkUI)
+`AppRootView` gates on `@AppStorage("didCompleteOnboarding")`: shows
+`OnboardingView` until the flow hits `.done`, then `PhoneLinkRootView`.
+- `OnboardingViewModel` steps: welcome → permissions → signIn → pairing → done.
+- `PermissionsManager` (@MainActor): `requestNotifications()` (UserNotifications),
+  `requestLocalNetwork()` (NWBrowser Bonjour → macOS prompt).
+- Sign-in is injected: set `onboarding.signInAction = { try await
+  authenticator.acquireToken…; return username }` in the app (wire DCGAuthenticator).
+- `QRCode.image(from:)` renders the pairing payload (CoreImage). Payload is a
+  **placeholder** until the real DCG pairing handshake exists — that's the next
+  protocol task (study pairing-proxy + the QR the Windows app shows).
+- `@main` app (`Sources/PhoneLinkApp/App.swift`) builds `connection` +
+  `onboarding` StateObjects and hosts `AppRootView`.
 
 ## Next work (priority order)
 1. **Merge #3** to `main` (user action).

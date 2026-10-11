@@ -82,7 +82,7 @@ Two local vendor artifacts (used for analysis only, **never committed** — see
 | Routing | `DCGTransport` | ✅ `DCGConnection` (fragment-on-send, reassemble+auto-ack) over `DCGChannel` |
 | SignalR channel | `DCGTransport` | ✅ `SignalRDCGChannel` (configurable hub method names) |
 | Auth↔transport bridge | `DCGTransport` | ✅ `DeviceTrustAuthorizer`, `SideChannelAuth`, `DCGSession` |
-| macOS UI | `PhoneLinkUI` | ✅ `ConnectionViewModel`, `PhoneLinkRootView`, `PhoneLinkScene` (library) |
+| macOS UI | `PhoneLinkUI` | ✅ `ConnectionViewModel`, `PhoneLinkRootView`; onboarding/pairing flow (`OnboardingView(Model)`, `PermissionsManager`, `QRCode`, `AppRootView` gate) |
 | Screen-mirroring protos | `PhoneLinkProtos` | ✅ message layer (PR #3) |
 | Screen-mirroring video | `PhoneLinkVideo` | ✅ VideoToolbox decode (`VTVideoDecoder`) + `AVSampleBufferDisplayLayer` render + `VideoStreamController` (NAL/AVCC framing) |
 | Runnable `.app` bundle | `PhoneLinkApp` | ✅ `@main` SwiftUI app; `scripts/package-app.sh` assembles `PhoneLink.app` |
@@ -116,8 +116,24 @@ Two local vendor artifacts (used for analysis only, **never committed** — see
   moved to `jobersi10/mac-phone-link-old` and closed.
 - PR #3 (`feature/screen-mirroring`) now **based on `main`**, CI green: screen-
   mirroring protos + `PhoneLinkVideo` + `PhoneLinkApp` + `build-app.yml`.
-- `v0.1.0` tagged from the PR #3 branch tip to exercise the Release upload.
+- `v0.1.0` tagged from the PR #3 tip to exercise the Release upload — its asset
+  is the **broken pre-embed build** (crashes: missing MSAL.framework).
+- **`v0.1.1`** tagged after the framework-embedding fix → first launchable
+  release asset (`PhoneLink.app.zip`, ad-hoc signed, arm64). Use this one.
 - Commit attribution footer: `Co-Authored-By: Claude Opus 4.8`.
+
+## Onboarding / pairing (PhoneLinkUI)
+First-run flow gated by `@AppStorage("didCompleteOnboarding")` in `AppRootView`
+(onboarding → else `PhoneLinkRootView`). Steps: welcome → permissions → sign-in
+→ pairing → done.
+- **Permissions** (`PermissionsManager`): Notifications via
+  `UNUserNotificationCenter.requestAuthorization`; Local Network via an
+  `NWBrowser` Bonjour browse that triggers the macOS prompt.
+- **Microsoft sign-in**: injected `signInAction: () async throws -> String`
+  (keeps PhoneLinkUI decoupled from MSAL UI; the app wires `DCGAuthenticator`).
+- **Pairing**: `QRCode.image(from:)` (CoreImage, no dep) renders the pairing
+  payload. Payload is a **placeholder** (`ms-phone-link://pair?v=1`) until the
+  real DCG pairing handshake is reverse-engineered/wired.
 
 ---
 
