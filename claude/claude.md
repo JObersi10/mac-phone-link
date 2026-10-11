@@ -88,7 +88,9 @@ Two local vendor artifacts (used for analysis only, **never committed** — see
 | Runnable `.app` bundle | `PhoneLinkApp` | ✅ `@main` SwiftUI app; `scripts/package-app.sh` assembles `PhoneLink.app` |
 | Release packaging | CI | ✅ `build-app.yml` → `.app` → ditto zip → GitHub Releases on `v*` tags (no DMG) |
 | Nano/QUIC transport | `NanoTransport` | ⚠️ scaffolded: `QUICNanoConnection` (Network.framework QUIC, one bidi stream), `NanoFraming` (4-byte length prefix), `NanoHandshake` (context_source Initialize→IdentityResponse→OpenDeviceConnection), `LoopbackNanoTransport`. Not yet traffic-verified; frame container + real cert pinning TBD |
-| Pairing (QR + proxy) | `PhoneLinkPairing` | ⚠️ clean-room model of confirmed QR grammar + proxy endpoints + ceremony order; needs first-party MSA PinSession to actually pair |
+| Pairing (QR + proxy) | `PhoneLinkPairing` | ⚠️ clean-room model of confirmed QR grammar (HTTPS DCG dynamic link) + proxy endpoints + ceremony order; needs first-party MSA PinSession to actually pair |
+| Screen-mirror UI + cursor control | `PhoneLinkUI` | ⚠️ `MirroringView(Model)` Connect action over Nano/QUIC; `RemoteControl`/`RemoteInputView` inject cursor+keyboard as normalized `InputEventMessage` (letterbox-mapped, coalesced). Needs live stream |
+| Clipboard sync | `PhoneLinkUI` | ⚠️ `ClipboardSync` NSPasteboard ↔ clipboard proto (both ways); needs a live channel to attach to |
 | Device-trust provisioning (pairing-proxy cert issuance) | — | ❌ not started |
 | App signing / notarization | — | ❌ unsigned (Gatekeeper prompt); needs Developer ID in CI secrets |
 
