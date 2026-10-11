@@ -4,13 +4,14 @@ Precise state for picking up `mac-phone-link` in a fresh session.
 
 ## Repo & branches
 - GitHub: `jobersi10/mac-phone-link` (public), default branch `main`.
-- **PR #2 merged to `main`** (squash) — the clean-room foundation is now on main.
-- **PR #1** (old scrcpy/companion prototype) was moved to
-  `jobersi10/mac-phone-link-old` (its code is on that repo's `main`) and closed.
-- **PR #3** `feature/screen-mirroring` → `main` (retargeted; CI green). **Current
-  branch.** Adds screen-mirroring protos, `PhoneLinkVideo`, `PhoneLinkApp`, and
-  `build-app.yml`. Ready to merge (user merges — agent can't merge-without-review).
-- Tag **`v0.1.0`** pushed from the PR #3 tip to exercise the Release workflow.
+- **PR #2 merged** (clean-room foundation). **PR #3 merged** (screen-mirroring
+  protos, `PhoneLinkVideo`, `PhoneLinkApp`, `build-app.yml`, onboarding/pairing
+  UI). Both squashed onto `main`; feature branches retired.
+- **PR #1** (old scrcpy/companion prototype) moved to
+  `jobersi10/mac-phone-link-old` and closed.
+- Releases: **`v0.1.1`** is the current good asset (v0.1.0 broken).
+- Current work: branch `docs/pairing-protocol` → `docs/PAIRING_PROTOCOL.md`
+  (RE plan). Next code work is the real pairing handshake (see that doc).
 
 ## Toolchain
 - Build locally: `swift build` (works with Swift 6.1 CommandLineTools).
