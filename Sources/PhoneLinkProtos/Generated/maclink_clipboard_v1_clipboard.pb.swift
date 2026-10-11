@@ -31,7 +31,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated enum MLClipboardRequestType: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Clipboard_V1_RequestType: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case content // = 1
@@ -70,7 +70,7 @@ public nonisolated enum MLClipboardRequestType: SwiftProtobuf.Enum, Swift.CaseIt
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLClipboardRequestType] = [
+  public static let allCases: [Maclink_Clipboard_V1_RequestType] = [
     .unspecified,
     .content,
     .featureOn,
@@ -81,7 +81,7 @@ public nonisolated enum MLClipboardRequestType: SwiftProtobuf.Enum, Swift.CaseIt
 
 }
 
-public nonisolated enum MLClipboardResponseStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Clipboard_V1_ResponseStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case ok // = 1
@@ -135,7 +135,7 @@ public nonisolated enum MLClipboardResponseStatus: SwiftProtobuf.Enum, Swift.Cas
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLClipboardResponseStatus] = [
+  public static let allCases: [Maclink_Clipboard_V1_ResponseStatus] = [
     .unspecified,
     .ok,
     .invalidDeviceResourceRequestType,
@@ -151,7 +151,7 @@ public nonisolated enum MLClipboardResponseStatus: SwiftProtobuf.Enum, Swift.Cas
 
 }
 
-public nonisolated enum MLClipboardItemType: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Clipboard_V1_ItemType: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case image // = 1
@@ -184,7 +184,7 @@ public nonisolated enum MLClipboardItemType: SwiftProtobuf.Enum, Swift.CaseItera
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLClipboardItemType] = [
+  public static let allCases: [Maclink_Clipboard_V1_ItemType] = [
     .unspecified,
     .image,
     .textPlain,
@@ -193,7 +193,7 @@ public nonisolated enum MLClipboardItemType: SwiftProtobuf.Enum, Swift.CaseItera
 
 }
 
-public nonisolated enum MLClipboardErrorType: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Clipboard_V1_ErrorType: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case reject // = 1
@@ -223,7 +223,7 @@ public nonisolated enum MLClipboardErrorType: SwiftProtobuf.Enum, Swift.CaseIter
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLClipboardErrorType] = [
+  public static let allCases: [Maclink_Clipboard_V1_ErrorType] = [
     .unspecified,
     .reject,
     .fail,
@@ -231,12 +231,12 @@ public nonisolated enum MLClipboardErrorType: SwiftProtobuf.Enum, Swift.CaseIter
 
 }
 
-public nonisolated struct MLClipboardRequestMessage: Sendable {
+public nonisolated struct Maclink_Clipboard_V1_RequestMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var requestType: MLClipboardRequestType = .unspecified
+  public var requestType: Maclink_Clipboard_V1_RequestType = .unspecified
 
   public var correlationID: String = String()
 
@@ -245,12 +245,12 @@ public nonisolated struct MLClipboardRequestMessage: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLClipboardItem: Sendable {
+public nonisolated struct Maclink_Clipboard_V1_Item: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var itemType: MLClipboardItemType = .unspecified
+  public var itemType: Maclink_Clipboard_V1_ItemType = .unspecified
 
   public var text: String {
     get {_text ?? String()}
@@ -288,18 +288,18 @@ public nonisolated struct MLClipboardItem: Sendable {
   fileprivate var _createdTime: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
 }
 
-public nonisolated struct MLClipboardResponseMessage: Sendable {
+public nonisolated struct Maclink_Clipboard_V1_ResponseMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var clipboardItem: [MLClipboardItem] = []
+  public var clipboardItem: [Maclink_Clipboard_V1_Item] = []
 
-  public var status: MLClipboardResponseStatus = .unspecified
+  public var status: Maclink_Clipboard_V1_ResponseStatus = .unspecified
 
   public var correlationID: String = String()
 
-  public var errorType: MLClipboardErrorType = .unspecified
+  public var errorType: Maclink_Clipboard_V1_ErrorType = .unspecified
 
   public var errorDetail: String = String()
 
@@ -312,23 +312,23 @@ public nonisolated struct MLClipboardResponseMessage: Sendable {
 
 fileprivate nonisolated let _protobuf_package = "maclink.clipboard.v1"
 
-nonisolated extension MLClipboardRequestType: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Clipboard_V1_RequestType: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0REQUEST_TYPE_UNSPECIFIED\0\u{1}REQUEST_TYPE_CONTENT\0\u{1}REQUEST_TYPE_FEATURE_ON\0\u{1}REQUEST_TYPE_FEATURE_OFF\0\u{1}REQUEST_TYPE_FEATURE_DISABLE\0\u{1}REQUEST_TYPE_STATUS\0")
 }
 
-nonisolated extension MLClipboardResponseStatus: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Clipboard_V1_ResponseStatus: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0RESPONSE_STATUS_UNSPECIFIED\0\u{1}RESPONSE_STATUS_OK\0\u{1}RESPONSE_STATUS_INVALID_DEVICE_RESOURCE_REQUEST_TYPE\0\u{1}RESPONSE_STATUS_INVALID_DEVICE_RESOURCE_REQUEST_PATH\0\u{1}RESPONSE_STATUS_INVALID_CLIPBOARD_REQUEST_TYPE\0\u{1}RESPONSE_STATUS_UNRECOGNIZED_PAYLOAD\0\u{1}RESPONSE_STATUS_CLIPBOARD_CHANGE\0\u{1}RESPONSE_STATUS_INVALID_CONTENT\0\u{1}RESPONSE_STATUS_FEATURE_ON\0\u{1}RESPONSE_STATUS_FEATURE_OFF\0\u{1}RESPONSE_STATUS_FEATURE_DISABLE\0")
 }
 
-nonisolated extension MLClipboardItemType: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Clipboard_V1_ItemType: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ITEM_TYPE_UNSPECIFIED\0\u{1}ITEM_TYPE_IMAGE\0\u{1}ITEM_TYPE_TEXT_PLAIN\0\u{1}ITEM_TYPE_TEXT_HTML\0")
 }
 
-nonisolated extension MLClipboardErrorType: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Clipboard_V1_ErrorType: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ERROR_TYPE_UNSPECIFIED\0\u{1}ERROR_TYPE_REJECT\0\u{1}ERROR_TYPE_FAIL\0")
 }
 
-nonisolated extension MLClipboardRequestMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Clipboard_V1_RequestMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RequestMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}request_type\0\u{3}correlation_id\0")
 
@@ -355,7 +355,7 @@ nonisolated extension MLClipboardRequestMessage: SwiftProtobuf.Message, SwiftPro
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLClipboardRequestMessage, rhs: MLClipboardRequestMessage) -> Bool {
+  public static func ==(lhs: Maclink_Clipboard_V1_RequestMessage, rhs: Maclink_Clipboard_V1_RequestMessage) -> Bool {
     if lhs.requestType != rhs.requestType {return false}
     if lhs.correlationID != rhs.correlationID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -363,7 +363,7 @@ nonisolated extension MLClipboardRequestMessage: SwiftProtobuf.Message, SwiftPro
   }
 }
 
-nonisolated extension MLClipboardItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Clipboard_V1_Item: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Item"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}item_type\0\u{1}text\0\u{3}image_bytes\0\u{3}created_time\0")
 
@@ -402,7 +402,7 @@ nonisolated extension MLClipboardItem: SwiftProtobuf.Message, SwiftProtobuf._Mes
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLClipboardItem, rhs: MLClipboardItem) -> Bool {
+  public static func ==(lhs: Maclink_Clipboard_V1_Item, rhs: Maclink_Clipboard_V1_Item) -> Bool {
     if lhs.itemType != rhs.itemType {return false}
     if lhs._text != rhs._text {return false}
     if lhs._imageBytes != rhs._imageBytes {return false}
@@ -412,7 +412,7 @@ nonisolated extension MLClipboardItem: SwiftProtobuf.Message, SwiftProtobuf._Mes
   }
 }
 
-nonisolated extension MLClipboardResponseMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Clipboard_V1_ResponseMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ResponseMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}clipboard_item\0\u{1}status\0\u{3}correlation_id\0\u{3}error_type\0\u{3}error_detail\0")
 
@@ -451,7 +451,7 @@ nonisolated extension MLClipboardResponseMessage: SwiftProtobuf.Message, SwiftPr
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLClipboardResponseMessage, rhs: MLClipboardResponseMessage) -> Bool {
+  public static func ==(lhs: Maclink_Clipboard_V1_ResponseMessage, rhs: Maclink_Clipboard_V1_ResponseMessage) -> Bool {
     if lhs.clipboardItem != rhs.clipboardItem {return false}
     if lhs.status != rhs.status {return false}
     if lhs.correlationID != rhs.correlationID {return false}

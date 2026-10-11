@@ -26,7 +26,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated enum MLFilesFilesResponseStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Files_V1_FilesResponseStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case success // = 1
@@ -86,7 +86,7 @@ public nonisolated enum MLFilesFilesResponseStatus: SwiftProtobuf.Enum, Swift.Ca
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLFilesFilesResponseStatus] = [
+  public static let allCases: [Maclink_Files_V1_FilesResponseStatus] = [
     .unspecified,
     .success,
     .noPermission,
@@ -106,6 +106,6 @@ public nonisolated enum MLFilesFilesResponseStatus: SwiftProtobuf.Enum, Swift.Ca
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
-nonisolated extension MLFilesFilesResponseStatus: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_FilesResponseStatus: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0FILES_RESPONSE_STATUS_UNSPECIFIED\0\u{1}FILES_RESPONSE_STATUS_SUCCESS\0\u{1}FILES_RESPONSE_STATUS_NO_PERMISSION\0\u{1}FILES_RESPONSE_STATUS_NOT_FOUND\0\u{1}FILES_RESPONSE_STATUS_CHECKSUM_MISMATCH\0\u{1}FILES_RESPONSE_STATUS_IO_ERROR\0\u{1}FILES_RESPONSE_STATUS_NOT_SUPPORTED\0\u{1}FILES_RESPONSE_STATUS_REQUEST_NOT_SET\0\u{1}FILES_RESPONSE_STATUS_FEATURE_DISABLED\0\u{1}FILES_RESPONSE_STATUS_PLATFORM_ERROR\0\u{1}FILES_RESPONSE_STATUS_CANCELLED\0\u{1}FILES_RESPONSE_STATUS_SYNC_FAILED\0\u{1}FILES_RESPONSE_STATUS_BATCH_RESTART_REQUIRED\0")
 }

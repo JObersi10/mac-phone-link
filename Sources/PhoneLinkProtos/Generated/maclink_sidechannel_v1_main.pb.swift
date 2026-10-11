@@ -26,13 +26,13 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated struct MLSideChannelClientRequest: Sendable {
+public nonisolated struct Maclink_Sidechannel_V1_ClientRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var context: MLSideChannelTraceContext {
-    get {_context ?? MLSideChannelTraceContext()}
+  public var context: Maclink_Sidechannel_V1_TraceContext {
+    get {_context ?? Maclink_Sidechannel_V1_TraceContext()}
     set {_context = newValue}
   }
   /// Returns true if `context` has been explicitly set.
@@ -40,42 +40,42 @@ public nonisolated struct MLSideChannelClientRequest: Sendable {
   /// Clears the value of `context`. Subsequent reads from it will return its default value.
   public mutating func clearContext() {self._context = nil}
 
-  public var request: MLSideChannelClientRequest.OneOf_Request? = nil
+  public var request: Maclink_Sidechannel_V1_ClientRequest.OneOf_Request? = nil
 
-  public var wakeRequest: MLSideChannelWakeRequest {
+  public var wakeRequest: Maclink_Sidechannel_V1_WakeRequest {
     get {
       if case .wakeRequest(let v)? = request {return v}
-      return MLSideChannelWakeRequest()
+      return Maclink_Sidechannel_V1_WakeRequest()
     }
     set {request = .wakeRequest(newValue)}
   }
 
-  public var capabilityRequest: MLSideChannelCapabilityRequest {
+  public var capabilityRequest: Maclink_Sidechannel_V1_CapabilityRequest {
     get {
       if case .capabilityRequest(let v)? = request {return v}
-      return MLSideChannelCapabilityRequest()
+      return Maclink_Sidechannel_V1_CapabilityRequest()
     }
     set {request = .capabilityRequest(newValue)}
   }
 
-  public var hotspotRequest: MLSideChannelHotspotRequest {
+  public var hotspotRequest: Maclink_Sidechannel_V1_HotspotRequest {
     get {
       if case .hotspotRequest(let v)? = request {return v}
-      return MLSideChannelHotspotRequest()
+      return Maclink_Sidechannel_V1_HotspotRequest()
     }
     set {request = .hotspotRequest(newValue)}
   }
 
-  public var instantHotspotRequest: MLSideChannelInstantHotspotRequest {
+  public var instantHotspotRequest: Maclink_Sidechannel_V1_InstantHotspotRequest {
     get {
       if case .instantHotspotRequest(let v)? = request {return v}
-      return MLSideChannelInstantHotspotRequest()
+      return Maclink_Sidechannel_V1_InstantHotspotRequest()
     }
     set {request = .instantHotspotRequest(newValue)}
   }
 
-  public var authorization: MLSideChannelAuthorization {
-    get {_authorization ?? MLSideChannelAuthorization()}
+  public var authorization: Maclink_Sidechannel_V1_Authorization {
+    get {_authorization ?? Maclink_Sidechannel_V1_Authorization()}
     set {_authorization = newValue}
   }
   /// Returns true if `authorization` has been explicitly set.
@@ -86,28 +86,28 @@ public nonisolated struct MLSideChannelClientRequest: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public nonisolated enum OneOf_Request: Equatable, Sendable {
-    case wakeRequest(MLSideChannelWakeRequest)
-    case capabilityRequest(MLSideChannelCapabilityRequest)
-    case hotspotRequest(MLSideChannelHotspotRequest)
-    case instantHotspotRequest(MLSideChannelInstantHotspotRequest)
+    case wakeRequest(Maclink_Sidechannel_V1_WakeRequest)
+    case capabilityRequest(Maclink_Sidechannel_V1_CapabilityRequest)
+    case hotspotRequest(Maclink_Sidechannel_V1_HotspotRequest)
+    case instantHotspotRequest(Maclink_Sidechannel_V1_InstantHotspotRequest)
 
   }
 
   public init() {}
 
-  fileprivate var _context: MLSideChannelTraceContext? = nil
-  fileprivate var _authorization: MLSideChannelAuthorization? = nil
+  fileprivate var _context: Maclink_Sidechannel_V1_TraceContext? = nil
+  fileprivate var _authorization: Maclink_Sidechannel_V1_Authorization? = nil
 }
 
-public nonisolated struct MLSideChannelServerResponse: Sendable {
+public nonisolated struct Maclink_Sidechannel_V1_ServerResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   public var ok: Bool = false
 
-  public var error: MLSideChannelError {
-    get {_error ?? MLSideChannelError()}
+  public var error: Maclink_Sidechannel_V1_Error {
+    get {_error ?? Maclink_Sidechannel_V1_Error()}
     set {_error = newValue}
   }
   /// Returns true if `error` has been explicitly set.
@@ -115,58 +115,58 @@ public nonisolated struct MLSideChannelServerResponse: Sendable {
   /// Clears the value of `error`. Subsequent reads from it will return its default value.
   public mutating func clearError() {self._error = nil}
 
-  public var response: MLSideChannelServerResponse.OneOf_Response? = nil
+  public var response: Maclink_Sidechannel_V1_ServerResponse.OneOf_Response? = nil
 
-  public var wakeResponse: MLSideChannelWakeResponse {
+  public var wakeResponse: Maclink_Sidechannel_V1_WakeResponse {
     get {
       if case .wakeResponse(let v)? = response {return v}
-      return MLSideChannelWakeResponse()
+      return Maclink_Sidechannel_V1_WakeResponse()
     }
     set {response = .wakeResponse(newValue)}
   }
 
-  public var capabilityResponse: MLSideChannelCapabilityResponse {
+  public var capabilityResponse: Maclink_Sidechannel_V1_CapabilityResponse {
     get {
       if case .capabilityResponse(let v)? = response {return v}
-      return MLSideChannelCapabilityResponse()
+      return Maclink_Sidechannel_V1_CapabilityResponse()
     }
     set {response = .capabilityResponse(newValue)}
   }
 
-  public var hotspotResponse: MLSideChannelHotspotResponse {
+  public var hotspotResponse: Maclink_Sidechannel_V1_HotspotResponse {
     get {
       if case .hotspotResponse(let v)? = response {return v}
-      return MLSideChannelHotspotResponse()
+      return Maclink_Sidechannel_V1_HotspotResponse()
     }
     set {response = .hotspotResponse(newValue)}
   }
 
-  public var hotspotEncryptedResponse: MLSideChannelHotspotEncryptedResponse {
+  public var hotspotEncryptedResponse: Maclink_Sidechannel_V1_HotspotEncryptedResponse {
     get {
       if case .hotspotEncryptedResponse(let v)? = response {return v}
-      return MLSideChannelHotspotEncryptedResponse()
+      return Maclink_Sidechannel_V1_HotspotEncryptedResponse()
     }
     set {response = .hotspotEncryptedResponse(newValue)}
   }
 
-  public var instantHotspotResponse: MLSideChannelInstantHotspotResponse {
+  public var instantHotspotResponse: Maclink_Sidechannel_V1_InstantHotspotResponse {
     get {
       if case .instantHotspotResponse(let v)? = response {return v}
-      return MLSideChannelInstantHotspotResponse()
+      return Maclink_Sidechannel_V1_InstantHotspotResponse()
     }
     set {response = .instantHotspotResponse(newValue)}
   }
 
-  public var instantHotspotEncryptedResponse: MLSideChannelInstantHotspotEncryptedResponse {
+  public var instantHotspotEncryptedResponse: Maclink_Sidechannel_V1_InstantHotspotEncryptedResponse {
     get {
       if case .instantHotspotEncryptedResponse(let v)? = response {return v}
-      return MLSideChannelInstantHotspotEncryptedResponse()
+      return Maclink_Sidechannel_V1_InstantHotspotEncryptedResponse()
     }
     set {response = .instantHotspotEncryptedResponse(newValue)}
   }
 
-  public var authorization: MLSideChannelAuthorization {
-    get {_authorization ?? MLSideChannelAuthorization()}
+  public var authorization: Maclink_Sidechannel_V1_Authorization {
+    get {_authorization ?? Maclink_Sidechannel_V1_Authorization()}
     set {_authorization = newValue}
   }
   /// Returns true if `authorization` has been explicitly set.
@@ -174,8 +174,8 @@ public nonisolated struct MLSideChannelServerResponse: Sendable {
   /// Clears the value of `authorization`. Subsequent reads from it will return its default value.
   public mutating func clearAuthorization() {self._authorization = nil}
 
-  public var context: MLSideChannelTraceContext {
-    get {_context ?? MLSideChannelTraceContext()}
+  public var context: Maclink_Sidechannel_V1_TraceContext {
+    get {_context ?? Maclink_Sidechannel_V1_TraceContext()}
     set {_context = newValue}
   }
   /// Returns true if `context` has been explicitly set.
@@ -186,33 +186,33 @@ public nonisolated struct MLSideChannelServerResponse: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public nonisolated enum OneOf_Response: Equatable, Sendable {
-    case wakeResponse(MLSideChannelWakeResponse)
-    case capabilityResponse(MLSideChannelCapabilityResponse)
-    case hotspotResponse(MLSideChannelHotspotResponse)
-    case hotspotEncryptedResponse(MLSideChannelHotspotEncryptedResponse)
-    case instantHotspotResponse(MLSideChannelInstantHotspotResponse)
-    case instantHotspotEncryptedResponse(MLSideChannelInstantHotspotEncryptedResponse)
+    case wakeResponse(Maclink_Sidechannel_V1_WakeResponse)
+    case capabilityResponse(Maclink_Sidechannel_V1_CapabilityResponse)
+    case hotspotResponse(Maclink_Sidechannel_V1_HotspotResponse)
+    case hotspotEncryptedResponse(Maclink_Sidechannel_V1_HotspotEncryptedResponse)
+    case instantHotspotResponse(Maclink_Sidechannel_V1_InstantHotspotResponse)
+    case instantHotspotEncryptedResponse(Maclink_Sidechannel_V1_InstantHotspotEncryptedResponse)
 
   }
 
   public init() {}
 
-  fileprivate var _error: MLSideChannelError? = nil
-  fileprivate var _authorization: MLSideChannelAuthorization? = nil
-  fileprivate var _context: MLSideChannelTraceContext? = nil
+  fileprivate var _error: Maclink_Sidechannel_V1_Error? = nil
+  fileprivate var _authorization: Maclink_Sidechannel_V1_Authorization? = nil
+  fileprivate var _context: Maclink_Sidechannel_V1_TraceContext? = nil
 }
 
-public nonisolated struct MLSideChannelServerMessage: Sendable {
+public nonisolated struct Maclink_Sidechannel_V1_ServerMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var body: MLSideChannelServerMessage.OneOf_Body? = nil
+  public var body: Maclink_Sidechannel_V1_ServerMessage.OneOf_Body? = nil
 
-  public var requestResponse: MLSideChannelServerResponse {
+  public var requestResponse: Maclink_Sidechannel_V1_ServerResponse {
     get {
       if case .requestResponse(let v)? = body {return v}
-      return MLSideChannelServerResponse()
+      return Maclink_Sidechannel_V1_ServerResponse()
     }
     set {body = .requestResponse(newValue)}
   }
@@ -220,7 +220,7 @@ public nonisolated struct MLSideChannelServerMessage: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public nonisolated enum OneOf_Body: Equatable, Sendable {
-    case requestResponse(MLSideChannelServerResponse)
+    case requestResponse(Maclink_Sidechannel_V1_ServerResponse)
 
   }
 
@@ -231,7 +231,7 @@ public nonisolated struct MLSideChannelServerMessage: Sendable {
 
 fileprivate nonisolated let _protobuf_package = "maclink.sidechannel.v1"
 
-nonisolated extension MLSideChannelClientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_ClientRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ClientRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}context\0\u{3}wake_request\0\u{3}capability_request\0\u{1}authorization\0\u{3}hotspot_request\0\u{3}instant_hotspot_request\0")
 
@@ -243,7 +243,7 @@ nonisolated extension MLSideChannelClientRequest: SwiftProtobuf.Message, SwiftPr
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularMessageField(value: &self._context) }()
       case 2: try {
-        var v: MLSideChannelWakeRequest?
+        var v: Maclink_Sidechannel_V1_WakeRequest?
         var hadOneofValue = false
         if let current = self.request {
           hadOneofValue = true
@@ -256,7 +256,7 @@ nonisolated extension MLSideChannelClientRequest: SwiftProtobuf.Message, SwiftPr
         }
       }()
       case 3: try {
-        var v: MLSideChannelCapabilityRequest?
+        var v: Maclink_Sidechannel_V1_CapabilityRequest?
         var hadOneofValue = false
         if let current = self.request {
           hadOneofValue = true
@@ -270,7 +270,7 @@ nonisolated extension MLSideChannelClientRequest: SwiftProtobuf.Message, SwiftPr
       }()
       case 4: try { try decoder.decodeSingularMessageField(value: &self._authorization) }()
       case 5: try {
-        var v: MLSideChannelHotspotRequest?
+        var v: Maclink_Sidechannel_V1_HotspotRequest?
         var hadOneofValue = false
         if let current = self.request {
           hadOneofValue = true
@@ -283,7 +283,7 @@ nonisolated extension MLSideChannelClientRequest: SwiftProtobuf.Message, SwiftPr
         }
       }()
       case 6: try {
-        var v: MLSideChannelInstantHotspotRequest?
+        var v: Maclink_Sidechannel_V1_InstantHotspotRequest?
         var hadOneofValue = false
         if let current = self.request {
           hadOneofValue = true
@@ -336,7 +336,7 @@ nonisolated extension MLSideChannelClientRequest: SwiftProtobuf.Message, SwiftPr
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLSideChannelClientRequest, rhs: MLSideChannelClientRequest) -> Bool {
+  public static func ==(lhs: Maclink_Sidechannel_V1_ClientRequest, rhs: Maclink_Sidechannel_V1_ClientRequest) -> Bool {
     if lhs._context != rhs._context {return false}
     if lhs.request != rhs.request {return false}
     if lhs._authorization != rhs._authorization {return false}
@@ -345,7 +345,7 @@ nonisolated extension MLSideChannelClientRequest: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-nonisolated extension MLSideChannelServerResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_ServerResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ServerResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ok\0\u{1}error\0\u{3}wake_response\0\u{3}capability_response\0\u{3}hotspot_response\0\u{1}authorization\0\u{1}context\0\u{3}hotspot_encrypted_response\0\u{3}instant_hotspot_response\0\u{3}instant_hotspot_encrypted_response\0")
 
@@ -358,7 +358,7 @@ nonisolated extension MLSideChannelServerResponse: SwiftProtobuf.Message, SwiftP
       case 1: try { try decoder.decodeSingularBoolField(value: &self.ok) }()
       case 2: try { try decoder.decodeSingularMessageField(value: &self._error) }()
       case 3: try {
-        var v: MLSideChannelWakeResponse?
+        var v: Maclink_Sidechannel_V1_WakeResponse?
         var hadOneofValue = false
         if let current = self.response {
           hadOneofValue = true
@@ -371,7 +371,7 @@ nonisolated extension MLSideChannelServerResponse: SwiftProtobuf.Message, SwiftP
         }
       }()
       case 4: try {
-        var v: MLSideChannelCapabilityResponse?
+        var v: Maclink_Sidechannel_V1_CapabilityResponse?
         var hadOneofValue = false
         if let current = self.response {
           hadOneofValue = true
@@ -384,7 +384,7 @@ nonisolated extension MLSideChannelServerResponse: SwiftProtobuf.Message, SwiftP
         }
       }()
       case 5: try {
-        var v: MLSideChannelHotspotResponse?
+        var v: Maclink_Sidechannel_V1_HotspotResponse?
         var hadOneofValue = false
         if let current = self.response {
           hadOneofValue = true
@@ -399,7 +399,7 @@ nonisolated extension MLSideChannelServerResponse: SwiftProtobuf.Message, SwiftP
       case 6: try { try decoder.decodeSingularMessageField(value: &self._authorization) }()
       case 7: try { try decoder.decodeSingularMessageField(value: &self._context) }()
       case 8: try {
-        var v: MLSideChannelHotspotEncryptedResponse?
+        var v: Maclink_Sidechannel_V1_HotspotEncryptedResponse?
         var hadOneofValue = false
         if let current = self.response {
           hadOneofValue = true
@@ -412,7 +412,7 @@ nonisolated extension MLSideChannelServerResponse: SwiftProtobuf.Message, SwiftP
         }
       }()
       case 9: try {
-        var v: MLSideChannelInstantHotspotResponse?
+        var v: Maclink_Sidechannel_V1_InstantHotspotResponse?
         var hadOneofValue = false
         if let current = self.response {
           hadOneofValue = true
@@ -425,7 +425,7 @@ nonisolated extension MLSideChannelServerResponse: SwiftProtobuf.Message, SwiftP
         }
       }()
       case 10: try {
-        var v: MLSideChannelInstantHotspotEncryptedResponse?
+        var v: Maclink_Sidechannel_V1_InstantHotspotEncryptedResponse?
         var hadOneofValue = false
         if let current = self.response {
           hadOneofValue = true
@@ -492,7 +492,7 @@ nonisolated extension MLSideChannelServerResponse: SwiftProtobuf.Message, SwiftP
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLSideChannelServerResponse, rhs: MLSideChannelServerResponse) -> Bool {
+  public static func ==(lhs: Maclink_Sidechannel_V1_ServerResponse, rhs: Maclink_Sidechannel_V1_ServerResponse) -> Bool {
     if lhs.ok != rhs.ok {return false}
     if lhs._error != rhs._error {return false}
     if lhs.response != rhs.response {return false}
@@ -503,7 +503,7 @@ nonisolated extension MLSideChannelServerResponse: SwiftProtobuf.Message, SwiftP
   }
 }
 
-nonisolated extension MLSideChannelServerMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_ServerMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ServerMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}request_response\0")
 
@@ -514,7 +514,7 @@ nonisolated extension MLSideChannelServerMessage: SwiftProtobuf.Message, SwiftPr
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try {
-        var v: MLSideChannelServerResponse?
+        var v: Maclink_Sidechannel_V1_ServerResponse?
         var hadOneofValue = false
         if let current = self.body {
           hadOneofValue = true
@@ -542,7 +542,7 @@ nonisolated extension MLSideChannelServerMessage: SwiftProtobuf.Message, SwiftPr
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLSideChannelServerMessage, rhs: MLSideChannelServerMessage) -> Bool {
+  public static func ==(lhs: Maclink_Sidechannel_V1_ServerMessage, rhs: Maclink_Sidechannel_V1_ServerMessage) -> Bool {
     if lhs.body != rhs.body {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

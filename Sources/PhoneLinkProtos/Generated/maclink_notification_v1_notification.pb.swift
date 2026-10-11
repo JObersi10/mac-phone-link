@@ -26,7 +26,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated enum MLNotificationOperationType: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Notification_V1_OperationType: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case get // = 1
@@ -53,14 +53,14 @@ public nonisolated enum MLNotificationOperationType: SwiftProtobuf.Enum, Swift.C
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLNotificationOperationType] = [
+  public static let allCases: [Maclink_Notification_V1_OperationType] = [
     .unspecified,
     .get,
   ]
 
 }
 
-public nonisolated enum MLNotificationResponseStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Notification_V1_ResponseStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case ok // = 1
@@ -99,7 +99,7 @@ public nonisolated enum MLNotificationResponseStatus: SwiftProtobuf.Enum, Swift.
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLNotificationResponseStatus] = [
+  public static let allCases: [Maclink_Notification_V1_ResponseStatus] = [
     .unspecified,
     .ok,
     .invalidRequest,
@@ -110,7 +110,7 @@ public nonisolated enum MLNotificationResponseStatus: SwiftProtobuf.Enum, Swift.
 
 }
 
-public nonisolated struct MLNotificationNotificationInfo: Sendable {
+public nonisolated struct Maclink_Notification_V1_NotificationInfo: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -146,12 +146,12 @@ public nonisolated struct MLNotificationNotificationInfo: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLNotificationRequestMessage: Sendable {
+public nonisolated struct Maclink_Notification_V1_RequestMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var type: MLNotificationOperationType = .unspecified
+  public var type: Maclink_Notification_V1_OperationType = .unspecified
 
   public var keys: [String] = []
 
@@ -162,14 +162,14 @@ public nonisolated struct MLNotificationRequestMessage: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLNotificationResponseMessage: Sendable {
+public nonisolated struct Maclink_Notification_V1_ResponseMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var status: MLNotificationResponseStatus = .unspecified
+  public var status: Maclink_Notification_V1_ResponseStatus = .unspecified
 
-  public var notifications: [MLNotificationNotificationInfo] = []
+  public var notifications: [Maclink_Notification_V1_NotificationInfo] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -180,15 +180,15 @@ public nonisolated struct MLNotificationResponseMessage: Sendable {
 
 fileprivate nonisolated let _protobuf_package = "maclink.notification.v1"
 
-nonisolated extension MLNotificationOperationType: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Notification_V1_OperationType: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0OPERATION_TYPE_UNSPECIFIED\0\u{1}OPERATION_TYPE_GET\0")
 }
 
-nonisolated extension MLNotificationResponseStatus: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Notification_V1_ResponseStatus: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0RESPONSE_STATUS_UNSPECIFIED\0\u{1}RESPONSE_STATUS_OK\0\u{1}RESPONSE_STATUS_INVALID_REQUEST\0\u{1}RESPONSE_STATUS_PERMISSION_NOT_GRANTED\0\u{1}RESPONSE_STATUS_NO_NOTIFICATION\0\u{1}RESPONSE_STATUS_UNKNOWN_ERROR\0")
 }
 
-nonisolated extension MLNotificationNotificationInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Notification_V1_NotificationInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".NotificationInfo"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}key\0\u{1}title\0\u{1}text\0\u{3}big_text\0\u{3}app_name\0\u{3}package_name\0\u{3}post_time\0\u{1}timestamp\0\u{1}category\0\u{3}is_clearable\0\u{3}sub_text\0\u{3}conversation_title\0\u{3}notification_class\0")
 
@@ -259,7 +259,7 @@ nonisolated extension MLNotificationNotificationInfo: SwiftProtobuf.Message, Swi
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLNotificationNotificationInfo, rhs: MLNotificationNotificationInfo) -> Bool {
+  public static func ==(lhs: Maclink_Notification_V1_NotificationInfo, rhs: Maclink_Notification_V1_NotificationInfo) -> Bool {
     if lhs.key != rhs.key {return false}
     if lhs.title != rhs.title {return false}
     if lhs.text != rhs.text {return false}
@@ -278,7 +278,7 @@ nonisolated extension MLNotificationNotificationInfo: SwiftProtobuf.Message, Swi
   }
 }
 
-nonisolated extension MLNotificationRequestMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Notification_V1_RequestMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RequestMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0\u{1}keys\0\u{3}post_times\0")
 
@@ -309,7 +309,7 @@ nonisolated extension MLNotificationRequestMessage: SwiftProtobuf.Message, Swift
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLNotificationRequestMessage, rhs: MLNotificationRequestMessage) -> Bool {
+  public static func ==(lhs: Maclink_Notification_V1_RequestMessage, rhs: Maclink_Notification_V1_RequestMessage) -> Bool {
     if lhs.type != rhs.type {return false}
     if lhs.keys != rhs.keys {return false}
     if lhs.postTimes != rhs.postTimes {return false}
@@ -318,7 +318,7 @@ nonisolated extension MLNotificationRequestMessage: SwiftProtobuf.Message, Swift
   }
 }
 
-nonisolated extension MLNotificationResponseMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Notification_V1_ResponseMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ResponseMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{1}notifications\0")
 
@@ -345,7 +345,7 @@ nonisolated extension MLNotificationResponseMessage: SwiftProtobuf.Message, Swif
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLNotificationResponseMessage, rhs: MLNotificationResponseMessage) -> Bool {
+  public static func ==(lhs: Maclink_Notification_V1_ResponseMessage, rhs: Maclink_Notification_V1_ResponseMessage) -> Bool {
     if lhs.status != rhs.status {return false}
     if lhs.notifications != rhs.notifications {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

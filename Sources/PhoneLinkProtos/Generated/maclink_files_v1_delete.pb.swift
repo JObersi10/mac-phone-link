@@ -26,7 +26,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated struct MLFilesBatchedDeleteRequest: Sendable {
+public nonisolated struct Maclink_Files_V1_BatchedDeleteRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -40,21 +40,21 @@ public nonisolated struct MLFilesBatchedDeleteRequest: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLFilesBatchedDeleteResponse: Sendable {
+public nonisolated struct Maclink_Files_V1_BatchedDeleteResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   public var targetUri: String = String()
 
-  public var status: MLFilesFilesResponseStatus = .unspecified
+  public var status: Maclink_Files_V1_FilesResponseStatus = .unspecified
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 }
 
-public nonisolated struct MLFilesFilesDeleteRequest: Sendable {
+public nonisolated struct Maclink_Files_V1_FilesDeleteRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -65,25 +65,25 @@ public nonisolated struct MLFilesFilesDeleteRequest: Sendable {
 
   public var isBatch: Bool = false
 
-  public var batchRequests: [MLFilesBatchedDeleteRequest] = []
+  public var batchRequests: [Maclink_Files_V1_BatchedDeleteRequest] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 }
 
-public nonisolated struct MLFilesFilesDeleteResponse: Sendable {
+public nonisolated struct Maclink_Files_V1_FilesDeleteResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var status: MLFilesFilesResponseStatus = .unspecified
+  public var status: Maclink_Files_V1_FilesResponseStatus = .unspecified
 
   public var targetUri: String = String()
 
   public var isBatch: Bool = false
 
-  public var batchResponses: [MLFilesBatchedDeleteResponse] = []
+  public var batchResponses: [Maclink_Files_V1_BatchedDeleteResponse] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -94,7 +94,7 @@ public nonisolated struct MLFilesFilesDeleteResponse: Sendable {
 
 fileprivate nonisolated let _protobuf_package = "maclink.files.v1"
 
-nonisolated extension MLFilesBatchedDeleteRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_BatchedDeleteRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BatchedDeleteRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}target_uri\0\u{3}target_checksum\0")
 
@@ -121,7 +121,7 @@ nonisolated extension MLFilesBatchedDeleteRequest: SwiftProtobuf.Message, SwiftP
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesBatchedDeleteRequest, rhs: MLFilesBatchedDeleteRequest) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_BatchedDeleteRequest, rhs: Maclink_Files_V1_BatchedDeleteRequest) -> Bool {
     if lhs.targetUri != rhs.targetUri {return false}
     if lhs.targetChecksum != rhs.targetChecksum {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -129,7 +129,7 @@ nonisolated extension MLFilesBatchedDeleteRequest: SwiftProtobuf.Message, SwiftP
   }
 }
 
-nonisolated extension MLFilesBatchedDeleteResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_BatchedDeleteResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BatchedDeleteResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}target_uri\0\u{1}status\0")
 
@@ -156,7 +156,7 @@ nonisolated extension MLFilesBatchedDeleteResponse: SwiftProtobuf.Message, Swift
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesBatchedDeleteResponse, rhs: MLFilesBatchedDeleteResponse) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_BatchedDeleteResponse, rhs: Maclink_Files_V1_BatchedDeleteResponse) -> Bool {
     if lhs.targetUri != rhs.targetUri {return false}
     if lhs.status != rhs.status {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -164,7 +164,7 @@ nonisolated extension MLFilesBatchedDeleteResponse: SwiftProtobuf.Message, Swift
   }
 }
 
-nonisolated extension MLFilesFilesDeleteRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_FilesDeleteRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FilesDeleteRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}target_uri\0\u{3}target_checksum\0\u{3}is_batch\0\u{3}batch_requests\0")
 
@@ -199,7 +199,7 @@ nonisolated extension MLFilesFilesDeleteRequest: SwiftProtobuf.Message, SwiftPro
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesFilesDeleteRequest, rhs: MLFilesFilesDeleteRequest) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_FilesDeleteRequest, rhs: Maclink_Files_V1_FilesDeleteRequest) -> Bool {
     if lhs.targetUri != rhs.targetUri {return false}
     if lhs.targetChecksum != rhs.targetChecksum {return false}
     if lhs.isBatch != rhs.isBatch {return false}
@@ -209,7 +209,7 @@ nonisolated extension MLFilesFilesDeleteRequest: SwiftProtobuf.Message, SwiftPro
   }
 }
 
-nonisolated extension MLFilesFilesDeleteResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_FilesDeleteResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FilesDeleteResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{3}target_uri\0\u{3}is_batch\0\u{3}batch_responses\0")
 
@@ -244,7 +244,7 @@ nonisolated extension MLFilesFilesDeleteResponse: SwiftProtobuf.Message, SwiftPr
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesFilesDeleteResponse, rhs: MLFilesFilesDeleteResponse) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_FilesDeleteResponse, rhs: Maclink_Files_V1_FilesDeleteResponse) -> Bool {
     if lhs.status != rhs.status {return false}
     if lhs.targetUri != rhs.targetUri {return false}
     if lhs.isBatch != rhs.isBatch {return false}

@@ -31,7 +31,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated struct MLPlatformMsaepMessage: Sendable {
+public nonisolated struct Maclink_Platform_V1_MsaepMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -57,7 +57,7 @@ public nonisolated struct MLPlatformMsaepMessage: Sendable {
 
 fileprivate nonisolated let _protobuf_package = "maclink.platform.v1"
 
-nonisolated extension MLPlatformMsaepMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Platform_V1_MsaepMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MsaepMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}message_tag\0\u{3}dcg_client_id\0\u{3}message_id\0\u{1}payload\0\u{3}platform_major_version\0\u{3}platform_minor_version\0")
 
@@ -100,7 +100,7 @@ nonisolated extension MLPlatformMsaepMessage: SwiftProtobuf.Message, SwiftProtob
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLPlatformMsaepMessage, rhs: MLPlatformMsaepMessage) -> Bool {
+  public static func ==(lhs: Maclink_Platform_V1_MsaepMessage, rhs: Maclink_Platform_V1_MsaepMessage) -> Bool {
     if lhs.messageTag != rhs.messageTag {return false}
     if lhs.dcgClientID != rhs.dcgClientID {return false}
     if lhs.messageID != rhs.messageID {return false}

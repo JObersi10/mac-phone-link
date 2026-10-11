@@ -26,7 +26,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated enum MLPlatformPlatformCapability: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Platform_V1_PlatformCapability: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case sessionValidation // = 1
@@ -59,7 +59,7 @@ public nonisolated enum MLPlatformPlatformCapability: SwiftProtobuf.Enum, Swift.
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLPlatformPlatformCapability] = [
+  public static let allCases: [Maclink_Platform_V1_PlatformCapability] = [
     .unspecified,
     .sessionValidation,
     .persistentMessageChannel,
@@ -68,24 +68,24 @@ public nonisolated enum MLPlatformPlatformCapability: SwiftProtobuf.Enum, Swift.
 
 }
 
-public nonisolated struct MLPlatformSessionValidationRequest: Sendable {
+public nonisolated struct Maclink_Platform_V1_SessionValidationRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var platformCapabilities: [MLPlatformPlatformCapability] = []
+  public var platformCapabilities: [Maclink_Platform_V1_PlatformCapability] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 }
 
-public nonisolated struct MLPlatformSessionValidationResponse: Sendable {
+public nonisolated struct Maclink_Platform_V1_SessionValidationResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var platformCapabilities: [MLPlatformPlatformCapability] = []
+  public var platformCapabilities: [Maclink_Platform_V1_PlatformCapability] = []
 
   public var persistentMessagingChannelVersion: Int32 = 0
 
@@ -100,11 +100,11 @@ public nonisolated struct MLPlatformSessionValidationResponse: Sendable {
 
 fileprivate nonisolated let _protobuf_package = "maclink.platform.v1"
 
-nonisolated extension MLPlatformPlatformCapability: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Platform_V1_PlatformCapability: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0PLATFORM_CAPABILITY_UNSPECIFIED\0\u{1}PLATFORM_CAPABILITY_SESSION_VALIDATION\0\u{1}PLATFORM_CAPABILITY_PERSISTENT_MESSAGE_CHANNEL\0\u{1}PLATFORM_CAPABILITY_NANO_TRANSPORT_PREFERENCE\0")
 }
 
-nonisolated extension MLPlatformSessionValidationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Platform_V1_SessionValidationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SessionValidationRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}platform_capabilities\0")
 
@@ -127,14 +127,14 @@ nonisolated extension MLPlatformSessionValidationRequest: SwiftProtobuf.Message,
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLPlatformSessionValidationRequest, rhs: MLPlatformSessionValidationRequest) -> Bool {
+  public static func ==(lhs: Maclink_Platform_V1_SessionValidationRequest, rhs: Maclink_Platform_V1_SessionValidationRequest) -> Bool {
     if lhs.platformCapabilities != rhs.platformCapabilities {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-nonisolated extension MLPlatformSessionValidationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Platform_V1_SessionValidationResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SessionValidationResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}platform_capabilities\0\u{3}persistent_messaging_channel_version\0\u{3}nano_transport_preference_version\0")
 
@@ -165,7 +165,7 @@ nonisolated extension MLPlatformSessionValidationResponse: SwiftProtobuf.Message
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLPlatformSessionValidationResponse, rhs: MLPlatformSessionValidationResponse) -> Bool {
+  public static func ==(lhs: Maclink_Platform_V1_SessionValidationResponse, rhs: Maclink_Platform_V1_SessionValidationResponse) -> Bool {
     if lhs.platformCapabilities != rhs.platformCapabilities {return false}
     if lhs.persistentMessagingChannelVersion != rhs.persistentMessagingChannelVersion {return false}
     if lhs.nanoTransportPreferenceVersion != rhs.nanoTransportPreferenceVersion {return false}

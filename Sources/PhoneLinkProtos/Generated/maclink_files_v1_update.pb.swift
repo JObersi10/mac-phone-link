@@ -26,7 +26,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated struct MLFilesCreateFileRequest: Sendable {
+public nonisolated struct Maclink_Files_V1_CreateFileRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -42,7 +42,7 @@ public nonisolated struct MLFilesCreateFileRequest: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLFilesCreateFolderRequest: Sendable {
+public nonisolated struct Maclink_Files_V1_CreateFolderRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -58,7 +58,7 @@ public nonisolated struct MLFilesCreateFolderRequest: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLFilesRenameRequest: Sendable {
+public nonisolated struct Maclink_Files_V1_RenameRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -74,7 +74,7 @@ public nonisolated struct MLFilesRenameRequest: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLFilesMoveFileRequest: Sendable {
+public nonisolated struct Maclink_Files_V1_MoveFileRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -90,7 +90,7 @@ public nonisolated struct MLFilesMoveFileRequest: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLFilesMoveFolderRequest: Sendable {
+public nonisolated struct Maclink_Files_V1_MoveFolderRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -106,49 +106,49 @@ public nonisolated struct MLFilesMoveFolderRequest: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLFilesFilesUpdateRequest: Sendable {
+public nonisolated struct Maclink_Files_V1_FilesUpdateRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var request: MLFilesFilesUpdateRequest.OneOf_Request? = nil
+  public var request: Maclink_Files_V1_FilesUpdateRequest.OneOf_Request? = nil
 
-  public var createFileRequest: MLFilesCreateFileRequest {
+  public var createFileRequest: Maclink_Files_V1_CreateFileRequest {
     get {
       if case .createFileRequest(let v)? = request {return v}
-      return MLFilesCreateFileRequest()
+      return Maclink_Files_V1_CreateFileRequest()
     }
     set {request = .createFileRequest(newValue)}
   }
 
-  public var createFolderRequest: MLFilesCreateFolderRequest {
+  public var createFolderRequest: Maclink_Files_V1_CreateFolderRequest {
     get {
       if case .createFolderRequest(let v)? = request {return v}
-      return MLFilesCreateFolderRequest()
+      return Maclink_Files_V1_CreateFolderRequest()
     }
     set {request = .createFolderRequest(newValue)}
   }
 
-  public var renameRequest: MLFilesRenameRequest {
+  public var renameRequest: Maclink_Files_V1_RenameRequest {
     get {
       if case .renameRequest(let v)? = request {return v}
-      return MLFilesRenameRequest()
+      return Maclink_Files_V1_RenameRequest()
     }
     set {request = .renameRequest(newValue)}
   }
 
-  public var moveFileRequest: MLFilesMoveFileRequest {
+  public var moveFileRequest: Maclink_Files_V1_MoveFileRequest {
     get {
       if case .moveFileRequest(let v)? = request {return v}
-      return MLFilesMoveFileRequest()
+      return Maclink_Files_V1_MoveFileRequest()
     }
     set {request = .moveFileRequest(newValue)}
   }
 
-  public var moveFolderRequest: MLFilesMoveFolderRequest {
+  public var moveFolderRequest: Maclink_Files_V1_MoveFolderRequest {
     get {
       if case .moveFolderRequest(let v)? = request {return v}
-      return MLFilesMoveFolderRequest()
+      return Maclink_Files_V1_MoveFolderRequest()
     }
     set {request = .moveFolderRequest(newValue)}
   }
@@ -156,26 +156,26 @@ public nonisolated struct MLFilesFilesUpdateRequest: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public nonisolated enum OneOf_Request: Equatable, Sendable {
-    case createFileRequest(MLFilesCreateFileRequest)
-    case createFolderRequest(MLFilesCreateFolderRequest)
-    case renameRequest(MLFilesRenameRequest)
-    case moveFileRequest(MLFilesMoveFileRequest)
-    case moveFolderRequest(MLFilesMoveFolderRequest)
+    case createFileRequest(Maclink_Files_V1_CreateFileRequest)
+    case createFolderRequest(Maclink_Files_V1_CreateFolderRequest)
+    case renameRequest(Maclink_Files_V1_RenameRequest)
+    case moveFileRequest(Maclink_Files_V1_MoveFileRequest)
+    case moveFolderRequest(Maclink_Files_V1_MoveFolderRequest)
 
   }
 
   public init() {}
 }
 
-public nonisolated struct MLFilesFilesUpdateResponse: Sendable {
+public nonisolated struct Maclink_Files_V1_FilesUpdateResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var status: MLFilesFilesResponseStatus = .unspecified
+  public var status: Maclink_Files_V1_FilesResponseStatus = .unspecified
 
-  public var targetMetadata: MLFilesFileMetadata {
-    get {_targetMetadata ?? MLFilesFileMetadata()}
+  public var targetMetadata: Maclink_Files_V1_FileMetadata {
+    get {_targetMetadata ?? Maclink_Files_V1_FileMetadata()}
     set {_targetMetadata = newValue}
   }
   /// Returns true if `targetMetadata` has been explicitly set.
@@ -187,14 +187,14 @@ public nonisolated struct MLFilesFilesUpdateResponse: Sendable {
 
   public init() {}
 
-  fileprivate var _targetMetadata: MLFilesFileMetadata? = nil
+  fileprivate var _targetMetadata: Maclink_Files_V1_FileMetadata? = nil
 }
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate nonisolated let _protobuf_package = "maclink.files.v1"
 
-nonisolated extension MLFilesCreateFileRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_CreateFileRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateFileRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}folder_uri\0\u{3}folder_checksum\0\u{3}file_name\0")
 
@@ -225,7 +225,7 @@ nonisolated extension MLFilesCreateFileRequest: SwiftProtobuf.Message, SwiftProt
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesCreateFileRequest, rhs: MLFilesCreateFileRequest) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_CreateFileRequest, rhs: Maclink_Files_V1_CreateFileRequest) -> Bool {
     if lhs.folderUri != rhs.folderUri {return false}
     if lhs.folderChecksum != rhs.folderChecksum {return false}
     if lhs.fileName != rhs.fileName {return false}
@@ -234,7 +234,7 @@ nonisolated extension MLFilesCreateFileRequest: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-nonisolated extension MLFilesCreateFolderRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_CreateFolderRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateFolderRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}folder_uri\0\u{3}folder_checksum\0\u{3}folder_name\0")
 
@@ -265,7 +265,7 @@ nonisolated extension MLFilesCreateFolderRequest: SwiftProtobuf.Message, SwiftPr
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesCreateFolderRequest, rhs: MLFilesCreateFolderRequest) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_CreateFolderRequest, rhs: Maclink_Files_V1_CreateFolderRequest) -> Bool {
     if lhs.folderUri != rhs.folderUri {return false}
     if lhs.folderChecksum != rhs.folderChecksum {return false}
     if lhs.folderName != rhs.folderName {return false}
@@ -274,7 +274,7 @@ nonisolated extension MLFilesCreateFolderRequest: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-nonisolated extension MLFilesRenameRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_RenameRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RenameRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}target_uri\0\u{3}target_checksum\0\u{3}target_path\0")
 
@@ -305,7 +305,7 @@ nonisolated extension MLFilesRenameRequest: SwiftProtobuf.Message, SwiftProtobuf
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesRenameRequest, rhs: MLFilesRenameRequest) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_RenameRequest, rhs: Maclink_Files_V1_RenameRequest) -> Bool {
     if lhs.targetUri != rhs.targetUri {return false}
     if lhs.targetChecksum != rhs.targetChecksum {return false}
     if lhs.targetPath != rhs.targetPath {return false}
@@ -314,7 +314,7 @@ nonisolated extension MLFilesRenameRequest: SwiftProtobuf.Message, SwiftProtobuf
   }
 }
 
-nonisolated extension MLFilesMoveFileRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_MoveFileRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MoveFileRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}src_file_uri\0\u{3}src_file_checksum\0\u{3}target_folder_uri\0")
 
@@ -345,7 +345,7 @@ nonisolated extension MLFilesMoveFileRequest: SwiftProtobuf.Message, SwiftProtob
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesMoveFileRequest, rhs: MLFilesMoveFileRequest) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_MoveFileRequest, rhs: Maclink_Files_V1_MoveFileRequest) -> Bool {
     if lhs.srcFileUri != rhs.srcFileUri {return false}
     if lhs.srcFileChecksum != rhs.srcFileChecksum {return false}
     if lhs.targetFolderUri != rhs.targetFolderUri {return false}
@@ -354,7 +354,7 @@ nonisolated extension MLFilesMoveFileRequest: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-nonisolated extension MLFilesMoveFolderRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_MoveFolderRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".MoveFolderRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}src_folder_uri\0\u{3}src_folder_checksum\0\u{3}target_folder_uri\0")
 
@@ -385,7 +385,7 @@ nonisolated extension MLFilesMoveFolderRequest: SwiftProtobuf.Message, SwiftProt
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesMoveFolderRequest, rhs: MLFilesMoveFolderRequest) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_MoveFolderRequest, rhs: Maclink_Files_V1_MoveFolderRequest) -> Bool {
     if lhs.srcFolderUri != rhs.srcFolderUri {return false}
     if lhs.srcFolderChecksum != rhs.srcFolderChecksum {return false}
     if lhs.targetFolderUri != rhs.targetFolderUri {return false}
@@ -394,7 +394,7 @@ nonisolated extension MLFilesMoveFolderRequest: SwiftProtobuf.Message, SwiftProt
   }
 }
 
-nonisolated extension MLFilesFilesUpdateRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_FilesUpdateRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FilesUpdateRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}create_file_request\0\u{3}create_folder_request\0\u{3}rename_request\0\u{3}move_file_request\0\u{3}move_folder_request\0")
 
@@ -405,7 +405,7 @@ nonisolated extension MLFilesFilesUpdateRequest: SwiftProtobuf.Message, SwiftPro
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try {
-        var v: MLFilesCreateFileRequest?
+        var v: Maclink_Files_V1_CreateFileRequest?
         var hadOneofValue = false
         if let current = self.request {
           hadOneofValue = true
@@ -418,7 +418,7 @@ nonisolated extension MLFilesFilesUpdateRequest: SwiftProtobuf.Message, SwiftPro
         }
       }()
       case 2: try {
-        var v: MLFilesCreateFolderRequest?
+        var v: Maclink_Files_V1_CreateFolderRequest?
         var hadOneofValue = false
         if let current = self.request {
           hadOneofValue = true
@@ -431,7 +431,7 @@ nonisolated extension MLFilesFilesUpdateRequest: SwiftProtobuf.Message, SwiftPro
         }
       }()
       case 3: try {
-        var v: MLFilesRenameRequest?
+        var v: Maclink_Files_V1_RenameRequest?
         var hadOneofValue = false
         if let current = self.request {
           hadOneofValue = true
@@ -444,7 +444,7 @@ nonisolated extension MLFilesFilesUpdateRequest: SwiftProtobuf.Message, SwiftPro
         }
       }()
       case 4: try {
-        var v: MLFilesMoveFileRequest?
+        var v: Maclink_Files_V1_MoveFileRequest?
         var hadOneofValue = false
         if let current = self.request {
           hadOneofValue = true
@@ -457,7 +457,7 @@ nonisolated extension MLFilesFilesUpdateRequest: SwiftProtobuf.Message, SwiftPro
         }
       }()
       case 5: try {
-        var v: MLFilesMoveFolderRequest?
+        var v: Maclink_Files_V1_MoveFolderRequest?
         var hadOneofValue = false
         if let current = self.request {
           hadOneofValue = true
@@ -505,14 +505,14 @@ nonisolated extension MLFilesFilesUpdateRequest: SwiftProtobuf.Message, SwiftPro
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesFilesUpdateRequest, rhs: MLFilesFilesUpdateRequest) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_FilesUpdateRequest, rhs: Maclink_Files_V1_FilesUpdateRequest) -> Bool {
     if lhs.request != rhs.request {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-nonisolated extension MLFilesFilesUpdateResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_FilesUpdateResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FilesUpdateResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{3}target_metadata\0")
 
@@ -543,7 +543,7 @@ nonisolated extension MLFilesFilesUpdateResponse: SwiftProtobuf.Message, SwiftPr
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesFilesUpdateResponse, rhs: MLFilesFilesUpdateResponse) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_FilesUpdateResponse, rhs: Maclink_Files_V1_FilesUpdateResponse) -> Bool {
     if lhs.status != rhs.status {return false}
     if lhs._targetMetadata != rhs._targetMetadata {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

@@ -26,7 +26,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated enum MLFilesFileType: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Files_V1_FileType: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case image // = 1
@@ -71,7 +71,7 @@ public nonisolated enum MLFilesFileType: SwiftProtobuf.Enum, Swift.CaseIterable 
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLFilesFileType] = [
+  public static let allCases: [Maclink_Files_V1_FileType] = [
     .unspecified,
     .image,
     .video,
@@ -84,7 +84,7 @@ public nonisolated enum MLFilesFileType: SwiftProtobuf.Enum, Swift.CaseIterable 
 
 }
 
-public nonisolated struct MLFilesFileMetadata: Sendable {
+public nonisolated struct Maclink_Files_V1_FileMetadata: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -97,7 +97,7 @@ public nonisolated struct MLFilesFileMetadata: Sendable {
 
   public var path: String = String()
 
-  public var fileType: MLFilesFileType = .unspecified
+  public var fileType: Maclink_Files_V1_FileType = .unspecified
 
   public var size: Int64 = 0
 
@@ -135,11 +135,11 @@ public nonisolated struct MLFilesFileMetadata: Sendable {
 
 fileprivate nonisolated let _protobuf_package = "maclink.files.v1"
 
-nonisolated extension MLFilesFileType: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_FileType: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0FILE_TYPE_UNSPECIFIED\0\u{1}FILE_TYPE_IMAGE\0\u{1}FILE_TYPE_VIDEO\0\u{1}FILE_TYPE_AUDIO\0\u{1}FILE_TYPE_DOCUMENT\0\u{1}FILE_TYPE_PLAYLIST\0\u{1}FILE_TYPE_SUBTITLE\0\u{1}FILE_TYPE_NONE\0")
 }
 
-nonisolated extension MLFilesFileMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_FileMetadata: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FileMetadata"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}uri\0\u{1}name\0\u{1}path\0\u{3}file_type\0\u{1}size\0\u{3}created_time\0\u{3}modified_time\0\u{1}checksum\0\u{3}is_directory\0")
 
@@ -202,7 +202,7 @@ nonisolated extension MLFilesFileMetadata: SwiftProtobuf.Message, SwiftProtobuf.
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesFileMetadata, rhs: MLFilesFileMetadata) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_FileMetadata, rhs: Maclink_Files_V1_FileMetadata) -> Bool {
     if lhs.id != rhs.id {return false}
     if lhs.uri != rhs.uri {return false}
     if lhs.name != rhs.name {return false}

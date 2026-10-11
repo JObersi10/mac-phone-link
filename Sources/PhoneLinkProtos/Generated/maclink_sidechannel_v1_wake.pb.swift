@@ -26,7 +26,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated enum MLSideChannelWakeResponseStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Sidechannel_V1_WakeResponseStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case success // = 1
@@ -77,7 +77,7 @@ public nonisolated enum MLSideChannelWakeResponseStatus: SwiftProtobuf.Enum, Swi
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLSideChannelWakeResponseStatus] = [
+  public static let allCases: [Maclink_Sidechannel_V1_WakeResponseStatus] = [
     .unspecified,
     .success,
     .errorOther,
@@ -92,7 +92,7 @@ public nonisolated enum MLSideChannelWakeResponseStatus: SwiftProtobuf.Enum, Swi
 
 }
 
-public nonisolated struct MLSideChannelWakeRequest: Sendable {
+public nonisolated struct Maclink_Sidechannel_V1_WakeRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -102,12 +102,12 @@ public nonisolated struct MLSideChannelWakeRequest: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLSideChannelWakeResponse: Sendable {
+public nonisolated struct Maclink_Sidechannel_V1_WakeResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var status: MLSideChannelWakeResponseStatus = .unspecified
+  public var status: Maclink_Sidechannel_V1_WakeResponseStatus = .unspecified
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -118,11 +118,11 @@ public nonisolated struct MLSideChannelWakeResponse: Sendable {
 
 fileprivate nonisolated let _protobuf_package = "maclink.sidechannel.v1"
 
-nonisolated extension MLSideChannelWakeResponseStatus: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_WakeResponseStatus: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0WAKE_RESPONSE_STATUS_UNSPECIFIED\0\u{1}WAKE_RESPONSE_STATUS_SUCCESS\0\u{1}WAKE_RESPONSE_STATUS_ERROR_OTHER\0\u{1}WAKE_RESPONSE_STATUS_NO_INTERNET\0\u{1}WAKE_RESPONSE_STATUS_NETWORK_ERROR\0\u{1}WAKE_RESPONSE_STATUS_WEB_SERVICE_ERROR\0\u{1}WAKE_RESPONSE_STATUS_WEB_SERVICE_CIRCUIT_BREAKER\0\u{1}WAKE_RESPONSE_STATUS_UNTRUSTED\0\u{1}WAKE_RESPONSE_STATUS_MSA_ISSUE\0\u{1}WAKE_RESPONSE_STATUS_FEATURE_DISABLED\0")
 }
 
-nonisolated extension MLSideChannelWakeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_WakeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WakeRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -135,13 +135,13 @@ nonisolated extension MLSideChannelWakeRequest: SwiftProtobuf.Message, SwiftProt
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLSideChannelWakeRequest, rhs: MLSideChannelWakeRequest) -> Bool {
+  public static func ==(lhs: Maclink_Sidechannel_V1_WakeRequest, rhs: Maclink_Sidechannel_V1_WakeRequest) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-nonisolated extension MLSideChannelWakeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_WakeResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".WakeResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0")
 
@@ -164,7 +164,7 @@ nonisolated extension MLSideChannelWakeResponse: SwiftProtobuf.Message, SwiftPro
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLSideChannelWakeResponse, rhs: MLSideChannelWakeResponse) -> Bool {
+  public static func ==(lhs: Maclink_Sidechannel_V1_WakeResponse, rhs: Maclink_Sidechannel_V1_WakeResponse) -> Bool {
     if lhs.status != rhs.status {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

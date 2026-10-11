@@ -31,7 +31,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated struct MLFilesGetThumbnailRequest: Sendable {
+public nonisolated struct Maclink_Files_V1_GetThumbnailRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -51,12 +51,12 @@ public nonisolated struct MLFilesGetThumbnailRequest: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLFilesPrefetchThumbnailRequest: Sendable {
+public nonisolated struct Maclink_Files_V1_PrefetchThumbnailRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var metadata: [MLFilesFileMetadata] = []
+  public var metadata: [Maclink_Files_V1_FileMetadata] = []
 
   public var requestID: String = String()
 
@@ -69,12 +69,12 @@ public nonisolated struct MLFilesPrefetchThumbnailRequest: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLFilesGetFilesMetadataSyncRequest: Sendable {
+public nonisolated struct Maclink_Files_V1_GetFilesMetadataSyncRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var syncType: MLFilesFilesSyncType = .unspecified
+  public var syncType: Maclink_Files_V1_FilesSyncType = .unspecified
 
   public var seqNum: Int64 {
     get {_seqNum ?? 0}
@@ -132,33 +132,33 @@ public nonisolated struct MLFilesGetFilesMetadataSyncRequest: Sendable {
   fileprivate var _isNoEngagementSync: Bool? = nil
 }
 
-public nonisolated struct MLFilesFilesGetRequest: Sendable {
+public nonisolated struct Maclink_Files_V1_FilesGetRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var request: MLFilesFilesGetRequest.OneOf_Request? = nil
+  public var request: Maclink_Files_V1_FilesGetRequest.OneOf_Request? = nil
 
-  public var thumbnailRequest: MLFilesGetThumbnailRequest {
+  public var thumbnailRequest: Maclink_Files_V1_GetThumbnailRequest {
     get {
       if case .thumbnailRequest(let v)? = request {return v}
-      return MLFilesGetThumbnailRequest()
+      return Maclink_Files_V1_GetThumbnailRequest()
     }
     set {request = .thumbnailRequest(newValue)}
   }
 
-  public var filesMetadataSyncRequest: MLFilesGetFilesMetadataSyncRequest {
+  public var filesMetadataSyncRequest: Maclink_Files_V1_GetFilesMetadataSyncRequest {
     get {
       if case .filesMetadataSyncRequest(let v)? = request {return v}
-      return MLFilesGetFilesMetadataSyncRequest()
+      return Maclink_Files_V1_GetFilesMetadataSyncRequest()
     }
     set {request = .filesMetadataSyncRequest(newValue)}
   }
 
-  public var prefetchThumbnailRequest: MLFilesPrefetchThumbnailRequest {
+  public var prefetchThumbnailRequest: Maclink_Files_V1_PrefetchThumbnailRequest {
     get {
       if case .prefetchThumbnailRequest(let v)? = request {return v}
-      return MLFilesPrefetchThumbnailRequest()
+      return Maclink_Files_V1_PrefetchThumbnailRequest()
     }
     set {request = .prefetchThumbnailRequest(newValue)}
   }
@@ -168,21 +168,21 @@ public nonisolated struct MLFilesFilesGetRequest: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public nonisolated enum OneOf_Request: Equatable, Sendable {
-    case thumbnailRequest(MLFilesGetThumbnailRequest)
-    case filesMetadataSyncRequest(MLFilesGetFilesMetadataSyncRequest)
-    case prefetchThumbnailRequest(MLFilesPrefetchThumbnailRequest)
+    case thumbnailRequest(Maclink_Files_V1_GetThumbnailRequest)
+    case filesMetadataSyncRequest(Maclink_Files_V1_GetFilesMetadataSyncRequest)
+    case prefetchThumbnailRequest(Maclink_Files_V1_PrefetchThumbnailRequest)
 
   }
 
   public init() {}
 }
 
-public nonisolated struct MLFilesFullFileSyncPayload: Sendable {
+public nonisolated struct Maclink_Files_V1_FullFileSyncPayload: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var metadata: [MLFilesFileMetadata] = []
+  public var metadata: [Maclink_Files_V1_FileMetadata] = []
 
   public var endingSequenceNumber: Int64 = 0
 
@@ -203,13 +203,13 @@ public nonisolated struct MLFilesFullFileSyncPayload: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLFilesFileSyncCreate: Sendable {
+public nonisolated struct Maclink_Files_V1_FileSyncCreate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var metadata: MLFilesFileMetadata {
-    get {_metadata ?? MLFilesFileMetadata()}
+  public var metadata: Maclink_Files_V1_FileMetadata {
+    get {_metadata ?? Maclink_Files_V1_FileMetadata()}
     set {_metadata = newValue}
   }
   /// Returns true if `metadata` has been explicitly set.
@@ -221,16 +221,16 @@ public nonisolated struct MLFilesFileSyncCreate: Sendable {
 
   public init() {}
 
-  fileprivate var _metadata: MLFilesFileMetadata? = nil
+  fileprivate var _metadata: Maclink_Files_V1_FileMetadata? = nil
 }
 
-public nonisolated struct MLFilesFileSyncUpdate: Sendable {
+public nonisolated struct Maclink_Files_V1_FileSyncUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var metadata: MLFilesFileMetadata {
-    get {_metadata ?? MLFilesFileMetadata()}
+  public var metadata: Maclink_Files_V1_FileMetadata {
+    get {_metadata ?? Maclink_Files_V1_FileMetadata()}
     set {_metadata = newValue}
   }
   /// Returns true if `metadata` has been explicitly set.
@@ -242,16 +242,16 @@ public nonisolated struct MLFilesFileSyncUpdate: Sendable {
 
   public init() {}
 
-  fileprivate var _metadata: MLFilesFileMetadata? = nil
+  fileprivate var _metadata: Maclink_Files_V1_FileMetadata? = nil
 }
 
-public nonisolated struct MLFilesFileSyncDelete: Sendable {
+public nonisolated struct Maclink_Files_V1_FileSyncDelete: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var metadata: MLFilesFileMetadata {
-    get {_metadata ?? MLFilesFileMetadata()}
+  public var metadata: Maclink_Files_V1_FileMetadata {
+    get {_metadata ?? Maclink_Files_V1_FileMetadata()}
     set {_metadata = newValue}
   }
   /// Returns true if `metadata` has been explicitly set.
@@ -263,36 +263,36 @@ public nonisolated struct MLFilesFileSyncDelete: Sendable {
 
   public init() {}
 
-  fileprivate var _metadata: MLFilesFileMetadata? = nil
+  fileprivate var _metadata: Maclink_Files_V1_FileMetadata? = nil
 }
 
-public nonisolated struct MLFilesIncrementalFileSync: Sendable {
+public nonisolated struct Maclink_Files_V1_IncrementalFileSync: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var operation: MLFilesIncrementalFileSync.OneOf_Operation? = nil
+  public var operation: Maclink_Files_V1_IncrementalFileSync.OneOf_Operation? = nil
 
-  public var create: MLFilesFileSyncCreate {
+  public var create: Maclink_Files_V1_FileSyncCreate {
     get {
       if case .create(let v)? = operation {return v}
-      return MLFilesFileSyncCreate()
+      return Maclink_Files_V1_FileSyncCreate()
     }
     set {operation = .create(newValue)}
   }
 
-  public var update: MLFilesFileSyncUpdate {
+  public var update: Maclink_Files_V1_FileSyncUpdate {
     get {
       if case .update(let v)? = operation {return v}
-      return MLFilesFileSyncUpdate()
+      return Maclink_Files_V1_FileSyncUpdate()
     }
     set {operation = .update(newValue)}
   }
 
-  public var delete: MLFilesFileSyncDelete {
+  public var delete: Maclink_Files_V1_FileSyncDelete {
     get {
       if case .delete(let v)? = operation {return v}
-      return MLFilesFileSyncDelete()
+      return Maclink_Files_V1_FileSyncDelete()
     }
     set {operation = .delete(newValue)}
   }
@@ -300,21 +300,21 @@ public nonisolated struct MLFilesIncrementalFileSync: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public nonisolated enum OneOf_Operation: Equatable, Sendable {
-    case create(MLFilesFileSyncCreate)
-    case update(MLFilesFileSyncUpdate)
-    case delete(MLFilesFileSyncDelete)
+    case create(Maclink_Files_V1_FileSyncCreate)
+    case update(Maclink_Files_V1_FileSyncUpdate)
+    case delete(Maclink_Files_V1_FileSyncDelete)
 
   }
 
   public init() {}
 }
 
-public nonisolated struct MLFilesIncrementalFileSyncPayload: Sendable {
+public nonisolated struct Maclink_Files_V1_IncrementalFileSyncPayload: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var syncOperation: [MLFilesIncrementalFileSync] = []
+  public var syncOperation: [Maclink_Files_V1_IncrementalFileSync] = []
 
   public var startingSequenceNumber: Int64 = 0
 
@@ -325,13 +325,13 @@ public nonisolated struct MLFilesIncrementalFileSyncPayload: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLFilesGetThumbnailResponse: Sendable {
+public nonisolated struct Maclink_Files_V1_GetThumbnailResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var metadata: MLFilesFileMetadata {
-    get {_metadata ?? MLFilesFileMetadata()}
+  public var metadata: Maclink_Files_V1_FileMetadata {
+    get {_metadata ?? Maclink_Files_V1_FileMetadata()}
     set {_metadata = newValue}
   }
   /// Returns true if `metadata` has been explicitly set.
@@ -341,34 +341,34 @@ public nonisolated struct MLFilesGetThumbnailResponse: Sendable {
 
   public var thumbnail: Data = Data()
 
-  public var status: MLFilesFilesResponseStatus = .unspecified
+  public var status: Maclink_Files_V1_FilesResponseStatus = .unspecified
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 
-  fileprivate var _metadata: MLFilesFileMetadata? = nil
+  fileprivate var _metadata: Maclink_Files_V1_FileMetadata? = nil
 }
 
-public nonisolated struct MLFilesGetFilesMetadataSyncResponse: Sendable {
+public nonisolated struct Maclink_Files_V1_GetFilesMetadataSyncResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var payload: MLFilesGetFilesMetadataSyncResponse.OneOf_Payload? = nil
+  public var payload: Maclink_Files_V1_GetFilesMetadataSyncResponse.OneOf_Payload? = nil
 
-  public var fullSync: MLFilesFullFileSyncPayload {
+  public var fullSync: Maclink_Files_V1_FullFileSyncPayload {
     get {
       if case .fullSync(let v)? = payload {return v}
-      return MLFilesFullFileSyncPayload()
+      return Maclink_Files_V1_FullFileSyncPayload()
     }
     set {payload = .fullSync(newValue)}
   }
 
-  public var incrementalSync: MLFilesIncrementalFileSyncPayload {
+  public var incrementalSync: Maclink_Files_V1_IncrementalFileSyncPayload {
     get {
       if case .incrementalSync(let v)? = payload {return v}
-      return MLFilesIncrementalFileSyncPayload()
+      return Maclink_Files_V1_IncrementalFileSyncPayload()
     }
     set {payload = .incrementalSync(newValue)}
   }
@@ -376,55 +376,55 @@ public nonisolated struct MLFilesGetFilesMetadataSyncResponse: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public nonisolated enum OneOf_Payload: Equatable, Sendable {
-    case fullSync(MLFilesFullFileSyncPayload)
-    case incrementalSync(MLFilesIncrementalFileSyncPayload)
+    case fullSync(Maclink_Files_V1_FullFileSyncPayload)
+    case incrementalSync(Maclink_Files_V1_IncrementalFileSyncPayload)
 
   }
 
   public init() {}
 }
 
-public nonisolated struct MLFilesPrefetchThumbnailResponse: Sendable {
+public nonisolated struct Maclink_Files_V1_PrefetchThumbnailResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var thumbnailResponse: [MLFilesGetThumbnailResponse] = []
+  public var thumbnailResponse: [Maclink_Files_V1_GetThumbnailResponse] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 }
 
-public nonisolated struct MLFilesFilesGetResponse: Sendable {
+public nonisolated struct Maclink_Files_V1_FilesGetResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var status: MLFilesFilesResponseStatus = .unspecified
+  public var status: Maclink_Files_V1_FilesResponseStatus = .unspecified
 
-  public var response: MLFilesFilesGetResponse.OneOf_Response? = nil
+  public var response: Maclink_Files_V1_FilesGetResponse.OneOf_Response? = nil
 
-  public var thumbnailResponse: MLFilesGetThumbnailResponse {
+  public var thumbnailResponse: Maclink_Files_V1_GetThumbnailResponse {
     get {
       if case .thumbnailResponse(let v)? = response {return v}
-      return MLFilesGetThumbnailResponse()
+      return Maclink_Files_V1_GetThumbnailResponse()
     }
     set {response = .thumbnailResponse(newValue)}
   }
 
-  public var filesMetadataSyncResponse: MLFilesGetFilesMetadataSyncResponse {
+  public var filesMetadataSyncResponse: Maclink_Files_V1_GetFilesMetadataSyncResponse {
     get {
       if case .filesMetadataSyncResponse(let v)? = response {return v}
-      return MLFilesGetFilesMetadataSyncResponse()
+      return Maclink_Files_V1_GetFilesMetadataSyncResponse()
     }
     set {response = .filesMetadataSyncResponse(newValue)}
   }
 
-  public var prefetchThumbnailResponse: MLFilesPrefetchThumbnailResponse {
+  public var prefetchThumbnailResponse: Maclink_Files_V1_PrefetchThumbnailResponse {
     get {
       if case .prefetchThumbnailResponse(let v)? = response {return v}
-      return MLFilesPrefetchThumbnailResponse()
+      return Maclink_Files_V1_PrefetchThumbnailResponse()
     }
     set {response = .prefetchThumbnailResponse(newValue)}
   }
@@ -434,9 +434,9 @@ public nonisolated struct MLFilesFilesGetResponse: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public nonisolated enum OneOf_Response: Equatable, Sendable {
-    case thumbnailResponse(MLFilesGetThumbnailResponse)
-    case filesMetadataSyncResponse(MLFilesGetFilesMetadataSyncResponse)
-    case prefetchThumbnailResponse(MLFilesPrefetchThumbnailResponse)
+    case thumbnailResponse(Maclink_Files_V1_GetThumbnailResponse)
+    case filesMetadataSyncResponse(Maclink_Files_V1_GetFilesMetadataSyncResponse)
+    case prefetchThumbnailResponse(Maclink_Files_V1_PrefetchThumbnailResponse)
 
   }
 
@@ -447,7 +447,7 @@ public nonisolated struct MLFilesFilesGetResponse: Sendable {
 
 fileprivate nonisolated let _protobuf_package = "maclink.files.v1"
 
-nonisolated extension MLFilesGetThumbnailRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_GetThumbnailRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetThumbnailRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}target_uri\0\u{3}target_checksum\0\u{1}width\0\u{1}height\0\u{3}request_id\0")
 
@@ -486,7 +486,7 @@ nonisolated extension MLFilesGetThumbnailRequest: SwiftProtobuf.Message, SwiftPr
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesGetThumbnailRequest, rhs: MLFilesGetThumbnailRequest) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_GetThumbnailRequest, rhs: Maclink_Files_V1_GetThumbnailRequest) -> Bool {
     if lhs.targetUri != rhs.targetUri {return false}
     if lhs.targetChecksum != rhs.targetChecksum {return false}
     if lhs.width != rhs.width {return false}
@@ -497,7 +497,7 @@ nonisolated extension MLFilesGetThumbnailRequest: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-nonisolated extension MLFilesPrefetchThumbnailRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_PrefetchThumbnailRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".PrefetchThumbnailRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}metadata\0\u{3}request_id\0\u{1}width\0\u{1}height\0")
 
@@ -532,7 +532,7 @@ nonisolated extension MLFilesPrefetchThumbnailRequest: SwiftProtobuf.Message, Sw
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesPrefetchThumbnailRequest, rhs: MLFilesPrefetchThumbnailRequest) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_PrefetchThumbnailRequest, rhs: Maclink_Files_V1_PrefetchThumbnailRequest) -> Bool {
     if lhs.metadata != rhs.metadata {return false}
     if lhs.requestID != rhs.requestID {return false}
     if lhs.width != rhs.width {return false}
@@ -542,7 +542,7 @@ nonisolated extension MLFilesPrefetchThumbnailRequest: SwiftProtobuf.Message, Sw
   }
 }
 
-nonisolated extension MLFilesGetFilesMetadataSyncRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_GetFilesMetadataSyncRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetFilesMetadataSyncRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}sync_type\0\u{3}seq_num\0\u{3}is_user_initiated\0\u{3}supports_batched_response\0\u{3}batch_continuation_token\0\u{3}is_no_engagement_sync\0")
 
@@ -589,7 +589,7 @@ nonisolated extension MLFilesGetFilesMetadataSyncRequest: SwiftProtobuf.Message,
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesGetFilesMetadataSyncRequest, rhs: MLFilesGetFilesMetadataSyncRequest) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_GetFilesMetadataSyncRequest, rhs: Maclink_Files_V1_GetFilesMetadataSyncRequest) -> Bool {
     if lhs.syncType != rhs.syncType {return false}
     if lhs._seqNum != rhs._seqNum {return false}
     if lhs._isUserInitiated != rhs._isUserInitiated {return false}
@@ -601,7 +601,7 @@ nonisolated extension MLFilesGetFilesMetadataSyncRequest: SwiftProtobuf.Message,
   }
 }
 
-nonisolated extension MLFilesFilesGetRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_FilesGetRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FilesGetRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}thumbnail_request\0\u{3}files_metadata_sync_request\0\u{3}prefetch_thumbnail_request\0\u{3}request_id\0")
 
@@ -612,7 +612,7 @@ nonisolated extension MLFilesFilesGetRequest: SwiftProtobuf.Message, SwiftProtob
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try {
-        var v: MLFilesGetThumbnailRequest?
+        var v: Maclink_Files_V1_GetThumbnailRequest?
         var hadOneofValue = false
         if let current = self.request {
           hadOneofValue = true
@@ -625,7 +625,7 @@ nonisolated extension MLFilesFilesGetRequest: SwiftProtobuf.Message, SwiftProtob
         }
       }()
       case 2: try {
-        var v: MLFilesGetFilesMetadataSyncRequest?
+        var v: Maclink_Files_V1_GetFilesMetadataSyncRequest?
         var hadOneofValue = false
         if let current = self.request {
           hadOneofValue = true
@@ -638,7 +638,7 @@ nonisolated extension MLFilesFilesGetRequest: SwiftProtobuf.Message, SwiftProtob
         }
       }()
       case 3: try {
-        var v: MLFilesPrefetchThumbnailRequest?
+        var v: Maclink_Files_V1_PrefetchThumbnailRequest?
         var hadOneofValue = false
         if let current = self.request {
           hadOneofValue = true
@@ -682,7 +682,7 @@ nonisolated extension MLFilesFilesGetRequest: SwiftProtobuf.Message, SwiftProtob
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesFilesGetRequest, rhs: MLFilesFilesGetRequest) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_FilesGetRequest, rhs: Maclink_Files_V1_FilesGetRequest) -> Bool {
     if lhs.request != rhs.request {return false}
     if lhs.requestID != rhs.requestID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -690,7 +690,7 @@ nonisolated extension MLFilesFilesGetRequest: SwiftProtobuf.Message, SwiftProtob
   }
 }
 
-nonisolated extension MLFilesFullFileSyncPayload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_FullFileSyncPayload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FullFileSyncPayload"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}metadata\0\u{3}ending_sequence_number\0\u{3}full_sync_max_capacity_reached\0\u{3}has_more_batches\0\u{3}batch_continuation_token\0\u{3}batch_index\0\u{3}estimated_total_items\0\u{3}provisional_ending_sequence_number\0")
 
@@ -741,7 +741,7 @@ nonisolated extension MLFilesFullFileSyncPayload: SwiftProtobuf.Message, SwiftPr
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesFullFileSyncPayload, rhs: MLFilesFullFileSyncPayload) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_FullFileSyncPayload, rhs: Maclink_Files_V1_FullFileSyncPayload) -> Bool {
     if lhs.metadata != rhs.metadata {return false}
     if lhs.endingSequenceNumber != rhs.endingSequenceNumber {return false}
     if lhs.fullSyncMaxCapacityReached != rhs.fullSyncMaxCapacityReached {return false}
@@ -755,7 +755,7 @@ nonisolated extension MLFilesFullFileSyncPayload: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-nonisolated extension MLFilesFileSyncCreate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_FileSyncCreate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FileSyncCreate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}metadata\0")
 
@@ -782,14 +782,14 @@ nonisolated extension MLFilesFileSyncCreate: SwiftProtobuf.Message, SwiftProtobu
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesFileSyncCreate, rhs: MLFilesFileSyncCreate) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_FileSyncCreate, rhs: Maclink_Files_V1_FileSyncCreate) -> Bool {
     if lhs._metadata != rhs._metadata {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-nonisolated extension MLFilesFileSyncUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_FileSyncUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FileSyncUpdate"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}metadata\0")
 
@@ -816,14 +816,14 @@ nonisolated extension MLFilesFileSyncUpdate: SwiftProtobuf.Message, SwiftProtobu
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesFileSyncUpdate, rhs: MLFilesFileSyncUpdate) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_FileSyncUpdate, rhs: Maclink_Files_V1_FileSyncUpdate) -> Bool {
     if lhs._metadata != rhs._metadata {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-nonisolated extension MLFilesFileSyncDelete: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_FileSyncDelete: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FileSyncDelete"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}metadata\0")
 
@@ -850,14 +850,14 @@ nonisolated extension MLFilesFileSyncDelete: SwiftProtobuf.Message, SwiftProtobu
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesFileSyncDelete, rhs: MLFilesFileSyncDelete) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_FileSyncDelete, rhs: Maclink_Files_V1_FileSyncDelete) -> Bool {
     if lhs._metadata != rhs._metadata {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-nonisolated extension MLFilesIncrementalFileSync: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_IncrementalFileSync: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".IncrementalFileSync"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}create\0\u{1}update\0\u{1}delete\0")
 
@@ -868,7 +868,7 @@ nonisolated extension MLFilesIncrementalFileSync: SwiftProtobuf.Message, SwiftPr
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try {
-        var v: MLFilesFileSyncCreate?
+        var v: Maclink_Files_V1_FileSyncCreate?
         var hadOneofValue = false
         if let current = self.operation {
           hadOneofValue = true
@@ -881,7 +881,7 @@ nonisolated extension MLFilesIncrementalFileSync: SwiftProtobuf.Message, SwiftPr
         }
       }()
       case 2: try {
-        var v: MLFilesFileSyncUpdate?
+        var v: Maclink_Files_V1_FileSyncUpdate?
         var hadOneofValue = false
         if let current = self.operation {
           hadOneofValue = true
@@ -894,7 +894,7 @@ nonisolated extension MLFilesIncrementalFileSync: SwiftProtobuf.Message, SwiftPr
         }
       }()
       case 3: try {
-        var v: MLFilesFileSyncDelete?
+        var v: Maclink_Files_V1_FileSyncDelete?
         var hadOneofValue = false
         if let current = self.operation {
           hadOneofValue = true
@@ -934,14 +934,14 @@ nonisolated extension MLFilesIncrementalFileSync: SwiftProtobuf.Message, SwiftPr
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesIncrementalFileSync, rhs: MLFilesIncrementalFileSync) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_IncrementalFileSync, rhs: Maclink_Files_V1_IncrementalFileSync) -> Bool {
     if lhs.operation != rhs.operation {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-nonisolated extension MLFilesIncrementalFileSyncPayload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_IncrementalFileSyncPayload: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".IncrementalFileSyncPayload"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}sync_operation\0\u{3}starting_sequence_number\0\u{3}ending_sequence_number\0")
 
@@ -972,7 +972,7 @@ nonisolated extension MLFilesIncrementalFileSyncPayload: SwiftProtobuf.Message, 
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesIncrementalFileSyncPayload, rhs: MLFilesIncrementalFileSyncPayload) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_IncrementalFileSyncPayload, rhs: Maclink_Files_V1_IncrementalFileSyncPayload) -> Bool {
     if lhs.syncOperation != rhs.syncOperation {return false}
     if lhs.startingSequenceNumber != rhs.startingSequenceNumber {return false}
     if lhs.endingSequenceNumber != rhs.endingSequenceNumber {return false}
@@ -981,7 +981,7 @@ nonisolated extension MLFilesIncrementalFileSyncPayload: SwiftProtobuf.Message, 
   }
 }
 
-nonisolated extension MLFilesGetThumbnailResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_GetThumbnailResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetThumbnailResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}metadata\0\u{1}thumbnail\0\u{1}status\0")
 
@@ -1016,7 +1016,7 @@ nonisolated extension MLFilesGetThumbnailResponse: SwiftProtobuf.Message, SwiftP
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesGetThumbnailResponse, rhs: MLFilesGetThumbnailResponse) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_GetThumbnailResponse, rhs: Maclink_Files_V1_GetThumbnailResponse) -> Bool {
     if lhs._metadata != rhs._metadata {return false}
     if lhs.thumbnail != rhs.thumbnail {return false}
     if lhs.status != rhs.status {return false}
@@ -1025,7 +1025,7 @@ nonisolated extension MLFilesGetThumbnailResponse: SwiftProtobuf.Message, SwiftP
   }
 }
 
-nonisolated extension MLFilesGetFilesMetadataSyncResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_GetFilesMetadataSyncResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetFilesMetadataSyncResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}full_sync\0\u{3}incremental_sync\0")
 
@@ -1036,7 +1036,7 @@ nonisolated extension MLFilesGetFilesMetadataSyncResponse: SwiftProtobuf.Message
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try {
-        var v: MLFilesFullFileSyncPayload?
+        var v: Maclink_Files_V1_FullFileSyncPayload?
         var hadOneofValue = false
         if let current = self.payload {
           hadOneofValue = true
@@ -1049,7 +1049,7 @@ nonisolated extension MLFilesGetFilesMetadataSyncResponse: SwiftProtobuf.Message
         }
       }()
       case 2: try {
-        var v: MLFilesIncrementalFileSyncPayload?
+        var v: Maclink_Files_V1_IncrementalFileSyncPayload?
         var hadOneofValue = false
         if let current = self.payload {
           hadOneofValue = true
@@ -1085,14 +1085,14 @@ nonisolated extension MLFilesGetFilesMetadataSyncResponse: SwiftProtobuf.Message
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesGetFilesMetadataSyncResponse, rhs: MLFilesGetFilesMetadataSyncResponse) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_GetFilesMetadataSyncResponse, rhs: Maclink_Files_V1_GetFilesMetadataSyncResponse) -> Bool {
     if lhs.payload != rhs.payload {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-nonisolated extension MLFilesPrefetchThumbnailResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_PrefetchThumbnailResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".PrefetchThumbnailResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}thumbnail_response\0")
 
@@ -1115,14 +1115,14 @@ nonisolated extension MLFilesPrefetchThumbnailResponse: SwiftProtobuf.Message, S
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesPrefetchThumbnailResponse, rhs: MLFilesPrefetchThumbnailResponse) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_PrefetchThumbnailResponse, rhs: Maclink_Files_V1_PrefetchThumbnailResponse) -> Bool {
     if lhs.thumbnailResponse != rhs.thumbnailResponse {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-nonisolated extension MLFilesFilesGetResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_FilesGetResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FilesGetResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{3}thumbnail_response\0\u{3}files_metadata_sync_response\0\u{3}prefetch_thumbnail_response\0\u{3}request_id\0")
 
@@ -1134,7 +1134,7 @@ nonisolated extension MLFilesFilesGetResponse: SwiftProtobuf.Message, SwiftProto
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularEnumField(value: &self.status) }()
       case 2: try {
-        var v: MLFilesGetThumbnailResponse?
+        var v: Maclink_Files_V1_GetThumbnailResponse?
         var hadOneofValue = false
         if let current = self.response {
           hadOneofValue = true
@@ -1147,7 +1147,7 @@ nonisolated extension MLFilesFilesGetResponse: SwiftProtobuf.Message, SwiftProto
         }
       }()
       case 3: try {
-        var v: MLFilesGetFilesMetadataSyncResponse?
+        var v: Maclink_Files_V1_GetFilesMetadataSyncResponse?
         var hadOneofValue = false
         if let current = self.response {
           hadOneofValue = true
@@ -1160,7 +1160,7 @@ nonisolated extension MLFilesFilesGetResponse: SwiftProtobuf.Message, SwiftProto
         }
       }()
       case 4: try {
-        var v: MLFilesPrefetchThumbnailResponse?
+        var v: Maclink_Files_V1_PrefetchThumbnailResponse?
         var hadOneofValue = false
         if let current = self.response {
           hadOneofValue = true
@@ -1207,7 +1207,7 @@ nonisolated extension MLFilesFilesGetResponse: SwiftProtobuf.Message, SwiftProto
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesFilesGetResponse, rhs: MLFilesFilesGetResponse) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_FilesGetResponse, rhs: Maclink_Files_V1_FilesGetResponse) -> Bool {
     if lhs.status != rhs.status {return false}
     if lhs.response != rhs.response {return false}
     if lhs.requestID != rhs.requestID {return false}

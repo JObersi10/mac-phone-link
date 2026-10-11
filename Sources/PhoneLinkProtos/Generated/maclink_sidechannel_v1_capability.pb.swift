@@ -26,7 +26,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated enum MLSideChannelCapability: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Sidechannel_V1_Capability: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case wake // = 1
@@ -59,7 +59,7 @@ public nonisolated enum MLSideChannelCapability: SwiftProtobuf.Enum, Swift.CaseI
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLSideChannelCapability] = [
+  public static let allCases: [Maclink_Sidechannel_V1_Capability] = [
     .unspecified,
     .wake,
     .hotspot,
@@ -68,7 +68,7 @@ public nonisolated enum MLSideChannelCapability: SwiftProtobuf.Enum, Swift.CaseI
 
 }
 
-public nonisolated struct MLSideChannelCapabilityRequest: Sendable {
+public nonisolated struct Maclink_Sidechannel_V1_CapabilityRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -78,12 +78,12 @@ public nonisolated struct MLSideChannelCapabilityRequest: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLSideChannelCapabilityResponse: Sendable {
+public nonisolated struct Maclink_Sidechannel_V1_CapabilityResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var capabilities: [MLSideChannelCapability] = []
+  public var capabilities: [Maclink_Sidechannel_V1_Capability] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -94,11 +94,11 @@ public nonisolated struct MLSideChannelCapabilityResponse: Sendable {
 
 fileprivate nonisolated let _protobuf_package = "maclink.sidechannel.v1"
 
-nonisolated extension MLSideChannelCapability: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_Capability: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0CAPABILITY_UNSPECIFIED\0\u{1}CAPABILITY_WAKE\0\u{1}CAPABILITY_HOTSPOT\0\u{1}CAPABILITY_ENCRYPTED_HOTSPOT\0")
 }
 
-nonisolated extension MLSideChannelCapabilityRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_CapabilityRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CapabilityRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -111,13 +111,13 @@ nonisolated extension MLSideChannelCapabilityRequest: SwiftProtobuf.Message, Swi
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLSideChannelCapabilityRequest, rhs: MLSideChannelCapabilityRequest) -> Bool {
+  public static func ==(lhs: Maclink_Sidechannel_V1_CapabilityRequest, rhs: Maclink_Sidechannel_V1_CapabilityRequest) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-nonisolated extension MLSideChannelCapabilityResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_CapabilityResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CapabilityResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}capabilities\0")
 
@@ -140,7 +140,7 @@ nonisolated extension MLSideChannelCapabilityResponse: SwiftProtobuf.Message, Sw
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLSideChannelCapabilityResponse, rhs: MLSideChannelCapabilityResponse) -> Bool {
+  public static func ==(lhs: Maclink_Sidechannel_V1_CapabilityResponse, rhs: Maclink_Sidechannel_V1_CapabilityResponse) -> Bool {
     if lhs.capabilities != rhs.capabilities {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

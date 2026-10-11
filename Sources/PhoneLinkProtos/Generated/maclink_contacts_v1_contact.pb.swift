@@ -26,7 +26,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated enum MLContactsContactResponseStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Contacts_V1_ContactResponseStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case ok // = 1
@@ -65,7 +65,7 @@ public nonisolated enum MLContactsContactResponseStatus: SwiftProtobuf.Enum, Swi
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLContactsContactResponseStatus] = [
+  public static let allCases: [Maclink_Contacts_V1_ContactResponseStatus] = [
     .unspecified,
     .ok,
     .invalidRequest,
@@ -76,7 +76,7 @@ public nonisolated enum MLContactsContactResponseStatus: SwiftProtobuf.Enum, Swi
 
 }
 
-public nonisolated struct MLContactsContactSearchRequestMessage: Sendable {
+public nonisolated struct Maclink_Contacts_V1_ContactSearchRequestMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -98,7 +98,7 @@ public nonisolated struct MLContactsContactSearchRequestMessage: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLContactsContactPhoneNumber: Sendable {
+public nonisolated struct Maclink_Contacts_V1_ContactPhoneNumber: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -120,7 +120,7 @@ public nonisolated struct MLContactsContactPhoneNumber: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLContactsContactItem: Sendable {
+public nonisolated struct Maclink_Contacts_V1_ContactItem: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -141,21 +141,21 @@ public nonisolated struct MLContactsContactItem: Sendable {
 
   public var lastModifiedDateTime: String = String()
 
-  public var phoneNumbers: [MLContactsContactPhoneNumber] = []
+  public var phoneNumbers: [Maclink_Contacts_V1_ContactPhoneNumber] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 }
 
-public nonisolated struct MLContactsContactSearchResponseMessage: Sendable {
+public nonisolated struct Maclink_Contacts_V1_ContactSearchResponseMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var status: MLContactsContactResponseStatus = .unspecified
+  public var status: Maclink_Contacts_V1_ContactResponseStatus = .unspecified
 
-  public var contacts: [MLContactsContactItem] = []
+  public var contacts: [Maclink_Contacts_V1_ContactItem] = []
 
   public var hasMore_p: Bool = false
 
@@ -170,11 +170,11 @@ public nonisolated struct MLContactsContactSearchResponseMessage: Sendable {
 
 fileprivate nonisolated let _protobuf_package = "maclink.contacts.v1"
 
-nonisolated extension MLContactsContactResponseStatus: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Contacts_V1_ContactResponseStatus: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0CONTACT_RESPONSE_STATUS_UNSPECIFIED\0\u{1}CONTACT_RESPONSE_STATUS_OK\0\u{1}CONTACT_RESPONSE_STATUS_INVALID_REQUEST\0\u{1}CONTACT_RESPONSE_STATUS_PERMISSION_NOT_GRANTED\0\u{1}CONTACT_RESPONSE_STATUS_NO_CONTACT\0\u{1}CONTACT_RESPONSE_STATUS_UNKNOWN_ERROR\0")
 }
 
-nonisolated extension MLContactsContactSearchRequestMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Contacts_V1_ContactSearchRequestMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ContactSearchRequestMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}query\0\u{3}max_results\0\u{3}last_contact_id\0\u{3}allow_fuzzy\0\u{3}start_date\0\u{3}end_date\0")
 
@@ -217,7 +217,7 @@ nonisolated extension MLContactsContactSearchRequestMessage: SwiftProtobuf.Messa
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLContactsContactSearchRequestMessage, rhs: MLContactsContactSearchRequestMessage) -> Bool {
+  public static func ==(lhs: Maclink_Contacts_V1_ContactSearchRequestMessage, rhs: Maclink_Contacts_V1_ContactSearchRequestMessage) -> Bool {
     if lhs.query != rhs.query {return false}
     if lhs.maxResults != rhs.maxResults {return false}
     if lhs.lastContactID != rhs.lastContactID {return false}
@@ -229,7 +229,7 @@ nonisolated extension MLContactsContactSearchRequestMessage: SwiftProtobuf.Messa
   }
 }
 
-nonisolated extension MLContactsContactPhoneNumber: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Contacts_V1_ContactPhoneNumber: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ContactPhoneNumber"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}type\0\u{1}value\0\u{3}display_value\0\u{1}label\0\u{1}description\0")
 
@@ -272,7 +272,7 @@ nonisolated extension MLContactsContactPhoneNumber: SwiftProtobuf.Message, Swift
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLContactsContactPhoneNumber, rhs: MLContactsContactPhoneNumber) -> Bool {
+  public static func ==(lhs: Maclink_Contacts_V1_ContactPhoneNumber, rhs: Maclink_Contacts_V1_ContactPhoneNumber) -> Bool {
     if lhs.id != rhs.id {return false}
     if lhs.type != rhs.type {return false}
     if lhs.value != rhs.value {return false}
@@ -284,7 +284,7 @@ nonisolated extension MLContactsContactPhoneNumber: SwiftProtobuf.Message, Swift
   }
 }
 
-nonisolated extension MLContactsContactItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Contacts_V1_ContactItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ContactItem"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{3}display_name\0\u{3}first_name\0\u{3}last_name\0\u{3}nick_name\0\u{1}company\0\u{1}address\0\u{3}last_modified_date_time\0\u{3}phone_numbers\0")
 
@@ -339,7 +339,7 @@ nonisolated extension MLContactsContactItem: SwiftProtobuf.Message, SwiftProtobu
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLContactsContactItem, rhs: MLContactsContactItem) -> Bool {
+  public static func ==(lhs: Maclink_Contacts_V1_ContactItem, rhs: Maclink_Contacts_V1_ContactItem) -> Bool {
     if lhs.id != rhs.id {return false}
     if lhs.displayName != rhs.displayName {return false}
     if lhs.firstName != rhs.firstName {return false}
@@ -354,7 +354,7 @@ nonisolated extension MLContactsContactItem: SwiftProtobuf.Message, SwiftProtobu
   }
 }
 
-nonisolated extension MLContactsContactSearchResponseMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Contacts_V1_ContactSearchResponseMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ContactSearchResponseMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{1}contacts\0\u{3}has_more\0\u{3}error_detail\0")
 
@@ -389,7 +389,7 @@ nonisolated extension MLContactsContactSearchResponseMessage: SwiftProtobuf.Mess
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLContactsContactSearchResponseMessage, rhs: MLContactsContactSearchResponseMessage) -> Bool {
+  public static func ==(lhs: Maclink_Contacts_V1_ContactSearchResponseMessage, rhs: Maclink_Contacts_V1_ContactSearchResponseMessage) -> Bool {
     if lhs.status != rhs.status {return false}
     if lhs.contacts != rhs.contacts {return false}
     if lhs.hasMore_p != rhs.hasMore_p {return false}

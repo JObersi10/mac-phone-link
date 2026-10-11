@@ -1,0 +1,26 @@
+// Clean-room interoperability schema for the mac-phone-link project.
+// Independently authored from observed wire behavior; no vendor source text,
+// headers, or comments are reproduced. Field numbers and types reflect the
+// on-the-wire protobuf layout (interface facts) required for compatibility.
+// SPDX-License-Identifier: MIT
+syntax = "proto3";
+package maclink.platform.v1;
+
+import "maclink/platform/v1/dcg_base_message.proto";
+
+enum TransportMessageType {
+  TRANSPORT_MESSAGE_TYPE_UNSPECIFIED = 0;
+  TRANSPORT_MESSAGE_TYPE_APP = 1;
+  TRANSPORT_MESSAGE_TYPE_PLATFORM = 2;
+}
+
+message DcgFragmentMessage {
+  DcgBaseMessage base = 1;
+  int32 sequence_number = 2;
+  int32 message_id = 3;
+  int32 fragment_id = 4;
+  int32 fragment_count = 5;
+  TransportMessageType message_type = 6;
+  string handler_type = 7;
+  bytes raw = 8;
+}

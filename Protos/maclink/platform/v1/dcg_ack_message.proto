@@ -1,0 +1,18 @@
+// Clean-room interoperability schema for the mac-phone-link project.
+// Independently authored from observed wire behavior; no vendor source text,
+// headers, or comments are reproduced. Field numbers and types reflect the
+// on-the-wire protobuf layout (interface facts) required for compatibility.
+// SPDX-License-Identifier: MIT
+syntax = "proto3";
+package maclink.platform.v1;
+
+import "maclink/platform/v1/dcg_base_message.proto";
+
+message DcgAckMessage {
+  DcgBaseMessage base = 1;
+  int32 sequence_number = 2;
+  bool success = 3;
+  int32 error_no = 4;
+  string handler_type = 5;
+  optional string error_message = 6;
+}

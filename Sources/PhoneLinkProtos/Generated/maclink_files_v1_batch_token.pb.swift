@@ -26,7 +26,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated struct MLFilesBatchedSyncContinuationToken: Sendable {
+public nonisolated struct Maclink_Files_V1_BatchedSyncContinuationToken: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -56,7 +56,7 @@ public nonisolated struct MLFilesBatchedSyncContinuationToken: Sendable {
 
 fileprivate nonisolated let _protobuf_package = "maclink.files.v1"
 
-nonisolated extension MLFilesBatchedSyncContinuationToken: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_BatchedSyncContinuationToken: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".BatchedSyncContinuationToken"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}version\0\u{1}volume\0\u{3}snapshot_seq_no\0\u{3}max_id_at_start\0\u{3}last_id\0\u{3}next_batch_index\0\u{3}estimated_total_items\0\u{3}session_id\0")
 
@@ -107,7 +107,7 @@ nonisolated extension MLFilesBatchedSyncContinuationToken: SwiftProtobuf.Message
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesBatchedSyncContinuationToken, rhs: MLFilesBatchedSyncContinuationToken) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_BatchedSyncContinuationToken, rhs: Maclink_Files_V1_BatchedSyncContinuationToken) -> Bool {
     if lhs.version != rhs.version {return false}
     if lhs.volume != rhs.volume {return false}
     if lhs.snapshotSeqNo != rhs.snapshotSeqNo {return false}

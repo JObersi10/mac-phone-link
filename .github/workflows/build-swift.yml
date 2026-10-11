@@ -47,5 +47,8 @@ jobs:
       - name: Build Swift package
         run: swift build -v
 
+      - name: Run tests (round-trip serialization + DCG framing)
+        run: swift test -v
+
       - name: Run proto-check
         run: swift run proto-check

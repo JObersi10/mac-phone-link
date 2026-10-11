@@ -26,7 +26,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated struct MLSideChannelTraceContext: Sendable {
+public nonisolated struct Maclink_Sidechannel_V1_TraceContext: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -48,7 +48,7 @@ public nonisolated struct MLSideChannelTraceContext: Sendable {
 
 fileprivate nonisolated let _protobuf_package = "maclink.sidechannel.v1"
 
-nonisolated extension MLSideChannelTraceContext: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_TraceContext: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".TraceContext"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}trace_id\0\u{3}parent_id\0\u{3}correlation_id\0\u{3}trace_state\0")
 
@@ -83,7 +83,7 @@ nonisolated extension MLSideChannelTraceContext: SwiftProtobuf.Message, SwiftPro
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLSideChannelTraceContext, rhs: MLSideChannelTraceContext) -> Bool {
+  public static func ==(lhs: Maclink_Sidechannel_V1_TraceContext, rhs: Maclink_Sidechannel_V1_TraceContext) -> Bool {
     if lhs.traceID != rhs.traceID {return false}
     if lhs.parentID != rhs.parentID {return false}
     if lhs.correlationID != rhs.correlationID {return false}

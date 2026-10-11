@@ -26,7 +26,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated enum MLFilesFilesSyncType: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Files_V1_FilesSyncType: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case fullSync // = 1
@@ -56,7 +56,7 @@ public nonisolated enum MLFilesFilesSyncType: SwiftProtobuf.Enum, Swift.CaseIter
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLFilesFilesSyncType] = [
+  public static let allCases: [Maclink_Files_V1_FilesSyncType] = [
     .unspecified,
     .fullSync,
     .incrementalSync,
@@ -64,7 +64,7 @@ public nonisolated enum MLFilesFilesSyncType: SwiftProtobuf.Enum, Swift.CaseIter
 
 }
 
-public nonisolated struct MLFilesFilesConfigurationSyncRequest: Sendable {
+public nonisolated struct Maclink_Files_V1_FilesConfigurationSyncRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -74,17 +74,17 @@ public nonisolated struct MLFilesFilesConfigurationSyncRequest: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLFilesFilesSyncRequest: Sendable {
+public nonisolated struct Maclink_Files_V1_FilesSyncRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var request: MLFilesFilesSyncRequest.OneOf_Request? = nil
+  public var request: Maclink_Files_V1_FilesSyncRequest.OneOf_Request? = nil
 
-  public var configSyncRequest: MLFilesFilesConfigurationSyncRequest {
+  public var configSyncRequest: Maclink_Files_V1_FilesConfigurationSyncRequest {
     get {
       if case .configSyncRequest(let v)? = request {return v}
-      return MLFilesFilesConfigurationSyncRequest()
+      return Maclink_Files_V1_FilesConfigurationSyncRequest()
     }
     set {request = .configSyncRequest(newValue)}
   }
@@ -92,19 +92,19 @@ public nonisolated struct MLFilesFilesSyncRequest: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public nonisolated enum OneOf_Request: Equatable, Sendable {
-    case configSyncRequest(MLFilesFilesConfigurationSyncRequest)
+    case configSyncRequest(Maclink_Files_V1_FilesConfigurationSyncRequest)
 
   }
 
   public init() {}
 }
 
-public nonisolated struct MLFilesFilesSyncResponse: Sendable {
+public nonisolated struct Maclink_Files_V1_FilesSyncResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var status: MLFilesFilesResponseStatus = .unspecified
+  public var status: Maclink_Files_V1_FilesResponseStatus = .unspecified
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -115,11 +115,11 @@ public nonisolated struct MLFilesFilesSyncResponse: Sendable {
 
 fileprivate nonisolated let _protobuf_package = "maclink.files.v1"
 
-nonisolated extension MLFilesFilesSyncType: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_FilesSyncType: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0FILES_SYNC_TYPE_UNSPECIFIED\0\u{1}FILES_SYNC_TYPE_FULL_SYNC\0\u{1}FILES_SYNC_TYPE_INCREMENTAL_SYNC\0")
 }
 
-nonisolated extension MLFilesFilesConfigurationSyncRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_FilesConfigurationSyncRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FilesConfigurationSyncRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
 
@@ -132,13 +132,13 @@ nonisolated extension MLFilesFilesConfigurationSyncRequest: SwiftProtobuf.Messag
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesFilesConfigurationSyncRequest, rhs: MLFilesFilesConfigurationSyncRequest) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_FilesConfigurationSyncRequest, rhs: Maclink_Files_V1_FilesConfigurationSyncRequest) -> Bool {
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-nonisolated extension MLFilesFilesSyncRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_FilesSyncRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FilesSyncRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}config_sync_request\0")
 
@@ -149,7 +149,7 @@ nonisolated extension MLFilesFilesSyncRequest: SwiftProtobuf.Message, SwiftProto
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try {
-        var v: MLFilesFilesConfigurationSyncRequest?
+        var v: Maclink_Files_V1_FilesConfigurationSyncRequest?
         var hadOneofValue = false
         if let current = self.request {
           hadOneofValue = true
@@ -177,14 +177,14 @@ nonisolated extension MLFilesFilesSyncRequest: SwiftProtobuf.Message, SwiftProto
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesFilesSyncRequest, rhs: MLFilesFilesSyncRequest) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_FilesSyncRequest, rhs: Maclink_Files_V1_FilesSyncRequest) -> Bool {
     if lhs.request != rhs.request {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-nonisolated extension MLFilesFilesSyncResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_FilesSyncResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FilesSyncResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0")
 
@@ -207,7 +207,7 @@ nonisolated extension MLFilesFilesSyncResponse: SwiftProtobuf.Message, SwiftProt
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesFilesSyncResponse, rhs: MLFilesFilesSyncResponse) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_FilesSyncResponse, rhs: Maclink_Files_V1_FilesSyncResponse) -> Bool {
     if lhs.status != rhs.status {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

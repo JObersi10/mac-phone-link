@@ -26,7 +26,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated enum MLFilesStreamMessageStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Files_V1_StreamMessageStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case success // = 1
@@ -59,7 +59,7 @@ public nonisolated enum MLFilesStreamMessageStatus: SwiftProtobuf.Enum, Swift.Ca
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLFilesStreamMessageStatus] = [
+  public static let allCases: [Maclink_Files_V1_StreamMessageStatus] = [
     .unspecified,
     .success,
     .errorFileNotFound,
@@ -68,14 +68,14 @@ public nonisolated enum MLFilesStreamMessageStatus: SwiftProtobuf.Enum, Swift.Ca
 
 }
 
-public nonisolated struct MLFilesFilesStreamsMessage: Sendable {
+public nonisolated struct Maclink_Files_V1_FilesStreamsMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   public var fileUri: String = String()
 
-  public var streamMessageStatus: MLFilesStreamMessageStatus = .unspecified
+  public var streamMessageStatus: Maclink_Files_V1_StreamMessageStatus = .unspecified
 
   public var content: String = String()
 
@@ -88,11 +88,11 @@ public nonisolated struct MLFilesFilesStreamsMessage: Sendable {
 
 fileprivate nonisolated let _protobuf_package = "maclink.files.v1"
 
-nonisolated extension MLFilesStreamMessageStatus: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_StreamMessageStatus: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0STREAM_MESSAGE_STATUS_UNSPECIFIED\0\u{1}STREAM_MESSAGE_STATUS_SUCCESS\0\u{1}STREAM_MESSAGE_STATUS_ERROR_FILE_NOT_FOUND\0\u{1}STREAM_MESSAGE_STATUS_ERROR_GENERIC\0")
 }
 
-nonisolated extension MLFilesFilesStreamsMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Files_V1_FilesStreamsMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".FilesStreamsMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}file_uri\0\u{3}stream_message_status\0\u{1}content\0")
 
@@ -123,7 +123,7 @@ nonisolated extension MLFilesFilesStreamsMessage: SwiftProtobuf.Message, SwiftPr
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLFilesFilesStreamsMessage, rhs: MLFilesFilesStreamsMessage) -> Bool {
+  public static func ==(lhs: Maclink_Files_V1_FilesStreamsMessage, rhs: Maclink_Files_V1_FilesStreamsMessage) -> Bool {
     if lhs.fileUri != rhs.fileUri {return false}
     if lhs.streamMessageStatus != rhs.streamMessageStatus {return false}
     if lhs.content != rhs.content {return false}

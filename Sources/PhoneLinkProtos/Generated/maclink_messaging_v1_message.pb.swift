@@ -31,7 +31,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated enum MLMessagingSendMessageResponseStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Messaging_V1_SendMessageResponseStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case ok // = 1
@@ -88,7 +88,7 @@ public nonisolated enum MLMessagingSendMessageResponseStatus: SwiftProtobuf.Enum
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLMessagingSendMessageResponseStatus] = [
+  public static let allCases: [Maclink_Messaging_V1_SendMessageResponseStatus] = [
     .unspecified,
     .ok,
     .invalidRequest,
@@ -105,7 +105,7 @@ public nonisolated enum MLMessagingSendMessageResponseStatus: SwiftProtobuf.Enum
 
 }
 
-public nonisolated struct MLMessagingSendMessageAttachment: Sendable {
+public nonisolated struct Maclink_Messaging_V1_SendMessageAttachment: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -123,7 +123,7 @@ public nonisolated struct MLMessagingSendMessageAttachment: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLMessagingSendMessageRequestMessage: Sendable {
+public nonisolated struct Maclink_Messaging_V1_SendMessageRequestMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -136,19 +136,19 @@ public nonisolated struct MLMessagingSendMessageRequestMessage: Sendable {
 
   public var threadID: Int64 = 0
 
-  public var attachments: [MLMessagingSendMessageAttachment] = []
+  public var attachments: [Maclink_Messaging_V1_SendMessageAttachment] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 }
 
-public nonisolated struct MLMessagingSendMessageResponseMessage: Sendable {
+public nonisolated struct Maclink_Messaging_V1_SendMessageResponseMessage: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var status: MLMessagingSendMessageResponseStatus = .unspecified
+  public var status: Maclink_Messaging_V1_SendMessageResponseStatus = .unspecified
 
   public var messageID: String = String()
 
@@ -163,11 +163,11 @@ public nonisolated struct MLMessagingSendMessageResponseMessage: Sendable {
 
 fileprivate nonisolated let _protobuf_package = "maclink.messaging.v1"
 
-nonisolated extension MLMessagingSendMessageResponseStatus: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Messaging_V1_SendMessageResponseStatus: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0SEND_MESSAGE_RESPONSE_STATUS_UNSPECIFIED\0\u{1}SEND_MESSAGE_RESPONSE_STATUS_OK\0\u{1}SEND_MESSAGE_RESPONSE_STATUS_INVALID_REQUEST\0\u{1}SEND_MESSAGE_RESPONSE_STATUS_PERMISSION_NOT_GRANTED\0\u{1}SEND_MESSAGE_RESPONSE_STATUS_SEND_FAILED\0\u{1}SEND_MESSAGE_RESPONSE_STATUS_UNKNOWN_ERROR\0\u{1}SEND_MESSAGE_RESPONSE_STATUS_NO_SIM\0\u{1}SEND_MESSAGE_RESPONSE_STATUS_AIRPLANE_MODE\0\u{1}SEND_MESSAGE_RESPONSE_STATUS_NO_SERVICE\0\u{1}SEND_MESSAGE_RESPONSE_STATUS_TIMEOUT\0\u{1}SEND_MESSAGE_RESPONSE_STATUS_MESSAGE_SIZE_EXCEEDED\0\u{1}SEND_MESSAGE_RESPONSE_STATUS_BLUETOOTH_NOT_CONNECTED\0")
 }
 
-nonisolated extension MLMessagingSendMessageAttachment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Messaging_V1_SendMessageAttachment: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SendMessageAttachment"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{3}content_id\0\u{3}content_type\0\u{1}data\0")
 
@@ -202,7 +202,7 @@ nonisolated extension MLMessagingSendMessageAttachment: SwiftProtobuf.Message, S
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLMessagingSendMessageAttachment, rhs: MLMessagingSendMessageAttachment) -> Bool {
+  public static func ==(lhs: Maclink_Messaging_V1_SendMessageAttachment, rhs: Maclink_Messaging_V1_SendMessageAttachment) -> Bool {
     if lhs.name != rhs.name {return false}
     if lhs.contentID != rhs.contentID {return false}
     if lhs.contentType != rhs.contentType {return false}
@@ -212,7 +212,7 @@ nonisolated extension MLMessagingSendMessageAttachment: SwiftProtobuf.Message, S
   }
 }
 
-nonisolated extension MLMessagingSendMessageRequestMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Messaging_V1_SendMessageRequestMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SendMessageRequestMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}recipients\0\u{1}body\0\u{3}subscription_id\0\u{3}thread_id\0\u{1}attachments\0")
 
@@ -251,7 +251,7 @@ nonisolated extension MLMessagingSendMessageRequestMessage: SwiftProtobuf.Messag
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLMessagingSendMessageRequestMessage, rhs: MLMessagingSendMessageRequestMessage) -> Bool {
+  public static func ==(lhs: Maclink_Messaging_V1_SendMessageRequestMessage, rhs: Maclink_Messaging_V1_SendMessageRequestMessage) -> Bool {
     if lhs.recipients != rhs.recipients {return false}
     if lhs.body != rhs.body {return false}
     if lhs.subscriptionID != rhs.subscriptionID {return false}
@@ -262,7 +262,7 @@ nonisolated extension MLMessagingSendMessageRequestMessage: SwiftProtobuf.Messag
   }
 }
 
-nonisolated extension MLMessagingSendMessageResponseMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Messaging_V1_SendMessageResponseMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".SendMessageResponseMessage"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{3}message_id\0\u{3}error_detail\0")
 
@@ -293,7 +293,7 @@ nonisolated extension MLMessagingSendMessageResponseMessage: SwiftProtobuf.Messa
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLMessagingSendMessageResponseMessage, rhs: MLMessagingSendMessageResponseMessage) -> Bool {
+  public static func ==(lhs: Maclink_Messaging_V1_SendMessageResponseMessage, rhs: Maclink_Messaging_V1_SendMessageResponseMessage) -> Bool {
     if lhs.status != rhs.status {return false}
     if lhs.messageID != rhs.messageID {return false}
     if lhs.errorDetail != rhs.errorDetail {return false}

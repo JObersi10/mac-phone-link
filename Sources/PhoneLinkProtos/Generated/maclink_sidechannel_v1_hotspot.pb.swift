@@ -31,7 +31,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated enum MLSideChannelHotspotRequestType: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Sidechannel_V1_HotspotRequestType: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case capableStatus // = 1
@@ -64,7 +64,7 @@ public nonisolated enum MLSideChannelHotspotRequestType: SwiftProtobuf.Enum, Swi
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLSideChannelHotspotRequestType] = [
+  public static let allCases: [Maclink_Sidechannel_V1_HotspotRequestType] = [
     .unspecified,
     .capableStatus,
     .credentials,
@@ -73,7 +73,7 @@ public nonisolated enum MLSideChannelHotspotRequestType: SwiftProtobuf.Enum, Swi
 
 }
 
-public nonisolated enum MLSideChannelHotspotResponseStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Sidechannel_V1_HotspotResponseStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case success // = 1
@@ -112,7 +112,7 @@ public nonisolated enum MLSideChannelHotspotResponseStatus: SwiftProtobuf.Enum, 
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLSideChannelHotspotResponseStatus] = [
+  public static let allCases: [Maclink_Sidechannel_V1_HotspotResponseStatus] = [
     .unspecified,
     .success,
     .errorOther,
@@ -123,7 +123,7 @@ public nonisolated enum MLSideChannelHotspotResponseStatus: SwiftProtobuf.Enum, 
 
 }
 
-public nonisolated enum MLSideChannelHotspotCapableStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Sidechannel_V1_HotspotCapableStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case unknown // = 1
@@ -198,7 +198,7 @@ public nonisolated enum MLSideChannelHotspotCapableStatus: SwiftProtobuf.Enum, S
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLSideChannelHotspotCapableStatus] = [
+  public static let allCases: [Maclink_Sidechannel_V1_HotspotCapableStatus] = [
     .unspecified,
     .unknown,
     .supported,
@@ -221,31 +221,31 @@ public nonisolated enum MLSideChannelHotspotCapableStatus: SwiftProtobuf.Enum, S
 
 }
 
-public nonisolated struct MLSideChannelHotspotRequest: Sendable {
+public nonisolated struct Maclink_Sidechannel_V1_HotspotRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var type: MLSideChannelHotspotRequestType = .unspecified
+  public var type: Maclink_Sidechannel_V1_HotspotRequestType = .unspecified
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 }
 
-public nonisolated struct MLSideChannelInstantHotspotRequest: Sendable {
+public nonisolated struct Maclink_Sidechannel_V1_InstantHotspotRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var type: MLSideChannelHotspotRequestType = .unspecified
+  public var type: Maclink_Sidechannel_V1_HotspotRequestType = .unspecified
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 }
 
-public nonisolated struct MLSideChannelHotspotEncryptedCredentials: Sendable {
+public nonisolated struct Maclink_Sidechannel_V1_HotspotEncryptedCredentials: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -270,12 +270,12 @@ public nonisolated struct MLSideChannelHotspotEncryptedCredentials: Sendable {
   fileprivate var _tag: Data? = nil
 }
 
-public nonisolated struct MLSideChannelHotspotReservation: Sendable {
+public nonisolated struct Maclink_Sidechannel_V1_HotspotReservation: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var status: MLSideChannelHotspotCapableStatus = .unspecified
+  public var status: Maclink_Sidechannel_V1_HotspotCapableStatus = .unspecified
 
   public var nonce: String = String()
 
@@ -284,15 +284,15 @@ public nonisolated struct MLSideChannelHotspotReservation: Sendable {
   public init() {}
 }
 
-public nonisolated struct MLSideChannelHotspotResponse: Sendable {
+public nonisolated struct Maclink_Sidechannel_V1_HotspotResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var status: MLSideChannelHotspotResponseStatus = .unspecified
+  public var status: Maclink_Sidechannel_V1_HotspotResponseStatus = .unspecified
 
-  public var reservation: MLSideChannelHotspotReservation {
-    get {_reservation ?? MLSideChannelHotspotReservation()}
+  public var reservation: Maclink_Sidechannel_V1_HotspotReservation {
+    get {_reservation ?? Maclink_Sidechannel_V1_HotspotReservation()}
     set {_reservation = newValue}
   }
   /// Returns true if `reservation` has been explicitly set.
@@ -300,27 +300,27 @@ public nonisolated struct MLSideChannelHotspotResponse: Sendable {
   /// Clears the value of `reservation`. Subsequent reads from it will return its default value.
   public mutating func clearReservation() {self._reservation = nil}
 
-  public var type: MLSideChannelHotspotRequestType = .unspecified
+  public var type: Maclink_Sidechannel_V1_HotspotRequestType = .unspecified
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 
-  fileprivate var _reservation: MLSideChannelHotspotReservation? = nil
+  fileprivate var _reservation: Maclink_Sidechannel_V1_HotspotReservation? = nil
 }
 
-public nonisolated struct MLSideChannelInstantHotspotResponse: Sendable {
+public nonisolated struct Maclink_Sidechannel_V1_InstantHotspotResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var status: MLSideChannelHotspotResponseStatus = .unspecified
+  public var status: Maclink_Sidechannel_V1_HotspotResponseStatus = .unspecified
 
-  public var type: MLSideChannelHotspotRequestType = .unspecified
+  public var type: Maclink_Sidechannel_V1_HotspotRequestType = .unspecified
 
-  public var payload: MLSideChannelInstantHotspotResponse.OneOf_Payload? = nil
+  public var payload: Maclink_Sidechannel_V1_InstantHotspotResponse.OneOf_Payload? = nil
 
-  public var capableStatus: MLSideChannelHotspotCapableStatus {
+  public var capableStatus: Maclink_Sidechannel_V1_HotspotCapableStatus {
     get {
       if case .capableStatus(let v)? = payload {return v}
       return .unspecified
@@ -328,10 +328,10 @@ public nonisolated struct MLSideChannelInstantHotspotResponse: Sendable {
     set {payload = .capableStatus(newValue)}
   }
 
-  public var encryptedCredentials: MLSideChannelHotspotEncryptedCredentials {
+  public var encryptedCredentials: Maclink_Sidechannel_V1_HotspotEncryptedCredentials {
     get {
       if case .encryptedCredentials(let v)? = payload {return v}
-      return MLSideChannelHotspotEncryptedCredentials()
+      return Maclink_Sidechannel_V1_HotspotEncryptedCredentials()
     }
     set {payload = .encryptedCredentials(newValue)}
   }
@@ -339,29 +339,29 @@ public nonisolated struct MLSideChannelInstantHotspotResponse: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public nonisolated enum OneOf_Payload: Equatable, Sendable {
-    case capableStatus(MLSideChannelHotspotCapableStatus)
-    case encryptedCredentials(MLSideChannelHotspotEncryptedCredentials)
+    case capableStatus(Maclink_Sidechannel_V1_HotspotCapableStatus)
+    case encryptedCredentials(Maclink_Sidechannel_V1_HotspotEncryptedCredentials)
 
   }
 
   public init() {}
 }
 
-public nonisolated struct MLSideChannelHotspotEncryptedResponse: Sendable {
+public nonisolated struct Maclink_Sidechannel_V1_HotspotEncryptedResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var status: MLSideChannelHotspotResponseStatus = .unspecified
+  public var status: Maclink_Sidechannel_V1_HotspotResponseStatus = .unspecified
 
-  public var type: MLSideChannelHotspotRequestType = .unspecified
+  public var type: Maclink_Sidechannel_V1_HotspotRequestType = .unspecified
 
-  public var credentials: MLSideChannelHotspotEncryptedResponse.OneOf_Credentials? = nil
+  public var credentials: Maclink_Sidechannel_V1_HotspotEncryptedResponse.OneOf_Credentials? = nil
 
-  public var encryptedCredentials: MLSideChannelHotspotEncryptedCredentials {
+  public var encryptedCredentials: Maclink_Sidechannel_V1_HotspotEncryptedCredentials {
     get {
       if case .encryptedCredentials(let v)? = credentials {return v}
-      return MLSideChannelHotspotEncryptedCredentials()
+      return Maclink_Sidechannel_V1_HotspotEncryptedCredentials()
     }
     set {credentials = .encryptedCredentials(newValue)}
   }
@@ -369,28 +369,28 @@ public nonisolated struct MLSideChannelHotspotEncryptedResponse: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public nonisolated enum OneOf_Credentials: Equatable, Sendable {
-    case encryptedCredentials(MLSideChannelHotspotEncryptedCredentials)
+    case encryptedCredentials(Maclink_Sidechannel_V1_HotspotEncryptedCredentials)
 
   }
 
   public init() {}
 }
 
-public nonisolated struct MLSideChannelInstantHotspotEncryptedResponse: Sendable {
+public nonisolated struct Maclink_Sidechannel_V1_InstantHotspotEncryptedResponse: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var status: MLSideChannelHotspotResponseStatus = .unspecified
+  public var status: Maclink_Sidechannel_V1_HotspotResponseStatus = .unspecified
 
-  public var type: MLSideChannelHotspotRequestType = .unspecified
+  public var type: Maclink_Sidechannel_V1_HotspotRequestType = .unspecified
 
-  public var credentials: MLSideChannelInstantHotspotEncryptedResponse.OneOf_Credentials? = nil
+  public var credentials: Maclink_Sidechannel_V1_InstantHotspotEncryptedResponse.OneOf_Credentials? = nil
 
-  public var encryptedCredentials: MLSideChannelHotspotEncryptedCredentials {
+  public var encryptedCredentials: Maclink_Sidechannel_V1_HotspotEncryptedCredentials {
     get {
       if case .encryptedCredentials(let v)? = credentials {return v}
-      return MLSideChannelHotspotEncryptedCredentials()
+      return Maclink_Sidechannel_V1_HotspotEncryptedCredentials()
     }
     set {credentials = .encryptedCredentials(newValue)}
   }
@@ -398,7 +398,7 @@ public nonisolated struct MLSideChannelInstantHotspotEncryptedResponse: Sendable
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public nonisolated enum OneOf_Credentials: Equatable, Sendable {
-    case encryptedCredentials(MLSideChannelHotspotEncryptedCredentials)
+    case encryptedCredentials(Maclink_Sidechannel_V1_HotspotEncryptedCredentials)
 
   }
 
@@ -409,19 +409,19 @@ public nonisolated struct MLSideChannelInstantHotspotEncryptedResponse: Sendable
 
 fileprivate nonisolated let _protobuf_package = "maclink.sidechannel.v1"
 
-nonisolated extension MLSideChannelHotspotRequestType: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_HotspotRequestType: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0HOTSPOT_REQUEST_TYPE_UNSPECIFIED\0\u{1}HOTSPOT_REQUEST_TYPE_CAPABLE_STATUS\0\u{1}HOTSPOT_REQUEST_TYPE_CREDENTIALS\0\u{1}HOTSPOT_REQUEST_TYPE_ENCRYPTED_CREDENTIALS\0")
 }
 
-nonisolated extension MLSideChannelHotspotResponseStatus: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_HotspotResponseStatus: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0HOTSPOT_RESPONSE_STATUS_UNSPECIFIED\0\u{1}HOTSPOT_RESPONSE_STATUS_SUCCESS\0\u{1}HOTSPOT_RESPONSE_STATUS_ERROR_OTHER\0\u{1}HOTSPOT_RESPONSE_STATUS_UNTRUSTED\0\u{1}HOTSPOT_RESPONSE_STATUS_UNKNOWN_COMMAND\0\u{1}HOTSPOT_RESPONSE_STATUS_NOT_HOTSPOT_CAPABLE\0")
 }
 
-nonisolated extension MLSideChannelHotspotCapableStatus: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_HotspotCapableStatus: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0HOTSPOT_CAPABLE_STATUS_UNSPECIFIED\0\u{1}HOTSPOT_CAPABLE_STATUS_UNKNOWN\0\u{1}HOTSPOT_CAPABLE_STATUS_SUPPORTED\0\u{1}HOTSPOT_CAPABLE_STATUS_AIRPLANE_MODE\0\u{1}HOTSPOT_CAPABLE_STATUS_BLOCKED_BY_POLICY\0\u{1}HOTSPOT_CAPABLE_STATUS_DATA_NOT_ALLOWED\0\u{1}HOTSPOT_CAPABLE_STATUS_DATA_SAVER_ENABLED\0\u{1}HOTSPOT_CAPABLE_STATUS_PASSWORD_NOT_SET\0\u{1}HOTSPOT_CAPABLE_STATUS_NO_SUPPORT_ON_PHONE\0\u{1}HOTSPOT_CAPABLE_STATUS_SIM_NOT_READY\0\u{1}HOTSPOT_CAPABLE_STATUS_SCREEN_SHARE_IN_USE\0\u{1}HOTSPOT_CAPABLE_STATUS_UNSUPPORTED_DATA_PLAN\0\u{1}HOTSPOT_CAPABLE_STATUS_WIFI_DIRECT_IN_USE\0\u{1}HOTSPOT_CAPABLE_STATUS_WIRELESS_DESKTOP_IN_USE\0\u{1}HOTSPOT_CAPABLE_STATUS_LINK_NOT_ENABLED\0\u{1}HOTSPOT_CAPABLE_STATUS_BLUETOOTH_PERMISSION_NOT_GRANTED\0\u{1}HOTSPOT_CAPABLE_STATUS_MANAGER_IS_NULL\0\u{1}HOTSPOT_CAPABLE_STATUS_UNKNOWN_MAPPING\0")
 }
 
-nonisolated extension MLSideChannelHotspotRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_HotspotRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".HotspotRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0")
 
@@ -444,14 +444,14 @@ nonisolated extension MLSideChannelHotspotRequest: SwiftProtobuf.Message, SwiftP
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLSideChannelHotspotRequest, rhs: MLSideChannelHotspotRequest) -> Bool {
+  public static func ==(lhs: Maclink_Sidechannel_V1_HotspotRequest, rhs: Maclink_Sidechannel_V1_HotspotRequest) -> Bool {
     if lhs.type != rhs.type {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-nonisolated extension MLSideChannelInstantHotspotRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_InstantHotspotRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".InstantHotspotRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0")
 
@@ -474,14 +474,14 @@ nonisolated extension MLSideChannelInstantHotspotRequest: SwiftProtobuf.Message,
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLSideChannelInstantHotspotRequest, rhs: MLSideChannelInstantHotspotRequest) -> Bool {
+  public static func ==(lhs: Maclink_Sidechannel_V1_InstantHotspotRequest, rhs: Maclink_Sidechannel_V1_InstantHotspotRequest) -> Bool {
     if lhs.type != rhs.type {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-nonisolated extension MLSideChannelHotspotEncryptedCredentials: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_HotspotEncryptedCredentials: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".HotspotEncryptedCredentials"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}ciphertext\0\u{1}iv\0\u{1}tag\0")
 
@@ -516,7 +516,7 @@ nonisolated extension MLSideChannelHotspotEncryptedCredentials: SwiftProtobuf.Me
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLSideChannelHotspotEncryptedCredentials, rhs: MLSideChannelHotspotEncryptedCredentials) -> Bool {
+  public static func ==(lhs: Maclink_Sidechannel_V1_HotspotEncryptedCredentials, rhs: Maclink_Sidechannel_V1_HotspotEncryptedCredentials) -> Bool {
     if lhs.ciphertext != rhs.ciphertext {return false}
     if lhs.iv != rhs.iv {return false}
     if lhs._tag != rhs._tag {return false}
@@ -525,7 +525,7 @@ nonisolated extension MLSideChannelHotspotEncryptedCredentials: SwiftProtobuf.Me
   }
 }
 
-nonisolated extension MLSideChannelHotspotReservation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_HotspotReservation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".HotspotReservation"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{2}\u{2}nonce\0\u{c}\u{2}\u{1}")
 
@@ -552,7 +552,7 @@ nonisolated extension MLSideChannelHotspotReservation: SwiftProtobuf.Message, Sw
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLSideChannelHotspotReservation, rhs: MLSideChannelHotspotReservation) -> Bool {
+  public static func ==(lhs: Maclink_Sidechannel_V1_HotspotReservation, rhs: Maclink_Sidechannel_V1_HotspotReservation) -> Bool {
     if lhs.status != rhs.status {return false}
     if lhs.nonce != rhs.nonce {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -560,7 +560,7 @@ nonisolated extension MLSideChannelHotspotReservation: SwiftProtobuf.Message, Sw
   }
 }
 
-nonisolated extension MLSideChannelHotspotResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_HotspotResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".HotspotResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{1}reservation\0\u{1}type\0")
 
@@ -595,7 +595,7 @@ nonisolated extension MLSideChannelHotspotResponse: SwiftProtobuf.Message, Swift
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLSideChannelHotspotResponse, rhs: MLSideChannelHotspotResponse) -> Bool {
+  public static func ==(lhs: Maclink_Sidechannel_V1_HotspotResponse, rhs: Maclink_Sidechannel_V1_HotspotResponse) -> Bool {
     if lhs.status != rhs.status {return false}
     if lhs._reservation != rhs._reservation {return false}
     if lhs.type != rhs.type {return false}
@@ -604,7 +604,7 @@ nonisolated extension MLSideChannelHotspotResponse: SwiftProtobuf.Message, Swift
   }
 }
 
-nonisolated extension MLSideChannelInstantHotspotResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_InstantHotspotResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".InstantHotspotResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{1}type\0\u{3}capable_status\0\u{3}encrypted_credentials\0")
 
@@ -617,7 +617,7 @@ nonisolated extension MLSideChannelInstantHotspotResponse: SwiftProtobuf.Message
       case 1: try { try decoder.decodeSingularEnumField(value: &self.status) }()
       case 2: try { try decoder.decodeSingularEnumField(value: &self.type) }()
       case 3: try {
-        var v: MLSideChannelHotspotCapableStatus?
+        var v: Maclink_Sidechannel_V1_HotspotCapableStatus?
         try decoder.decodeSingularEnumField(value: &v)
         if let v = v {
           if self.payload != nil {try decoder.handleConflictingOneOf()}
@@ -625,7 +625,7 @@ nonisolated extension MLSideChannelInstantHotspotResponse: SwiftProtobuf.Message
         }
       }()
       case 4: try {
-        var v: MLSideChannelHotspotEncryptedCredentials?
+        var v: Maclink_Sidechannel_V1_HotspotEncryptedCredentials?
         var hadOneofValue = false
         if let current = self.payload {
           hadOneofValue = true
@@ -667,7 +667,7 @@ nonisolated extension MLSideChannelInstantHotspotResponse: SwiftProtobuf.Message
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLSideChannelInstantHotspotResponse, rhs: MLSideChannelInstantHotspotResponse) -> Bool {
+  public static func ==(lhs: Maclink_Sidechannel_V1_InstantHotspotResponse, rhs: Maclink_Sidechannel_V1_InstantHotspotResponse) -> Bool {
     if lhs.status != rhs.status {return false}
     if lhs.type != rhs.type {return false}
     if lhs.payload != rhs.payload {return false}
@@ -676,7 +676,7 @@ nonisolated extension MLSideChannelInstantHotspotResponse: SwiftProtobuf.Message
   }
 }
 
-nonisolated extension MLSideChannelHotspotEncryptedResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_HotspotEncryptedResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".HotspotEncryptedResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{1}type\0\u{3}encrypted_credentials\0")
 
@@ -689,7 +689,7 @@ nonisolated extension MLSideChannelHotspotEncryptedResponse: SwiftProtobuf.Messa
       case 1: try { try decoder.decodeSingularEnumField(value: &self.status) }()
       case 2: try { try decoder.decodeSingularEnumField(value: &self.type) }()
       case 3: try {
-        var v: MLSideChannelHotspotEncryptedCredentials?
+        var v: Maclink_Sidechannel_V1_HotspotEncryptedCredentials?
         var hadOneofValue = false
         if let current = self.credentials {
           hadOneofValue = true
@@ -723,7 +723,7 @@ nonisolated extension MLSideChannelHotspotEncryptedResponse: SwiftProtobuf.Messa
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLSideChannelHotspotEncryptedResponse, rhs: MLSideChannelHotspotEncryptedResponse) -> Bool {
+  public static func ==(lhs: Maclink_Sidechannel_V1_HotspotEncryptedResponse, rhs: Maclink_Sidechannel_V1_HotspotEncryptedResponse) -> Bool {
     if lhs.status != rhs.status {return false}
     if lhs.type != rhs.type {return false}
     if lhs.credentials != rhs.credentials {return false}
@@ -732,7 +732,7 @@ nonisolated extension MLSideChannelHotspotEncryptedResponse: SwiftProtobuf.Messa
   }
 }
 
-nonisolated extension MLSideChannelInstantHotspotEncryptedResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_InstantHotspotEncryptedResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".InstantHotspotEncryptedResponse"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{1}type\0\u{3}encrypted_credentials\0")
 
@@ -745,7 +745,7 @@ nonisolated extension MLSideChannelInstantHotspotEncryptedResponse: SwiftProtobu
       case 1: try { try decoder.decodeSingularEnumField(value: &self.status) }()
       case 2: try { try decoder.decodeSingularEnumField(value: &self.type) }()
       case 3: try {
-        var v: MLSideChannelHotspotEncryptedCredentials?
+        var v: Maclink_Sidechannel_V1_HotspotEncryptedCredentials?
         var hadOneofValue = false
         if let current = self.credentials {
           hadOneofValue = true
@@ -779,7 +779,7 @@ nonisolated extension MLSideChannelInstantHotspotEncryptedResponse: SwiftProtobu
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLSideChannelInstantHotspotEncryptedResponse, rhs: MLSideChannelInstantHotspotEncryptedResponse) -> Bool {
+  public static func ==(lhs: Maclink_Sidechannel_V1_InstantHotspotEncryptedResponse, rhs: Maclink_Sidechannel_V1_InstantHotspotEncryptedResponse) -> Bool {
     if lhs.status != rhs.status {return false}
     if lhs.type != rhs.type {return false}
     if lhs.credentials != rhs.credentials {return false}

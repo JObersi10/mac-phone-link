@@ -26,7 +26,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated enum MLPlatformOffloadAvailability: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Platform_V1_OffloadAvailability: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case enabled // = 1
@@ -65,7 +65,7 @@ public nonisolated enum MLPlatformOffloadAvailability: SwiftProtobuf.Enum, Swift
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLPlatformOffloadAvailability] = [
+  public static let allCases: [Maclink_Platform_V1_OffloadAvailability] = [
     .unspecified,
     .enabled,
     .disabled,
@@ -76,13 +76,13 @@ public nonisolated enum MLPlatformOffloadAvailability: SwiftProtobuf.Enum, Swift
 
 }
 
-public nonisolated struct MLPlatformChannelValidation: Sendable {
+public nonisolated struct Maclink_Platform_V1_ChannelValidation: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var traceContext: MLPlatformTraceContext {
-    get {_traceContext ?? MLPlatformTraceContext()}
+  public var traceContext: Maclink_Platform_V1_TraceContext {
+    get {_traceContext ?? Maclink_Platform_V1_TraceContext()}
     set {_traceContext = newValue}
   }
   /// Returns true if `traceContext` has been explicitly set.
@@ -92,7 +92,7 @@ public nonisolated struct MLPlatformChannelValidation: Sendable {
 
   public var isOffloadEnabled: Bool = false
 
-  public var offloadAvailability: MLPlatformOffloadAvailability = .unspecified
+  public var offloadAvailability: Maclink_Platform_V1_OffloadAvailability = .unspecified
 
   public var offloadVersion: Int32 = 0
 
@@ -104,18 +104,18 @@ public nonisolated struct MLPlatformChannelValidation: Sendable {
 
   public init() {}
 
-  fileprivate var _traceContext: MLPlatformTraceContext? = nil
+  fileprivate var _traceContext: Maclink_Platform_V1_TraceContext? = nil
 }
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate nonisolated let _protobuf_package = "maclink.platform.v1"
 
-nonisolated extension MLPlatformOffloadAvailability: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Platform_V1_OffloadAvailability: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0OFFLOAD_AVAILABILITY_UNSPECIFIED\0\u{1}OFFLOAD_AVAILABILITY_ENABLED\0\u{1}OFFLOAD_AVAILABILITY_DISABLED\0\u{1}OFFLOAD_AVAILABILITY_NO_PROVISIONED_ACCOUNT\0\u{1}OFFLOAD_AVAILABILITY_TRUST_FAILURE\0\u{1}OFFLOAD_AVAILABILITY_MORE_THAN_ONE_PARTNER\0")
 }
 
-nonisolated extension MLPlatformChannelValidation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Platform_V1_ChannelValidation: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ChannelValidation"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}trace_context\0\u{3}is_offload_enabled\0\u{3}offload_availability\0\u{3}offload_version\0\u{3}support_multiple_partners\0\u{3}support_device_proxy\0")
 
@@ -162,7 +162,7 @@ nonisolated extension MLPlatformChannelValidation: SwiftProtobuf.Message, SwiftP
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLPlatformChannelValidation, rhs: MLPlatformChannelValidation) -> Bool {
+  public static func ==(lhs: Maclink_Platform_V1_ChannelValidation, rhs: Maclink_Platform_V1_ChannelValidation) -> Bool {
     if lhs._traceContext != rhs._traceContext {return false}
     if lhs.isOffloadEnabled != rhs.isOffloadEnabled {return false}
     if lhs.offloadAvailability != rhs.offloadAvailability {return false}

@@ -26,7 +26,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated enum MLSideChannelErrorType: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Sidechannel_V1_ErrorType: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case otherServerError // = 1
@@ -71,7 +71,7 @@ public nonisolated enum MLSideChannelErrorType: SwiftProtobuf.Enum, Swift.CaseIt
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLSideChannelErrorType] = [
+  public static let allCases: [Maclink_Sidechannel_V1_ErrorType] = [
     .unspecified,
     .otherServerError,
     .unknownRequestType,
@@ -84,12 +84,12 @@ public nonisolated enum MLSideChannelErrorType: SwiftProtobuf.Enum, Swift.CaseIt
 
 }
 
-public nonisolated struct MLSideChannelError: Sendable {
+public nonisolated struct Maclink_Sidechannel_V1_Error: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var type: MLSideChannelErrorType = .unspecified
+  public var type: Maclink_Sidechannel_V1_ErrorType = .unspecified
 
   public var msg: String = String()
 
@@ -102,11 +102,11 @@ public nonisolated struct MLSideChannelError: Sendable {
 
 fileprivate nonisolated let _protobuf_package = "maclink.sidechannel.v1"
 
-nonisolated extension MLSideChannelErrorType: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_ErrorType: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ERROR_TYPE_UNSPECIFIED\0\u{1}ERROR_TYPE_OTHER_SERVER_ERROR\0\u{1}ERROR_TYPE_UNKNOWN_REQUEST_TYPE\0\u{1}ERROR_TYPE_SCENARIO_SERVICE_ERROR\0\u{1}ERROR_TYPE_CRYPTO_VALIDATION_ERROR\0\u{1}ERROR_TYPE_CLIENT_INFO_MISSING\0\u{1}ERROR_TYPE_CRYPTO_TRUST_ERROR\0\u{1}ERROR_TYPE_CRYPTO_TRUST_TIMEOUT\0")
 }
 
-nonisolated extension MLSideChannelError: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Sidechannel_V1_Error: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Error"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0\u{1}msg\0")
 
@@ -133,7 +133,7 @@ nonisolated extension MLSideChannelError: SwiftProtobuf.Message, SwiftProtobuf._
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLSideChannelError, rhs: MLSideChannelError) -> Bool {
+  public static func ==(lhs: Maclink_Sidechannel_V1_Error, rhs: Maclink_Sidechannel_V1_Error) -> Bool {
     if lhs.type != rhs.type {return false}
     if lhs.msg != rhs.msg {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

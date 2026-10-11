@@ -26,7 +26,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
   typealias Version = _2
 }
 
-public nonisolated enum MLPlatformChannelType: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Platform_V1_ChannelType: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case namedStreams // = 1
@@ -77,7 +77,7 @@ public nonisolated enum MLPlatformChannelType: SwiftProtobuf.Enum, Swift.CaseIte
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLPlatformChannelType] = [
+  public static let allCases: [Maclink_Platform_V1_ChannelType] = [
     .unspecified,
     .namedStreams,
     .videoStreaming,
@@ -92,7 +92,7 @@ public nonisolated enum MLPlatformChannelType: SwiftProtobuf.Enum, Swift.CaseIte
 
 }
 
-public nonisolated enum MLPlatformCreateChannelStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Platform_V1_CreateChannelStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case success // = 1
@@ -128,7 +128,7 @@ public nonisolated enum MLPlatformCreateChannelStatus: SwiftProtobuf.Enum, Swift
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLPlatformCreateChannelStatus] = [
+  public static let allCases: [Maclink_Platform_V1_CreateChannelStatus] = [
     .unspecified,
     .success,
     .failure,
@@ -138,7 +138,7 @@ public nonisolated enum MLPlatformCreateChannelStatus: SwiftProtobuf.Enum, Swift
 
 }
 
-public nonisolated enum MLPlatformChannelAcceptanceStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+public nonisolated enum Maclink_Platform_V1_ChannelAcceptanceStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case success // = 1
@@ -183,7 +183,7 @@ public nonisolated enum MLPlatformChannelAcceptanceStatus: SwiftProtobuf.Enum, S
   }
 
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static let allCases: [MLPlatformChannelAcceptanceStatus] = [
+  public static let allCases: [Maclink_Platform_V1_ChannelAcceptanceStatus] = [
     .unspecified,
     .success,
     .permissionRevoked,
@@ -196,19 +196,19 @@ public nonisolated enum MLPlatformChannelAcceptanceStatus: SwiftProtobuf.Enum, S
 
 }
 
-public nonisolated struct MLPlatformCreateChannelRequest: Sendable {
+public nonisolated struct Maclink_Platform_V1_CreateChannelRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var type: MLPlatformChannelType = .unspecified
+  public var type: Maclink_Platform_V1_ChannelType = .unspecified
 
   public var scenarioID: String = String()
 
   public var channelID: String = String()
 
-  public var traceContext: MLPlatformTraceContext {
-    get {_traceContext ?? MLPlatformTraceContext()}
+  public var traceContext: Maclink_Platform_V1_TraceContext {
+    get {_traceContext ?? Maclink_Platform_V1_TraceContext()}
     set {_traceContext = newValue}
   }
   /// Returns true if `traceContext` has been explicitly set.
@@ -222,22 +222,22 @@ public nonisolated struct MLPlatformCreateChannelRequest: Sendable {
 
   public init() {}
 
-  fileprivate var _traceContext: MLPlatformTraceContext? = nil
+  fileprivate var _traceContext: Maclink_Platform_V1_TraceContext? = nil
 }
 
-public nonisolated struct MLPlatformPeerChannelCreationResult: Sendable {
+public nonisolated struct Maclink_Platform_V1_PeerChannelCreationResult: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var type: MLPlatformChannelType = .unspecified
+  public var type: Maclink_Platform_V1_ChannelType = .unspecified
 
   public var scenarioID: String = String()
 
-  public var resultCode: MLPlatformCreateChannelStatus = .unspecified
+  public var resultCode: Maclink_Platform_V1_CreateChannelStatus = .unspecified
 
-  public var traceContext: MLPlatformTraceContext {
-    get {_traceContext ?? MLPlatformTraceContext()}
+  public var traceContext: Maclink_Platform_V1_TraceContext {
+    get {_traceContext ?? Maclink_Platform_V1_TraceContext()}
     set {_traceContext = newValue}
   }
   /// Returns true if `traceContext` has been explicitly set.
@@ -245,7 +245,7 @@ public nonisolated struct MLPlatformPeerChannelCreationResult: Sendable {
   /// Clears the value of `traceContext`. Subsequent reads from it will return its default value.
   public mutating func clearTraceContext() {self._traceContext = nil}
 
-  public var resultReason: MLPlatformChannelAcceptanceStatus = .unspecified
+  public var resultReason: Maclink_Platform_V1_ChannelAcceptanceStatus = .unspecified
 
   public var channelID: String = String()
 
@@ -253,26 +253,26 @@ public nonisolated struct MLPlatformPeerChannelCreationResult: Sendable {
 
   public init() {}
 
-  fileprivate var _traceContext: MLPlatformTraceContext? = nil
+  fileprivate var _traceContext: Maclink_Platform_V1_TraceContext? = nil
 }
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate nonisolated let _protobuf_package = "maclink.platform.v1"
 
-nonisolated extension MLPlatformChannelType: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Platform_V1_ChannelType: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0CHANNEL_TYPE_UNSPECIFIED\0\u{1}CHANNEL_TYPE_NAMED_STREAMS\0\u{1}CHANNEL_TYPE_VIDEO_STREAMING\0\u{1}CHANNEL_TYPE_INTERNAL_MESSAGING\0\u{1}CHANNEL_TYPE_MESSAGING\0\u{1}CHANNEL_TYPE_VIDEO_TARGET\0\u{1}CHANNEL_TYPE_BLOB\0\u{1}CHANNEL_TYPE_INPUT_SOURCE\0\u{1}CHANNEL_TYPE_AUDIO_TARGET\0\u{1}CHANNEL_TYPE_APP_REMOTE\0")
 }
 
-nonisolated extension MLPlatformCreateChannelStatus: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Platform_V1_CreateChannelStatus: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0CREATE_CHANNEL_STATUS_UNSPECIFIED\0\u{1}CREATE_CHANNEL_STATUS_SUCCESS\0\u{1}CREATE_CHANNEL_STATUS_FAILURE\0\u{1}CREATE_CHANNEL_STATUS_NO_REMOTE_SCENARIO_AVAILABLE\0\u{1}CREATE_CHANNEL_STATUS_REMOTE_SCENARIO_REJECTED\0")
 }
 
-nonisolated extension MLPlatformChannelAcceptanceStatus: SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Platform_V1_ChannelAcceptanceStatus: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0CHANNEL_ACCEPTANCE_STATUS_UNSPECIFIED\0\u{1}CHANNEL_ACCEPTANCE_STATUS_SUCCESS\0\u{1}CHANNEL_ACCEPTANCE_STATUS_PERMISSION_REVOKED\0\u{1}CHANNEL_ACCEPTANCE_STATUS_APP_DISABLED\0\u{1}CHANNEL_ACCEPTANCE_STATUS_MOBILE_DATA_DISABLED\0\u{1}CHANNEL_ACCEPTANCE_STATUS_NOT_SUPPORTED\0\u{1}CHANNEL_ACCEPTANCE_STATUS_INVALID_SCENARIO\0\u{1}CHANNEL_ACCEPTANCE_STATUS_NO_CALLBACK_PROVIDED\0")
 }
 
-nonisolated extension MLPlatformCreateChannelRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Platform_V1_CreateChannelRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".CreateChannelRequest"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0\u{3}scenario_id\0\u{3}channel_id\0\u{3}trace_context\0\u{3}additional_properties\0")
 
@@ -315,7 +315,7 @@ nonisolated extension MLPlatformCreateChannelRequest: SwiftProtobuf.Message, Swi
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLPlatformCreateChannelRequest, rhs: MLPlatformCreateChannelRequest) -> Bool {
+  public static func ==(lhs: Maclink_Platform_V1_CreateChannelRequest, rhs: Maclink_Platform_V1_CreateChannelRequest) -> Bool {
     if lhs.type != rhs.type {return false}
     if lhs.scenarioID != rhs.scenarioID {return false}
     if lhs.channelID != rhs.channelID {return false}
@@ -326,7 +326,7 @@ nonisolated extension MLPlatformCreateChannelRequest: SwiftProtobuf.Message, Swi
   }
 }
 
-nonisolated extension MLPlatformPeerChannelCreationResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Platform_V1_PeerChannelCreationResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".PeerChannelCreationResult"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}type\0\u{3}scenario_id\0\u{3}result_code\0\u{3}trace_context\0\u{3}result_reason\0\u{3}channel_id\0")
 
@@ -373,7 +373,7 @@ nonisolated extension MLPlatformPeerChannelCreationResult: SwiftProtobuf.Message
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLPlatformPeerChannelCreationResult, rhs: MLPlatformPeerChannelCreationResult) -> Bool {
+  public static func ==(lhs: Maclink_Platform_V1_PeerChannelCreationResult, rhs: Maclink_Platform_V1_PeerChannelCreationResult) -> Bool {
     if lhs.type != rhs.type {return false}
     if lhs.scenarioID != rhs.scenarioID {return false}
     if lhs.resultCode != rhs.resultCode {return false}

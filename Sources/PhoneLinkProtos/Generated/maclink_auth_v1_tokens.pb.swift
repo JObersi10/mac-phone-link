@@ -28,7 +28,7 @@ fileprivate nonisolated struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobu
 
 /// Observed broker token-transfer structure (originally proto2 required fields;
 /// modeled here in proto3).
-public nonisolated struct MLAuthTransferToken: Sendable {
+public nonisolated struct Maclink_Auth_V1_TransferToken: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -45,7 +45,7 @@ public nonisolated struct MLAuthTransferToken: Sendable {
 }
 
 /// Primary Refresh Token structure.
-public nonisolated struct MLAuthPrt: Sendable {
+public nonisolated struct Maclink_Auth_V1_Prt: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -92,7 +92,7 @@ public nonisolated struct MLAuthPrt: Sendable {
 
 fileprivate nonisolated let _protobuf_package = "maclink.auth.v1"
 
-nonisolated extension MLAuthTransferToken: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Auth_V1_TransferToken: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".TransferToken"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}raw_transfer_token\0\u{3}expires_in_millis\0\u{3}token_received_time_millis\0")
 
@@ -123,7 +123,7 @@ nonisolated extension MLAuthTransferToken: SwiftProtobuf.Message, SwiftProtobuf.
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLAuthTransferToken, rhs: MLAuthTransferToken) -> Bool {
+  public static func ==(lhs: Maclink_Auth_V1_TransferToken, rhs: Maclink_Auth_V1_TransferToken) -> Bool {
     if lhs.rawTransferToken != rhs.rawTransferToken {return false}
     if lhs.expiresInMillis != rhs.expiresInMillis {return false}
     if lhs.tokenReceivedTimeMillis != rhs.tokenReceivedTimeMillis {return false}
@@ -132,7 +132,7 @@ nonisolated extension MLAuthTransferToken: SwiftProtobuf.Message, SwiftProtobuf.
   }
 }
 
-nonisolated extension MLAuthPrt: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+nonisolated extension Maclink_Auth_V1_Prt: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Prt"
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}refresh_token\0\u{3}id_token\0\u{3}home_authority\0\u{3}acquisition_time_millis\0\u{3}is_registered_device_prt\0\u{3}prt_protocol_version\0\u{3}client_info\0\u{3}device_id\0")
 
@@ -187,7 +187,7 @@ nonisolated extension MLAuthPrt: SwiftProtobuf.Message, SwiftProtobuf._MessageIm
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: MLAuthPrt, rhs: MLAuthPrt) -> Bool {
+  public static func ==(lhs: Maclink_Auth_V1_Prt, rhs: Maclink_Auth_V1_Prt) -> Bool {
     if lhs.refreshToken != rhs.refreshToken {return false}
     if lhs.idToken != rhs.idToken {return false}
     if lhs.homeAuthority != rhs.homeAuthority {return false}
