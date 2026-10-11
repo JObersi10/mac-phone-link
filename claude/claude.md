@@ -84,9 +84,12 @@ Two local vendor artifacts (used for analysis only, **never committed** — see
 | Auth↔transport bridge | `DCGTransport` | ✅ `DeviceTrustAuthorizer`, `SideChannelAuth`, `DCGSession` |
 | macOS UI | `PhoneLinkUI` | ✅ `ConnectionViewModel`, `PhoneLinkRootView`, `PhoneLinkScene` (library) |
 | Screen-mirroring protos | `PhoneLinkProtos` | ✅ message layer (PR #3) |
-| Nano/QUIC transport | — | ❌ not started |
+| Screen-mirroring video | `PhoneLinkVideo` | ✅ VideoToolbox decode (`VTVideoDecoder`) + `AVSampleBufferDisplayLayer` render + `VideoStreamController` (NAL/AVCC framing) |
+| Runnable `.app` bundle | `PhoneLinkApp` | ✅ `@main` SwiftUI app; `scripts/package-app.sh` assembles `PhoneLink.app` |
+| Release packaging | CI | ✅ `build-app.yml` → `.app` → ditto zip → GitHub Releases on `v*` tags (no DMG) |
+| Nano/QUIC transport | — | ❌ not started (the direct path video actually flows over) |
 | Device-trust provisioning (pairing-proxy cert issuance) | — | ❌ not started |
-| Runnable `.app` bundle | — | ❌ (Xcode project needed) |
+| App signing / notarization | — | ❌ unsigned (Gatekeeper prompt); needs Developer ID in CI secrets |
 
 ---
 
@@ -104,8 +107,14 @@ Two local vendor artifacts (used for analysis only, **never committed** — see
 ## CI / workflow
 - `.github/workflows/build-swift.yml`: `macos-latest` → brew `protobuf` +
   `swift-protobuf` → regenerate → `swift build` → `swift test` → `proto-check`.
-- PR #2 (`feature/swift-protobuf-ci`) = foundation; **merge blocked pending user
-  review** (auto-mode classifier denies merge-without-review).
-- PR #3 (`feature/screen-mirroring`) = this branch, **stacked on #2**. Retarget to
-  `main` after #2 merges.
+- `.github/workflows/build-app.yml`: `macos-latest`, on `v*` tags +
+  `workflow_dispatch` → `swift build -c release --product PhoneLinkApp` →
+  `scripts/package-app.sh` → `ditto` zip (no DMG) → `upload-artifact` + publish
+  the zip to **GitHub Releases** on tags (`contents: write`). Single-arch
+  (arm64); universal is a one-flag opt-in (needs full-Xcode xcbuild on runner).
+- **PR #2 merged to `main`** (squash). PR #1 (old scrcpy/companion prototype)
+  moved to `jobersi10/mac-phone-link-old` and closed.
+- PR #3 (`feature/screen-mirroring`) now **based on `main`**, CI green: screen-
+  mirroring protos + `PhoneLinkVideo` + `PhoneLinkApp` + `build-app.yml`.
+- `v0.1.0` tagged from the PR #3 branch tip to exercise the Release upload.
 - Commit attribution footer: `Co-Authored-By: Claude Opus 4.8`.
