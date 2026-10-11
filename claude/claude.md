@@ -147,7 +147,13 @@ First-run flow gated by `@AppStorage("didCompleteOnboarding")` in `AppRootView`
   `UNUserNotificationCenter.requestAuthorization`; Local Network via an
   `NWBrowser` Bonjour browse that triggers the macOS prompt.
 - **Microsoft sign-in**: injected `signInAction: () async throws -> String`
-  (keeps PhoneLinkUI decoupled from MSAL UI; the app wires `DCGAuthenticator`).
+  (keeps PhoneLinkUI decoupled from MSAL UI). **Now wired** in the app layer:
+  `Sources/PhoneLinkApp/MicrosoftSignIn.swift` builds a `DCGAuthenticator`
+  (redirect `msauth.com.maclink.phonelink://auth`, scheme registered in the
+  bundle's `Info.plist`) and runs a real MSAL interactive sign-in with diagnostic
+  scopes. Client id is caller-supplied — env `PHONELINK_MSAL_CLIENT_ID`, the
+  onboarding text field (`PhoneLinkMSALClientId` UserDefaults), or Info.plist —
+  never embedded. Setup + keychain/signing caveat: `docs/MICROSOFT_SIGNIN.md`.
 - **Pairing**: `QRCode.image(from:)` (CoreImage, no dep) renders the pairing
   payload. Payload is a **placeholder** (`ms-phone-link://pair?v=1`) until the
   real DCG pairing handshake is reverse-engineered/wired.

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- MSAL persists its token cache in the keychain. On macOS it needs this
+       sharing group, or acquireToken fails with errSecMissingEntitlement
+       (-34018). $(AppIdentifierPrefix) is substituted by codesign when signing
+       with a provisioning profile / Developer ID identity. -->
+  <key>keychain-access-groups</key>
+  <array>
+    <string>$(AppIdentifierPrefix)com.microsoft.adalcache</string>
+    <string>$(AppIdentifierPrefix)com.maclink.phonelink</string>
+  </array>
+  <!-- Outbound sign-in + DCG/SignalR; inbound for local-network discovery. -->
+  <key>com.apple.security.network.client</key><true/>
+  <key>com.apple.security.network.server</key><true/>
+</dict>
+</plist>
