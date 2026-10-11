@@ -8,6 +8,10 @@ import Foundation
 import Combine
 import NanoTransport
 import PhoneLinkVideo
+import PhoneLinkProtos
+#if canImport(CoreGraphics)
+import CoreGraphics
+#endif
 
 @MainActor
 public final class MirroringViewModel: ObservableObject {
@@ -17,6 +21,12 @@ public final class MirroringViewModel: ObservableObject {
 
     /// The decode/render pipeline. Attach a display view to `controller`.
     public let controller: VideoStreamController
+
+    #if canImport(CoreGraphics)
+    /// Dimensions of the incoming video, used to map cursor → phone coordinates.
+    /// Defaults to a portrait phone aspect until the real stream reports its size.
+    @Published public var videoSize: CGSize = CGSize(width: 1080, height: 2400)
+    #endif
 
     private var transport: NanoTransport?
 
@@ -70,6 +80,13 @@ public final class MirroringViewModel: ObservableObject {
         transport = nil
         state = .idle
         statusDetail = ""
+    }
+
+    /// Send one input event to the phone (framed over the transport). No-op when
+    /// not connected, so stray cursor movement never leaks before pairing.
+    public func sendInput(_ event: Maclink_Mirroring_V1_InputEventMessage) {
+        guard isActive, let t = transport, let data = try? event.serializedData() else { return }
+        t.send(data)
     }
 
     public var isActive: Bool {

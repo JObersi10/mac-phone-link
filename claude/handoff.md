@@ -162,6 +162,32 @@ self-test), routes `onFrame` into `VideoStreamController.feed` → the
 `AVSampleBufferDisplayLayer` in `MirroringView`, and publishes `state` +
 `framesReceived`. So there's a runnable Connect action end to end.
 
+## Remote control + clipboard + input proto (PhoneLinkUI)
+- **Cursor/keyboard control** of the mirror: `RemoteControl` maps a view point →
+  normalized [0,1] of the aspect-fit video content (`videoContentRect`,
+  `normalize` returns nil in letterbox bars → event dropped), `MoveCoalescer`
+  rate-limits moves. `RemoteInputNSView`/`RemoteInputView` overlay the video,
+  flip AppKit's bottom-left Y, and emit `Maclink_Mirroring_V1_InputEventMessage`
+  (new `Protos/maclink/mirroring/v1/input.proto`: kind/x/y/button/scroll/key/
+  meta/ts). `MirroringViewModel.sendInput` serializes + sends over the transport
+  only while connected. This is what keeps control stable ("doesn't go crazy"):
+  clamped, letterbox-correct, coalesced. Default `videoSize` 1080×2400 until a
+  real stream reports dimensions.
+- **Clipboard**: `ClipboardSync` polls `NSPasteboard.changeCount` → serializes a
+  `Maclink_Clipboard_V1_ResponseMessage` (textPlain item) to a sink; inbound
+  `handleIncoming` writes remote text back (suppressing the echo). `ClipboardCodec`
+  is the pure, tested proto<->value mapping. Not yet attached to a live channel.
+- **Notifications** already decode (`ConnectionViewModel.decodeNotifications`).
+
+## QR diagnosis (confirmed first-party wall; grammar is correct)
+The URL grammar is right and `dcg.microsoft.com` IS an `autoVerify` App Link in
+the APK manifest — but scanning in-app still just "opened the link" because the
+pairing parser (`FreParseDynamicLinkManager.validateDynamicLink`) only treats it
+as a real pairing link when backed by cloud session params (`cpsi`, a Microsoft-
+minted `uaid`); ours isn't, so it degrades to opening the raw URL, which hits
+dcg's API host and returns a generic MS error page. No client-side fix exists —
+it needs a real cloud PinSession (first-party gated). QR work is done.
+
 ## QR payload (fixed — was rejected as "invalid")
 The phone's `DeeplinkResolver.validateUri` rejects any string without a scheme +
 host, so the old bare `uaid=...` was invalid. `QRPairingPayload` now emits the

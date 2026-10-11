@@ -57,12 +57,20 @@ public struct MirroringView: View {
         ZStack {
             Color.black
             VideoDisplayView { view in model.controller.displayView = view }
+            // Capture cursor/keyboard only while connected, so stray movement
+            // never leaks before pairing. Coordinates are letterbox-mapped.
+            if model.isActive {
+                RemoteInputView(videoSize: model.videoSize) { event in
+                    model.sendInput(event)
+                }
+            }
             if model.framesReceived == 0 {
                 VStack(spacing: 6) {
                     Image(systemName: "display").font(.system(size: 30)).foregroundStyle(.secondary)
                     Text("No video yet — Connect to a peer to start mirroring.")
                         .font(.caption).foregroundStyle(.secondary)
                 }
+                .allowsHitTesting(false)
             }
         }
     }
