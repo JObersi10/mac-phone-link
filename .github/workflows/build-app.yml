@@ -3,6 +3,11 @@ name: Build macOS App
 on:
   push:
     tags: [ "v*" ]
+    branches: [ "main" ]
+  pull_request:
+    # Build the .app on every PR so the bundle is downloadable from the run's
+    # Artifacts (Releases only get it on v* tags).
+    branches: [ "**" ]
   workflow_dispatch:
     inputs:
       version:

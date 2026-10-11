@@ -87,11 +87,22 @@ Two local vendor artifacts (used for analysis only, **never committed** — see
 | Screen-mirroring video | `PhoneLinkVideo` | ✅ VideoToolbox decode (`VTVideoDecoder`) + `AVSampleBufferDisplayLayer` render + `VideoStreamController` (NAL/AVCC framing) |
 | Runnable `.app` bundle | `PhoneLinkApp` | ✅ `@main` SwiftUI app; `scripts/package-app.sh` assembles `PhoneLink.app` |
 | Release packaging | CI | ✅ `build-app.yml` → `.app` → ditto zip → GitHub Releases on `v*` tags (no DMG) |
-| Nano/QUIC transport | — | ❌ not started (the direct path video actually flows over) |
+| Nano/QUIC transport | `NanoTransport` | ⚠️ scaffolded: `QUICNanoConnection` (Network.framework QUIC, one bidi stream), `NanoFraming` (4-byte length prefix), `NanoHandshake` (context_source Initialize→IdentityResponse→OpenDeviceConnection), `LoopbackNanoTransport`. Not yet traffic-verified; frame container + real cert pinning TBD |
+| Pairing (QR + proxy) | `PhoneLinkPairing` | ⚠️ clean-room model of confirmed QR grammar (HTTPS DCG dynamic link) + proxy endpoints + ceremony order; needs first-party MSA PinSession to actually pair |
+| Screen-mirror UI + cursor control | `PhoneLinkUI` | ⚠️ `MirroringView(Model)` Connect action over Nano/QUIC; `RemoteControl`/`RemoteInputView` inject cursor+keyboard as normalized `InputEventMessage` (letterbox-mapped, coalesced). Needs live stream |
+| Clipboard sync | `PhoneLinkUI` | ⚠️ `ClipboardSync` NSPasteboard ↔ clipboard proto (both ways); needs a live channel to attach to |
 | Device-trust provisioning (pairing-proxy cert issuance) | — | ❌ not started |
 | App signing / notarization | — | ❌ unsigned (Gatekeeper prompt); needs Developer ID in CI secrets |
 
 ---
+
+## Docs map
+- `docs/ROADMAP.md` — phased plan (done / buildable / blocked).
+- `docs/FINDINGS.md` — consolidated reverse-engineering evidence (QR grammar,
+  DCG hosts, pairing-proxy endpoints, ceremony order, manifest app-links,
+  input/clipboard, uncertainties).
+- `docs/PAIRING_PROTOCOL.md` — pairing deep-dive. `docs/MICROSOFT_SIGNIN.md` —
+  Entra setup + signing. `PHONE_LINK_PROTOCOL_ANALYSIS.md` — original writeup.
 
 ## Known uncertainties (verify against live traffic)
 - SignalR **hub method names** for DCG send/receive — placeholders (`SendMessage`/

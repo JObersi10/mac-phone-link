@@ -28,6 +28,11 @@ public final class VideoStreamController {
     private var parameterSets: [UInt8: Data] = [:]   // nalType -> latest payload
     private var frameIndex: Int64 = 0
 
+    /// Called with the coded picture size when an SPS is (re)parsed (H.264).
+    /// Drives the cursor-coordinate mapping to the real resolution.
+    public var onDimensions: ((H264Dimensions) -> Void)?
+    public private(set) var dimensions: H264Dimensions?
+
     public init(codec: VideoCodec) {
         self.codec = codec
     }
@@ -65,6 +70,12 @@ public final class VideoStreamController {
             if isParameterSet(type) {
                 if parameterSets[type] != nal { sawNewParameterSet = true }
                 parameterSets[type] = nal
+                // Recover the real resolution from a new H.264 SPS.
+                if codec == .h264, type == 7, sawNewParameterSet,
+                   let d = H264SPS.dimensions(fromSPS: nal), d != dimensions {
+                    dimensions = d
+                    onDimensions?(d)
+                }
             } else {
                 vcl.append(nal)
             }

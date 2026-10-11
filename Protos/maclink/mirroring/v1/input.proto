@@ -1,0 +1,32 @@
+// Clean-room interoperability schema for the mac-phone-link project.
+// Independently authored from observed wire behavior; no vendor source text,
+// headers, or comments are reproduced. Field numbers and types reflect the
+// on-the-wire protobuf layout (interface facts) required for compatibility.
+// SPDX-License-Identifier: MIT
+syntax = "proto3";
+package maclink.mirroring.v1;
+
+// A single input event injected from the PC into the mirrored phone screen.
+// Coordinates are normalized to [0,1] relative to the displayed video content
+// (NOT view pixels), so they are resolution- and letterbox-independent — the
+// host maps its cursor position into this space before sending.
+message InputEventMessage {
+  enum Kind {
+    KIND_UNSPECIFIED = 0;
+    POINTER_DOWN = 1;
+    POINTER_MOVE = 2;
+    POINTER_UP = 3;
+    SCROLL = 4;
+    KEY_DOWN = 5;
+    KEY_UP = 6;
+  }
+  Kind kind = 1;
+  float x = 2;            // normalized [0,1]
+  float y = 3;            // normalized [0,1]
+  int32 button = 4;       // 0 = primary, 1 = secondary, 2 = middle
+  float scroll_dx = 5;
+  float scroll_dy = 6;
+  int32 key_code = 7;
+  int32 meta_state = 8;   // modifier bitmask (shift/ctrl/alt/cmd)
+  int64 timestamp_ms = 9;
+}

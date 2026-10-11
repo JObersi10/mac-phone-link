@@ -137,13 +137,80 @@ secrets: `MACOS_CERTIFICATE` (base64 Developer ID .p12), `MACOS_CERTIFICATE_PWD`
 - `@main` app (`Sources/PhoneLinkApp/App.swift`) builds `connection` +
   `onboarding` StateObjects and hosts `AppRootView`.
 
-## Next work (priority order)
-1. **Merge #3** to `main` (user action).
-2. **Nano/QUIC transport** — the direct path screen-mirroring video actually
-   flows over. Needs: QUIC (Network.framework `NWConnection` w/ QUIC, or msquic),
-   the `context_source` identity-challenge handshake, Wi-Fi Direct/instant-
-   hotspot negotiation via side-channel. Biggest remaining piece; it feeds frame
-   bytes into `VideoStreamController.feed(frame:)`.
+## Nano/QUIC transport (`NanoTransport` target)
+The direct high-bandwidth path. Scaffolded:
+- `NanoFraming` — 4-byte big-endian length prefix per message; `NanoFrameDecoder`
+  reassembles split/coalesced chunks. Pure + unit-tested.
+- `NanoTransport` protocol (`state`/`onFrame`/`onStateChange`/`send`/`cancel`) +
+  `LoopbackNanoTransport` for tests/wiring.
+- `QUICNanoConnection` — Network.framework QUIC (`NWProtocolQUIC.Options(alpn:)`,
+  one bidirectional stream), `@available(macOS 12)`, `#if canImport(Network)`.
+  Insecure-cert verify block by default (direct peer uses a device-trust cert,
+  not web PKI) — pin the expected cert there for production.
+- `NanoHandshake` — context_source exchange (Initialize → IdentityResponse →
+  OpenDeviceConnectionRequest) over the clean-room `ContextSourceMessage`.
+- **Wire to video**: `transport.onFrame = { try? controller.feed(frame: $0) }`
+  (`VideoStreamController.feed(frame:) throws -> CMSampleBuffer?`).
+Still TODO: confirm the real frame container (Annex B vs AVCC, SPS/PPS
+signaling) against live bytes, Wi-Fi Direct/instant-hotspot negotiation via the
+side channel, cert pinning, and multi-stream (control vs media) if needed.
+
+## Screen mirroring UI (wired)
+`PhoneLinkRootView` is now a `TabView`: **Notifications** (DCG connection) +
+**Screen Mirroring**. `MirroringViewModel` (PhoneLinkUI) drives a `NanoTransport`
+— `connect(host:port:)` builds a `QUICNanoConnection` (empty host → loopback
+self-test), routes `onFrame` into `VideoStreamController.feed` → the
+`AVSampleBufferDisplayLayer` in `MirroringView`, and publishes `state` +
+`framesReceived`. So there's a runnable Connect action end to end.
+
+## Remote control + clipboard + input proto (PhoneLinkUI)
+- **Cursor/keyboard control** of the mirror: `RemoteControl` maps a view point →
+  normalized [0,1] of the aspect-fit video content (`videoContentRect`,
+  `normalize` returns nil in letterbox bars → event dropped), `MoveCoalescer`
+  rate-limits moves. `RemoteInputNSView`/`RemoteInputView` overlay the video,
+  flip AppKit's bottom-left Y, and emit `Maclink_Mirroring_V1_InputEventMessage`
+  (new `Protos/maclink/mirroring/v1/input.proto`: kind/x/y/button/scroll/key/
+  meta/ts). `MirroringViewModel.sendInput` serializes + sends over the transport
+  only while connected. This is what keeps control stable ("doesn't go crazy"):
+  clamped, letterbox-correct, coalesced. Default `videoSize` 1080×2400 until a
+  real stream reports dimensions.
+- **Clipboard**: `ClipboardSync` polls `NSPasteboard.changeCount` → serializes a
+  `Maclink_Clipboard_V1_ResponseMessage` (textPlain item) to a sink; inbound
+  `handleIncoming` writes remote text back (suppressing the echo). `ClipboardCodec`
+  is the pure, tested proto<->value mapping. Not yet attached to a live channel.
+- **Notifications** already decode (`ConnectionViewModel.decodeNotifications`).
+
+## QR diagnosis (confirmed first-party wall; grammar is correct)
+The URL grammar is right and `dcg.microsoft.com` IS an `autoVerify` App Link in
+the APK manifest — but scanning in-app still just "opened the link" because the
+pairing parser (`FreParseDynamicLinkManager.validateDynamicLink`) only treats it
+as a real pairing link when backed by cloud session params (`cpsi`, a Microsoft-
+minted `uaid`); ours isn't, so it degrades to opening the raw URL, which hits
+dcg's API host and returns a generic MS error page. No client-side fix exists —
+it needs a real cloud PinSession (first-party gated). QR work is done.
+
+## QR payload (fixed — was rejected as "invalid")
+The phone's `DeeplinkResolver.validateUri` rejects any string without a scheme +
+host, so the old bare `uaid=...` was invalid. `QRPairingPayload` now emits the
+real **HTTPS DCG dynamic link** (`https://dcg.microsoft.com/?vm=5&uaid=…&ti=…&r=5&
+apn=com.microsoft.appmanager`). The phone will now accept the scan; it still
+can't complete pairing (the `uaid`/session isn't a real cloud PinSession — the
+first-party gate). See `docs/PAIRING_PROTOCOL.md`.
+
+## Next work — see `docs/ROADMAP.md` (full phased plan) and `docs/FINDINGS.md`
+   (consolidated RE evidence). Short version:
+1. **Phase 1 (buildable now):** attach clipboard to a live channel, notification
+   actions, messaging (SMS), contacts, phone files, richer input (drag/gestures),
+   audio. Each needs only a live byte channel to attach to.
+2. **Phase 2:** Nano transport live bring-up — confirm frame container
+   (Annex B vs AVCC) + SPS-derived video size, QUIC ALPN + cert pinning, drive
+   the context_source handshake end to end. The UI Connect action already routes
+   frames to the display layer.
+3. **Phase 3:** Developer-ID signing/notarization (needs paid Apple account),
+   universal binary, settings UI.
+4. **Blocked (first-party wall):** completing a real pair (cloud PinSession /
+   `cpsi` / Microsoft-minted `uaid`), DCG consent, device-trust cert issuance —
+   not solvable client-side; documented in both docs.
 3. **Device-trust provisioning** — pairing-proxy cert issuance (we can sign but
    assume a key/cert already exists). Study `pairingproxyclient`.
 4. **Wire video to a real screen** — connect `VideoStreamController` →
