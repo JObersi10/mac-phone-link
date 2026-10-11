@@ -87,7 +87,8 @@ Two local vendor artifacts (used for analysis only, **never committed** — see
 | Screen-mirroring video | `PhoneLinkVideo` | ✅ VideoToolbox decode (`VTVideoDecoder`) + `AVSampleBufferDisplayLayer` render + `VideoStreamController` (NAL/AVCC framing) |
 | Runnable `.app` bundle | `PhoneLinkApp` | ✅ `@main` SwiftUI app; `scripts/package-app.sh` assembles `PhoneLink.app` |
 | Release packaging | CI | ✅ `build-app.yml` → `.app` → ditto zip → GitHub Releases on `v*` tags (no DMG) |
-| Nano/QUIC transport | — | ❌ not started (the direct path video actually flows over) |
+| Nano/QUIC transport | `NanoTransport` | ⚠️ scaffolded: `QUICNanoConnection` (Network.framework QUIC, one bidi stream), `NanoFraming` (4-byte length prefix), `NanoHandshake` (context_source Initialize→IdentityResponse→OpenDeviceConnection), `LoopbackNanoTransport`. Not yet traffic-verified; frame container + real cert pinning TBD |
+| Pairing (QR + proxy) | `PhoneLinkPairing` | ⚠️ clean-room model of confirmed QR grammar + proxy endpoints + ceremony order; needs first-party MSA PinSession to actually pair |
 | Device-trust provisioning (pairing-proxy cert issuance) | — | ❌ not started |
 | App signing / notarization | — | ❌ unsigned (Gatekeeper prompt); needs Developer ID in CI secrets |
 

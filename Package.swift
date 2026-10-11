@@ -13,6 +13,7 @@ let package = Package(
         .library(name: "PhoneLinkUI", targets: ["PhoneLinkUI"]),
         .library(name: "PhoneLinkVideo", targets: ["PhoneLinkVideo"]),
         .library(name: "PhoneLinkPairing", targets: ["PhoneLinkPairing"]),
+        .library(name: "NanoTransport", targets: ["NanoTransport"]),
         .executable(name: "proto-check", targets: ["ProtoCheck"]),
         .executable(name: "PhoneLinkApp", targets: ["PhoneLinkApp"]),
     ],
@@ -66,6 +67,11 @@ let package = Package(
             dependencies: [],
             path: "Sources/PhoneLinkPairing"
         ),
+        .target(
+            name: "NanoTransport",
+            dependencies: ["PhoneLinkProtos"],
+            path: "Sources/NanoTransport"
+        ),
         .executableTarget(
             name: "ProtoCheck",
             dependencies: ["PhoneLinkProtos"],
@@ -73,7 +79,7 @@ let package = Package(
         ),
         .testTarget(
             name: "PhoneLinkProtosTests",
-            dependencies: ["PhoneLinkProtos", "DCGTransport", "PhoneLinkUI", "PhoneLinkVideo", "PhoneLinkPairing"],
+            dependencies: ["PhoneLinkProtos", "DCGTransport", "PhoneLinkUI", "PhoneLinkVideo", "PhoneLinkPairing", "NanoTransport"],
             path: "Tests/PhoneLinkProtosTests"
         ),
     ]
