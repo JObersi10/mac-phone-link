@@ -1,0 +1,68 @@
+name: Build macOS App
+
+on:
+  push:
+    tags: [ "v*" ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version string for the bundle (e.g. 0.1.0)"
+        required: false
+        default: "0.0.0-dev"
+
+permissions:
+  contents: write   # needed to upload assets to GitHub Releases
+
+jobs:
+  build-app:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Toolchain
+        run: swift --version && sw_vers
+
+      - name: Resolve version
+        id: ver
+        run: |
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            V="${GITHUB_REF_NAME#v}"
+          else
+            V="${{ github.event.inputs.version }}"
+          fi
+          echo "version=${V:-0.0.0-dev}" >> "$GITHUB_OUTPUT"
+          echo "Version: ${V:-0.0.0-dev}"
+
+      - name: Build app (release)
+        run: |
+          # Single-arch (runner native). For a universal binary add
+          # `--arch arm64 --arch x86_64` — that path requires full Xcode's
+          # xcbuild, which the macos-latest runner has.
+          swift build -c release --product PhoneLinkApp
+          BIN="$(swift build -c release --product PhoneLinkApp --show-bin-path)/PhoneLinkApp"
+          echo "BIN=$BIN" >> "$GITHUB_ENV"
+          file "$BIN"
+
+      - name: Assemble PhoneLink.app
+        run: |
+          mkdir -p dist
+          scripts/package-app.sh "$BIN" dist "${{ steps.ver.outputs.version }}"
+          # Zip the bundle for upload (a .app is a directory; zipping is not a .dmg).
+          ditto -c -k --sequesterRsrc --keepParent dist/PhoneLink.app dist/PhoneLink.app.zip
+          ls -lh dist
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PhoneLink-app
+          path: dist/PhoneLink.app.zip
+          if-no-files-found: error
+
+      - name: Publish to GitHub Releases
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/PhoneLink.app.zip
+          fail_on_unmatched_files: true
