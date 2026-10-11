@@ -96,6 +96,14 @@ Two local vendor artifacts (used for analysis only, **never committed** — see
 
 ---
 
+## Docs map
+- `docs/ROADMAP.md` — phased plan (done / buildable / blocked).
+- `docs/FINDINGS.md` — consolidated reverse-engineering evidence (QR grammar,
+  DCG hosts, pairing-proxy endpoints, ceremony order, manifest app-links,
+  input/clipboard, uncertainties).
+- `docs/PAIRING_PROTOCOL.md` — pairing deep-dive. `docs/MICROSOFT_SIGNIN.md` —
+  Entra setup + signing. `PHONE_LINK_PROTOCOL_ANALYSIS.md` — original writeup.
+
 ## Known uncertainties (verify against live traffic)
 - SignalR **hub method names** for DCG send/receive — placeholders (`SendMessage`/
   `ReceiveMessage`), configurable.
