@@ -70,21 +70,52 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 </plist>
 PLIST
 
-# Ad-hoc code sign so Launch Services sees a (self-)signed bundle. This does NOT
-# notarize — downloaded copies still carry the com.apple.quarantine attribute,
-# but an ad-hoc signature turns the fatal "is damaged and can't be opened" into
-# the recoverable "unidentified developer" (right-click → Open). Proper Developer
-# ID signing/notarization is wired in CI when the secrets are present (see
-# claude/claude.md). `codesign` only runs on macOS; skip gracefully elsewhere.
+# Code signing. By default this is an ad-hoc signature (identity "-"), which lets
+# Launch Services load a self-signed bundle — it does NOT notarize, so downloaded
+# copies still carry com.apple.quarantine (right-click → Open). Set these env vars
+# to produce a real, keychain-entitled, hardened-runtime build for notarization:
+#   CODESIGN_IDENTITY     e.g. "Developer ID Application: Your Name (TEAMID)"
+#   CODESIGN_ENTITLEMENTS path to an entitlements plist (keychain-access-groups).
+# MSAL's macOS token cache REQUIRES the keychain entitlement under a real
+# identity; without it acquireToken fails with errSecMissingEntitlement (-34018).
+# Entitlements are only applied to a real identity: an ad-hoc build has no
+# AppIdentifierPrefix to resolve $(AppIdentifierPrefix), so applying them ad-hoc
+# would embed an invalid group. `codesign` only runs on macOS; skip elsewhere.
+IDENTITY="${CODESIGN_IDENTITY:--}"
+ENTITLEMENTS="${CODESIGN_ENTITLEMENTS:-}"
+SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ "$IDENTITY" != "-" ] && [ -z "$ENTITLEMENTS" ] && [ -f "$SELF_DIR/PhoneLink.entitlements" ]; then
+  ENTITLEMENTS="$SELF_DIR/PhoneLink.entitlements"
+fi
+
 if command -v codesign >/dev/null 2>&1; then
-  # Sign embedded frameworks first, then the app bundle (deep as a backstop).
+  RUNTIME_OPTS=()
+  APP_EXTRA=()
+  if [ "$IDENTITY" != "-" ]; then
+    # Hardened runtime is mandatory for notarization.
+    RUNTIME_OPTS=(--options runtime --timestamp)
+    if [ -n "$ENTITLEMENTS" ]; then
+      APP_EXTRA=(--entitlements "$ENTITLEMENTS")
+      echo "signing with entitlements: $ENTITLEMENTS"
+    fi
+  else
+    RUNTIME_OPTS=(--timestamp=none)
+  fi
+
+  # Sign embedded frameworks first (inside-out), then the app bundle.
+  # `${arr[@]+"${arr[@]}"}` expands safely even when empty under bash 3.2 `set -u`.
   if [ -d "$FRAMEWORKS" ]; then
     for fw in "$FRAMEWORKS"/*.framework; do
-      codesign --force --sign - --timestamp=none "$fw"
+      codesign --force --sign "$IDENTITY" ${RUNTIME_OPTS[@]+"${RUNTIME_OPTS[@]}"} "$fw"
     done
   fi
-  codesign --force --deep --sign - --timestamp=none "$APP"
-  codesign --verify --deep --strict "$APP" && echo "ad-hoc signed: $APP"
+  codesign --force --deep --sign "$IDENTITY" ${RUNTIME_OPTS[@]+"${RUNTIME_OPTS[@]}"} ${APP_EXTRA[@]+"${APP_EXTRA[@]}"} "$APP"
+  codesign --verify --deep --strict "$APP"
+  if [ "$IDENTITY" = "-" ]; then
+    echo "ad-hoc signed: $APP"
+  else
+    echo "signed ($IDENTITY): $APP"
+  fi
 else
   echo "warning: codesign not found; bundle left unsigned" >&2
 fi

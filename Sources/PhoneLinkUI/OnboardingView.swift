@@ -143,6 +143,11 @@ private struct SignInStep: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(model.isSigningIn || clientId.trimmingCharacters(in: .whitespaces).isEmpty)
+
+                Button("Skip for now") { model.next() }
+                    .buttonStyle(.link)
+                    .help("Explore the app without signing in. Microsoft sign-in "
+                          + "needs your own Entra app id and isn't required yet.")
             }
             if let err = model.signInError {
                 Text(err).font(.caption).foregroundStyle(.red).multilineTextAlignment(.center)

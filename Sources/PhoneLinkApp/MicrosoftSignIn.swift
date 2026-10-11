@@ -72,7 +72,14 @@ public enum MicrosoftSignIn {
             guard let clientId = resolvedClientId() else {
                 throw ConfigError.missingClientId
             }
-            let config = DCGAuthConfig(clientId: clientId, redirectUri: redirectUri)
+            // Matches the keychain-access-groups entitlement in
+            // scripts/PhoneLink.entitlements, so MSAL's token cache persists in a
+            // real (Developer ID signed) build. Harmless for ad-hoc builds.
+            let config = DCGAuthConfig(
+                clientId: clientId,
+                redirectUri: redirectUri,
+                keychainGroup: "com.microsoft.adalcache"
+            )
             let authenticator = try DCGAuthenticator(config: config)
             let anchor = try presentationViewController()
             let webParams = MSALWebviewParameters(authPresentationViewController: anchor)

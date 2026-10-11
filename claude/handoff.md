@@ -102,10 +102,15 @@ the zip to GitHub Releases.
 
 **Gatekeeper (un-notarized):** downloaded copies are quarantined → "is damaged".
 Testers: right-click → Open, or `xattr -dr com.apple.quarantine PhoneLink.app`.
-**Proper signing (TODO in CI):** repo secrets `APPLE_DEVELOPER_ID` (Developer ID
-Application identity + cert) and `PROVISIONING_PROFILE` (base64, decoded at
-build), then real `codesign` + `xcrun notarytool submit --wait` + `stapler
-staple`. That removes the prompt.
+**Proper signing (WIRED in CI, needs secrets):** `scripts/PhoneLink.entitlements`
+(keychain-access-groups incl. MSAL's `com.microsoft.adalcache` — required or MSAL
+token-cache hits `errSecMissingEntitlement -34018`). `package-app.sh` honors
+`CODESIGN_IDENTITY`/`CODESIGN_ENTITLEMENTS` (hardened runtime + entitlements for a
+real identity; ad-hoc otherwise). `build-app.yml` imports the cert and runs
+`codesign` + `xcrun notarytool submit --wait` + `stapler staple`, gated on repo
+secrets: `MACOS_CERTIFICATE` (base64 Developer ID .p12), `MACOS_CERTIFICATE_PWD`,
+`MACOS_SIGN_IDENTITY`, plus notarization `AC_API_KEY_ID`/`AC_API_ISSUER_ID`/
+`AC_API_KEY_P8`. Absent secrets → ad-hoc fallback. Setup: `docs/MICROSOFT_SIGNIN.md`.
 
 **Releases:** `v0.1.0` asset is BROKEN (pre-embed, crashes on missing MSAL).
 **`v0.1.1`** is the first launchable asset (framework embedded + ad-hoc signed).
@@ -113,7 +118,7 @@ staple`. That removes the prompt.
 ## Onboarding / pairing (PhoneLinkUI)
 `AppRootView` gates on `@AppStorage("didCompleteOnboarding")`: shows
 `OnboardingView` until the flow hits `.done`, then `PhoneLinkRootView`.
-- `OnboardingViewModel` steps: welcome → permissions → signIn → pairing → done.
+- `OnboardingViewModel` steps: welcome → permissions → signIn → pairing → done. Sign-in is optional ("Skip for now" link) since DCG is first-party-gated.
 - `PermissionsManager` (@MainActor): `requestNotifications()` (UserNotifications),
   `requestLocalNetwork()` (NWBrowser Bonjour → macOS prompt).
 - Sign-in is **wired** (`Sources/PhoneLinkApp/MicrosoftSignIn.swift`):
