@@ -153,3 +153,22 @@ from it is vendor source; no binaries or raw traces are committed.
 Confidence: the writeup tags its own claims (`[COURT]/[OBSERVED]/[STATIC]`); for
 us this is **unconfirmed against Phone Link traffic** until an ETW/token trace
 shows `wlidsvc` requesting these scopes in the pairing window.
+
+## Browser login tops out at the MSA session  — CONFIRMED live
+Live test (Claude-in-Chrome, user's own account, user-authenticated; only
+request *shapes* captured, no password/token values): signed out, then a fresh
+`login.live.com` sign-in. The whole flow was 31 requests — `ppsecure/post.srf`
+(the session post, body not inspected), `GetExperimentAssignments.srf`, and
+CDN/telemetry. **No `RST2.srf` / PPCRL, no `*.dcg.microsoft.com`, no
+`msatoken.dcg.microsoft.com`, no `MBI_SSL` request appeared.**
+
+**Conclusion:** a browser login only yields the MSA *session cookie*. The DCG
+`MBI_SSL` device ticket is never minted in-browser — it is minted by the native
+`wlidsvc` broker, which binds a device key + cert (`BindDeviceToHardware` /
+`GetDeviceCert`, per the GDID writeup). So the in-app WebView sign-in
+(`WebViewSignIn`) can authenticate the user, but that session **alone cannot
+reach DCG**; a client must additionally emulate the device broker (generate a
+device key/cert and call the RST endpoint for the DCG target). The exact shape of
+that call is **not browser-observable** — it only happens natively, which is why
+`docs/EVIDENCE_PLAN.md` item C (the `wlidsvc` ETW trace during pairing) is the
+real unlock, not optional.
