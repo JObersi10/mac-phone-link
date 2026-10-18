@@ -57,11 +57,14 @@ logic is buildable and testable now.
 Make the direct path actually carry media once a peer exists.
 1. **Frame container** — SPS parse now sets `videoSize` (✅); still confirm
    Annex B vs AVCC and PPS/VPS signaling against real bytes from a peer.
-2. **QUIC specifics** — cert pinning added (`pinnedCertificateSHA256`, ✅); still
-   need the real ALPN value and multi-stream (control vs media) if required.
+2. **QUIC specifics** — transport confirmed as **MsQuic** (✅, FINDINGS); cert
+   pinning added (`pinnedCertificateSHA256`, ✅); multi-stream confirmed — one
+   Connect multiplexes typed channels (video/audio/input/message/blob, modeled
+   in `NanoChannel`, ✅). Still need the real **ALPN string** (native/live only).
 3. **Handshake on the wire** — drive `NanoHandshake` (context_source) end to end;
    confirm message framing (netty codec) of the pairing-channel ceremony.
-4. **Transport negotiation** — Wi-Fi Direct / instant-hotspot selection via the
+4. **Transport negotiation** — confirmed there is a `hotspotSideChannelService`
+   plus BLE wake (MSAEP) in the YPP layer (✅, FINDINGS). Wi-Fi Direct / instant-hotspot selection via the
    side channel (`hotspot`/`wake` protos) before opening QUIC.
 
 ## Phase 3 — hardening / distribution (⬜, one has a cost)

@@ -172,3 +172,64 @@ device key/cert and call the RST endpoint for the DCG target). The exact shape o
 that call is **not browser-observable** — it only happens natively, which is why
 `docs/EVIDENCE_PLAN.md` item C (the `wlidsvc` ETW trace during pairing) is the
 real unlock, not optional.
+
+## Nano transport + mirroring  — CONFIRMED from YourPhone screen-mirroring stack
+Static RE (REA + plaintext API-doc/winmd sidecars) of the shipped mirroring
+stack: `LibNanoAPI.winmd/.dll`, `YourPhone.ScreenMirroring.Managed(.Protocol).dll`,
+alongside `msquic.dll` + `System.Net.Quic.dll`. Type/interface/field identifiers
+only; no vendor source copied.
+
+### Transport = MsQuic, one Connect multiplexing typed Channels (`LibNanoAPI`)
+- The direct transport is **MsQuic** (`msquic.dll`, `System.Net.Quic`), so our
+  Network.framework `NWProtocolQUIC` choice is protocol-compatible. The exact
+  **ALPN string and frame-header bytes are still unknown** (native LibNanoAPI /
+  live capture — EVIDENCE_PLAN item A).
+- Model: a **`Connect`** created as client or server (`CreateClientConnect` /
+  `CreateServerConnect`, `IConnect`/`IConnectDelegate`, `ConnectionId`,
+  `ConnectionType`, `ConnectCloseReason`/`ClientCloseReason`, `IsConnected`,
+  `GetConnectionMetrics`/`GetRealTimeConnectionMetrics`).
+- Over one Connect, typed **Channels** are multiplexed (`ChannelFactory`,
+  `CreateChannel`, `ChannelId`, `ChannelType`, `ChannelStack`, `IChannelDelegate`):
+  - `IVideoTargetChannel` (+Delegate) — video down to the PC
+  - `IAudioTargetChannel` (+Delegate) — audio down to the PC
+  - `IInputSourceChannel` — input up to the phone
+  - `IMessageChannel` — control messages
+  - `IBlobChannel` / `IBlobStream` — bulk/blob transfer
+- **Answers the Phase-2 "multi-stream?" question: yes** — control vs media are
+  separate channels over a single QUIC Connect, not one muxed byte stream.
+- Video delegate surface: `OnFramesReady`, `OnVideoFirstFrameDecoded`,
+  `OnExpiredFramesThreshold`, `RawFrames`, `frameLengthMs`, `useFrameInterpolation`,
+  `GetVideoMetrics`. Input: `SendKeyPress` with `wasKeyDown` / `isKeyReleased` /
+  `isExtendedKey` / `isAltGrOnKeyboard` — richer than our normalized pointer model.
+
+### Mirroring app messages — protobuf `YourPhone.PhoneMirroring.Protocol.V1`
+Transport-control message type is **`NearbyMessage`** (the mirroring handshake/
+control envelope). App messages (new/confirming beyond our set): `ConfigMessage`
+(MaxMainDisplayFps, AppsFeatureType, Width, Height, Dpi, HostDisplayWidth/Height),
+`LaunchPhoneScreenAppMessage` / `LaunchAppMessage` (PackageName, SessionId,
+TargetScreenLayout, TransferTaskId, Flags), `BlackScreenMessage`,
+`SetLockedStateMessage`, `DeviceLockMessage` (IsLocked, IsSecureLocked),
+`RequestSetting(Result)Message` (SkipUnlock, SkipVerification),
+`SendPinCodeMessage`, `VerificationResultMessage` (IsQrCode, ExpiryToken),
+permission messages (Request/Check/Show + LaunchSettings + Status + Result).
+
+### YPP messaging transport (separate from Nano) — `YourPhone.Connectivity.YPP.Managed`
+The notifications/messages/file layer is **SignalR + a cloud relay**, not Nano:
+`signalRPlatformConnectionManager`, `SignalRSendResponseMessageActivity`,
+`cloudRelayManager` ("calling cloud relay service"), `CustomPlatformConnectionManager`,
+`OutOfProcPlatformConnection`, `YppPlatformConnection`.
+- **Connection-string schema**: `selfClientId`, `signalRDetails`, `regionInfo`,
+  `regionName`, `installationId`, `dcgClientId`, `traceId`.
+- **Message envelope fields**: `_requestId`, `_originalRequestId`, `_route`,
+  `contentType`, `remoteAppId`, `_isGzippedCompressed` (gzip), `/internal/response`.
+- **File transfer headers**: `x-drm-resource-path`, `x-drm-resource-type`,
+  `x-drm-resource-request-type`, `x-bt-content`; OneDrive path (`FILE_TRANSFER_ONEDRIVE`).
+- **Side channels**: `hotspotSideChannelService` (Wi-Fi hotspot negotiation — the
+  Phase-2 transport-negotiation piece) and BLE wake via **MSAEP** (MsaepManager,
+  timer background task) for waking the phone over Bluetooth LE.
+- App id: `Microsoft Your Phone`, app GUID `8CF55838-E496-42C5-829B-F8D6945288F3`.
+- Cert-recovery deep link: `ms-phone:fre?reason=CertificateRecovery&devicetype=Android`.
+
+Confidence: interface/type/field identifiers are **observed** in the shipped
+artifacts; wire bytes (QUIC ALPN, Nano frame header, Nearby handshake order) are
+**not yet confirmed** and need the native LibNanoAPI disasm or a live QUIC capture.
