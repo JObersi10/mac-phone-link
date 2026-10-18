@@ -154,6 +154,116 @@ Confidence: the writeup tags its own claims (`[COURT]/[OBSERVED]/[STATIC]`); for
 us this is **unconfirmed against Phone Link traffic** until an ETW/token trace
 shows `wlidsvc` requesting these scopes in the pairing window.
 
+## Browser login tops out at the MSA session  — CONFIRMED live
+Live test (Claude-in-Chrome, user's own account, user-authenticated; only
+request *shapes* captured, no password/token values): signed out, then a fresh
+`login.live.com` sign-in. The whole flow was 31 requests — `ppsecure/post.srf`
+(the session post, body not inspected), `GetExperimentAssignments.srf`, and
+CDN/telemetry. **No `RST2.srf` / PPCRL, no `*.dcg.microsoft.com`, no
+`msatoken.dcg.microsoft.com`, no `MBI_SSL` request appeared.**
+
+**Conclusion:** a browser login only yields the MSA *session cookie*. The DCG
+`MBI_SSL` device ticket is never minted in-browser — it is minted by the native
+`wlidsvc` broker, which binds a device key + cert (`BindDeviceToHardware` /
+`GetDeviceCert`, per the GDID writeup). So the in-app WebView sign-in
+(`WebViewSignIn`) can authenticate the user, but that session **alone cannot
+reach DCG**; a client must additionally emulate the device broker (generate a
+device key/cert and call the RST endpoint for the DCG target). The exact shape of
+that call is **not browser-observable** — it only happens natively, which is why
+`docs/EVIDENCE_PLAN.md` item C (the `wlidsvc` ETW trace during pairing) is the
+real unlock, not optional.
+
+## Nano transport + mirroring  — CONFIRMED from YourPhone screen-mirroring stack
+Static RE (REA + plaintext API-doc/winmd sidecars) of the shipped mirroring
+stack: `LibNanoAPI.winmd/.dll`, `YourPhone.ScreenMirroring.Managed(.Protocol).dll`,
+alongside `msquic.dll` + `System.Net.Quic.dll`. Type/interface/field identifiers
+only; no vendor source copied.
+
+### Transport = ICE/STUN/TURN peer-to-peer + pseudo-TLS (`LibNanoAPI`, native)
+Corrects an earlier guess: the Nano **media** path is **not plain QUIC**. The
+native `LibNanoAPI.dll` (namespace `Microsoft::Nano::Streaming` / `::Input`) is a
+**WebRTC-style ICE/STUN/TURN** transport:
+- **ICE** candidate gathering + checks: `BaseIceTransport`,
+  `OnICEHandshakeComplete`, candidate types `0=Host, 1=ServerReflexive,
+  2=PeerReflexive, 3=Relayed, 4=Manual`, `m_relayedCandidatePairsOnly`.
+- **STUN/TURN**: STUN binding messages carry a transaction id (`trId4`) "on base
+  … to peer … via relay …"; TURN relay allocation with cloning (`CloneTurn`,
+  turn-server reallocation). Transport flavors seen: `nano` (direct UDP),
+  `tcp-turn`, `tls-turn`.
+- **Pseudo-TLS handshake** over the relay/base ("Sending/Received Pseudo TLS
+  handshake on base … to/from relay …"), wrapped inside STUN/"wrapper" messages.
+- Media QoE uses **RTP/RTCP** (`NanoNetworkQOE`, "RTCP report count …").
+- **Per-channel, versioned handshake packets** after the base is up — each channel
+  does a `ClientHandshakePacket` → `ServerHandshakePacket` exchange
+  (`Microsoft::Nano::Streaming::{Video,Audio,Blob,Message}Channel`,
+  `Microsoft::Nano::Input::InputChannel`); video/audio/input are asymmetric
+  (distinct Client/Server packets, "Server Handshake Packet V%d"), blob/message
+  use a single `HandshakePacket`. "is incompatible with client protocol version"
+  → the handshake negotiates a protocol version.
+- Channel lifecycle: `ChannelCreateRequest` / `ChannelOpenRequest` /
+  `ChannelBase Open`/`OnOpened`; channel id tokens `NANO_VIDEO`, `NANO_AUDIO`,
+  `NANO_INPUT`, `NANO_MESSAGING`, `NANO_BLOB`, `NANO_DCT`.
+
+**Implication for us:** our `NanoTransport` is built on Network.framework
+`NWProtocolQUIC`, which is the wrong primitive for the media path — a faithful
+client needs an **ICE agent + STUN/TURN + the pseudo-TLS handshake**, not QUIC.
+`msquic.dll` / `System.Net.Quic` (and the `H3`/`HQ` ALPN tokens) are present but
+most likely belong to the cloud/relay (HTTP/3) leg, not the P2P media path.
+Exact STUN/pseudo-TLS/handshake-packet byte layouts still need the native disasm
+or a live capture (EVIDENCE_PLAN item A).
+
+- Managed facade over this (`LibNanoAPI.winmd`): a **`Connect`** created as
+  client or server (`CreateClientConnect` /
+  `CreateServerConnect`, `IConnect`/`IConnectDelegate`, `ConnectionId`,
+  `ConnectionType`, `ConnectCloseReason`/`ClientCloseReason`, `IsConnected`,
+  `GetConnectionMetrics`/`GetRealTimeConnectionMetrics`).
+- Over one Connect, typed **Channels** are multiplexed (`ChannelFactory`,
+  `CreateChannel`, `ChannelId`, `ChannelType`, `ChannelStack`, `IChannelDelegate`):
+  - `IVideoTargetChannel` (+Delegate) — video down to the PC
+  - `IAudioTargetChannel` (+Delegate) — audio down to the PC
+  - `IInputSourceChannel` — input up to the phone
+  - `IMessageChannel` — control messages
+  - `IBlobChannel` / `IBlobStream` — bulk/blob transfer
+- **Answers the Phase-2 "multi-stream?" question: yes** — control vs media are
+  separate channels over a single ICE Connect, not one muxed byte stream.
+- Video delegate surface: `OnFramesReady`, `OnVideoFirstFrameDecoded`,
+  `OnExpiredFramesThreshold`, `RawFrames`, `frameLengthMs`, `useFrameInterpolation`,
+  `GetVideoMetrics`. Input: `SendKeyPress` with `wasKeyDown` / `isKeyReleased` /
+  `isExtendedKey` / `isAltGrOnKeyboard` — richer than our normalized pointer model.
+
+### Mirroring app messages — protobuf `YourPhone.PhoneMirroring.Protocol.V1`
+Transport-control message type is **`NearbyMessage`** (the mirroring handshake/
+control envelope). App messages (new/confirming beyond our set): `ConfigMessage`
+(MaxMainDisplayFps, AppsFeatureType, Width, Height, Dpi, HostDisplayWidth/Height),
+`LaunchPhoneScreenAppMessage` / `LaunchAppMessage` (PackageName, SessionId,
+TargetScreenLayout, TransferTaskId, Flags), `BlackScreenMessage`,
+`SetLockedStateMessage`, `DeviceLockMessage` (IsLocked, IsSecureLocked),
+`RequestSetting(Result)Message` (SkipUnlock, SkipVerification),
+`SendPinCodeMessage`, `VerificationResultMessage` (IsQrCode, ExpiryToken),
+permission messages (Request/Check/Show + LaunchSettings + Status + Result).
+
+### YPP messaging transport (separate from Nano) — `YourPhone.Connectivity.YPP.Managed`
+The notifications/messages/file layer is **SignalR + a cloud relay**, not Nano:
+`signalRPlatformConnectionManager`, `SignalRSendResponseMessageActivity`,
+`cloudRelayManager` ("calling cloud relay service"), `CustomPlatformConnectionManager`,
+`OutOfProcPlatformConnection`, `YppPlatformConnection`.
+- **Connection-string schema**: `selfClientId`, `signalRDetails`, `regionInfo`,
+  `regionName`, `installationId`, `dcgClientId`, `traceId`.
+- **Message envelope fields**: `_requestId`, `_originalRequestId`, `_route`,
+  `contentType`, `remoteAppId`, `_isGzippedCompressed` (gzip), `/internal/response`.
+- **File transfer headers**: `x-drm-resource-path`, `x-drm-resource-type`,
+  `x-drm-resource-request-type`, `x-bt-content`; OneDrive path (`FILE_TRANSFER_ONEDRIVE`).
+- **Side channels**: `hotspotSideChannelService` (Wi-Fi hotspot negotiation — the
+  Phase-2 transport-negotiation piece) and BLE wake via **MSAEP** (MsaepManager,
+  timer background task) for waking the phone over Bluetooth LE.
+- App id: `Microsoft Your Phone`, app GUID `8CF55838-E496-42C5-829B-F8D6945288F3`.
+- Cert-recovery deep link: `ms-phone:fre?reason=CertificateRecovery&devicetype=Android`.
+
+Confidence: interface/type/field identifiers and the ICE/STUN/TURN + pseudo-TLS +
+per-channel-handshake architecture are **observed** in the shipped artifacts; the
+exact wire bytes (STUN attributes, pseudo-TLS record layout, handshake-packet
+fields and version numbers, Nearby handshake order) are **not yet confirmed** and
+need the native LibNanoAPI disasm (function-level) or a live packet capture.
 ## DCG auth + device identity  — CONFIRMED from `YourPhone.YPP.Auth.dll`
 Static decompile of the Windows client's auth assembly (`YourPhone.YPP.Auth`,
 .NET 10, sha256 `d1105c4a…`), read via REA (no execution). These are protocol
