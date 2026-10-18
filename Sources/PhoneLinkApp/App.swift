@@ -28,10 +28,13 @@ struct PhoneLinkApp: App {
             permissions: PermissionsManager(),
             pairingPayload: sample.encoded()
         )
-        // Wire the real Microsoft (MSAL) interactive sign-in. Requires a
-        // caller-supplied Entra client id; see MicrosoftSignIn for how it's
-        // resolved (env / UserDefaults field / Info.plist).
-        #if canImport(MSAL)
+        // Sign-in. Prefer the in-app browser flow (no Entra registration needed:
+        // the user signs into their own account and we keep only the resulting
+        // MSA session — see WebViewSignIn). Fall back to the MSAL/Entra flow only
+        // where WebKit is unavailable.
+        #if canImport(WebKit)
+        model.signInAction = WebViewSignIn.makeSignInAction()
+        #elseif canImport(MSAL)
         model.signInAction = MicrosoftSignIn.makeSignInAction()
         #endif
         _onboarding = StateObject(wrappedValue: model)
