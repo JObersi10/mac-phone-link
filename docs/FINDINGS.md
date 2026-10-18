@@ -122,3 +122,34 @@ the open-in-browser fallback is the pairing-link rejection described above.
 - Nano QUIC ALPN value + whether control/media are separate streams.
 - Mirror frame container (Annex B vs AVCC) and SPS-derived video size.
 - Session-key derivation; exact DCG claim validation beyond nonce/dcgClientId.
+
+## Windows identity layer — DDS + MSA device tokens  (external RE note)
+Source: an independent Windows-side reverse-engineering writeup (GDID / MSA
+Device PUID), not our own extraction. Recorded here as protocol facts because it
+names the cloud identity layer that sits *under* the DCG/pairing wall. Nothing
+from it is vendor source; no binaries or raw traces are committed.
+
+- **DDS = Device Directory Service** is the cross-device graph behind Phone Link,
+  cloud clipboard, "Continue on PC" and Nearby Share. Endpoints seen in `cdp.dll`:
+  `dds.microsoft.com`, `fd.dds.microsoft.com`, `aad.cs.dds.microsoft.com`,
+  `cdpcs.access.microsoft.com`. The Connected Devices Platform (`CDPSvc`) is the
+  client that *registers* an installation into that graph (keyed `g:<decimal>`).
+- **The real client authenticates with MSA *device* tokens, not user OAuth.**
+  The MSA/Passport service (`wlidsvc`) mints device tokens scoped to exactly the
+  graph endpoints:
+  - `service::dds.microsoft.com::MBI_SSL_TOKEN_BROKER`
+  - `service::activity.windows.com::MBI_SSL_SA_TOKEN_BROKER`
+  These are `MBI_SSL` broker tokens tied to a machine-provisioned **Device PUID**
+  (`0018…` class), provisioned against `login.live.com` (PPCRL SOAP
+  `DeviceAssociateRequest`, `HWPUIDFlipped`) with a device cert bound by
+  `BindDeviceToHardware` / `GetDeviceCert`.
+- **Why this matters for us:** our sign-in uses a *user* Entra/MSAL token. The
+  DCG/activity endpoints appear to expect an MSA **device**-broker credential
+  (`MBI_SSL_*`) that only the first-party stack provisions — a strong candidate
+  explanation for the `AADSTS65001` refusal on `DCG.ReadWrite`, and it lines up
+  with "device-trust cert issuance" being gated. Confirming this needs a live
+  `wlidsvc` token-mint trace during a real pairing (see `docs/EVIDENCE_PLAN.md`).
+
+Confidence: the writeup tags its own claims (`[COURT]/[OBSERVED]/[STATIC]`); for
+us this is **unconfirmed against Phone Link traffic** until an ETW/token trace
+shows `wlidsvc` requesting these scopes in the pairing window.
