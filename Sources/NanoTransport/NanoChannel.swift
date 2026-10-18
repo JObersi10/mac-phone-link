@@ -1,8 +1,15 @@
 // NanoChannel — the confirmed channel model of the Nano transport, recovered by
 // static RE of the shipped `LibNanoAPI` (see docs/FINDINGS.md § "Nano transport
-// + mirroring"). The real transport is MsQuic: one `Connect` (client or server)
-// that multiplexes several *typed* channels, rather than a single muxed byte
-// stream. These identifiers are protocol facts, not vendor source.
+// + mirroring"). The real transport is a WebRTC-style ICE/STUN/TURN peer-to-peer
+// path with a custom pseudo-TLS handshake (NOT plain QUIC): one `Connect` (client
+// or server) multiplexes several *typed* channels, each opened with its own
+// versioned handshake packet. These identifiers are protocol facts, not vendor
+// source.
+//
+// NOTE: the existing `QUICNanoConnection` (Network.framework NWProtocolQUIC) is
+// the wrong transport primitive for the media path per this finding; a faithful
+// client needs an ICE agent + STUN/TURN + the pseudo-TLS handshake. This file
+// models only the channel taxonomy, which is transport-independent.
 //
 // SPDX-License-Identifier: MIT
 

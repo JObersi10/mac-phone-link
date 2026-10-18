@@ -179,12 +179,41 @@ stack: `LibNanoAPI.winmd/.dll`, `YourPhone.ScreenMirroring.Managed(.Protocol).dl
 alongside `msquic.dll` + `System.Net.Quic.dll`. Type/interface/field identifiers
 only; no vendor source copied.
 
-### Transport = MsQuic, one Connect multiplexing typed Channels (`LibNanoAPI`)
-- The direct transport is **MsQuic** (`msquic.dll`, `System.Net.Quic`), so our
-  Network.framework `NWProtocolQUIC` choice is protocol-compatible. The exact
-  **ALPN string and frame-header bytes are still unknown** (native LibNanoAPI /
-  live capture — EVIDENCE_PLAN item A).
-- Model: a **`Connect`** created as client or server (`CreateClientConnect` /
+### Transport = ICE/STUN/TURN peer-to-peer + pseudo-TLS (`LibNanoAPI`, native)
+Corrects an earlier guess: the Nano **media** path is **not plain QUIC**. The
+native `LibNanoAPI.dll` (namespace `Microsoft::Nano::Streaming` / `::Input`) is a
+**WebRTC-style ICE/STUN/TURN** transport:
+- **ICE** candidate gathering + checks: `BaseIceTransport`,
+  `OnICEHandshakeComplete`, candidate types `0=Host, 1=ServerReflexive,
+  2=PeerReflexive, 3=Relayed, 4=Manual`, `m_relayedCandidatePairsOnly`.
+- **STUN/TURN**: STUN binding messages carry a transaction id (`trId4`) "on base
+  … to peer … via relay …"; TURN relay allocation with cloning (`CloneTurn`,
+  turn-server reallocation). Transport flavors seen: `nano` (direct UDP),
+  `tcp-turn`, `tls-turn`.
+- **Pseudo-TLS handshake** over the relay/base ("Sending/Received Pseudo TLS
+  handshake on base … to/from relay …"), wrapped inside STUN/"wrapper" messages.
+- Media QoE uses **RTP/RTCP** (`NanoNetworkQOE`, "RTCP report count …").
+- **Per-channel, versioned handshake packets** after the base is up — each channel
+  does a `ClientHandshakePacket` → `ServerHandshakePacket` exchange
+  (`Microsoft::Nano::Streaming::{Video,Audio,Blob,Message}Channel`,
+  `Microsoft::Nano::Input::InputChannel`); video/audio/input are asymmetric
+  (distinct Client/Server packets, "Server Handshake Packet V%d"), blob/message
+  use a single `HandshakePacket`. "is incompatible with client protocol version"
+  → the handshake negotiates a protocol version.
+- Channel lifecycle: `ChannelCreateRequest` / `ChannelOpenRequest` /
+  `ChannelBase Open`/`OnOpened`; channel id tokens `NANO_VIDEO`, `NANO_AUDIO`,
+  `NANO_INPUT`, `NANO_MESSAGING`, `NANO_BLOB`, `NANO_DCT`.
+
+**Implication for us:** our `NanoTransport` is built on Network.framework
+`NWProtocolQUIC`, which is the wrong primitive for the media path — a faithful
+client needs an **ICE agent + STUN/TURN + the pseudo-TLS handshake**, not QUIC.
+`msquic.dll` / `System.Net.Quic` (and the `H3`/`HQ` ALPN tokens) are present but
+most likely belong to the cloud/relay (HTTP/3) leg, not the P2P media path.
+Exact STUN/pseudo-TLS/handshake-packet byte layouts still need the native disasm
+or a live capture (EVIDENCE_PLAN item A).
+
+- Managed facade over this (`LibNanoAPI.winmd`): a **`Connect`** created as
+  client or server (`CreateClientConnect` /
   `CreateServerConnect`, `IConnect`/`IConnectDelegate`, `ConnectionId`,
   `ConnectionType`, `ConnectCloseReason`/`ClientCloseReason`, `IsConnected`,
   `GetConnectionMetrics`/`GetRealTimeConnectionMetrics`).
@@ -196,7 +225,7 @@ only; no vendor source copied.
   - `IMessageChannel` — control messages
   - `IBlobChannel` / `IBlobStream` — bulk/blob transfer
 - **Answers the Phase-2 "multi-stream?" question: yes** — control vs media are
-  separate channels over a single QUIC Connect, not one muxed byte stream.
+  separate channels over a single ICE Connect, not one muxed byte stream.
 - Video delegate surface: `OnFramesReady`, `OnVideoFirstFrameDecoded`,
   `OnExpiredFramesThreshold`, `RawFrames`, `frameLengthMs`, `useFrameInterpolation`,
   `GetVideoMetrics`. Input: `SendKeyPress` with `wasKeyDown` / `isKeyReleased` /
@@ -230,6 +259,8 @@ The notifications/messages/file layer is **SignalR + a cloud relay**, not Nano:
 - App id: `Microsoft Your Phone`, app GUID `8CF55838-E496-42C5-829B-F8D6945288F3`.
 - Cert-recovery deep link: `ms-phone:fre?reason=CertificateRecovery&devicetype=Android`.
 
-Confidence: interface/type/field identifiers are **observed** in the shipped
-artifacts; wire bytes (QUIC ALPN, Nano frame header, Nearby handshake order) are
-**not yet confirmed** and need the native LibNanoAPI disasm or a live QUIC capture.
+Confidence: interface/type/field identifiers and the ICE/STUN/TURN + pseudo-TLS +
+per-channel-handshake architecture are **observed** in the shipped artifacts; the
+exact wire bytes (STUN attributes, pseudo-TLS record layout, handshake-packet
+fields and version numbers, Nearby handshake order) are **not yet confirmed** and
+need the native LibNanoAPI disasm (function-level) or a live packet capture.
