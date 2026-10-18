@@ -85,8 +85,10 @@ Documented so no one burns time here expecting a code fix:
    itself is issued during the (gated) pairing-proxy enrollment.
 
 Only two things could move these: Microsoft permitting third-party clients, or a
-live-traffic study on a paired device (out of scope for static RE). Everything in
-Phases 1–3 is worth doing regardless; it makes the client complete up to the wall.
+live-traffic study on a paired device (out of scope for static RE). The concrete
+capture plan for that study — what to collect, how to redact it, and which item
+each piece unblocks — is in `docs/EVIDENCE_PLAN.md`. Everything in Phases 1–3 is
+worth doing regardless; it makes the client complete up to the wall.
 
 ---
 
