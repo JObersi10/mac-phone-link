@@ -153,3 +153,68 @@ from it is vendor source; no binaries or raw traces are committed.
 Confidence: the writeup tags its own claims (`[COURT]/[OBSERVED]/[STATIC]`); for
 us this is **unconfirmed against Phone Link traffic** until an ETW/token trace
 shows `wlidsvc` requesting these scopes in the pairing window.
+
+## DCG auth + device identity  — CONFIRMED from `YourPhone.YPP.Auth.dll`
+Static decompile of the Windows client's auth assembly (`YourPhone.YPP.Auth`,
+.NET 10, sha256 `d1105c4a…`), read via REA (no execution). These are protocol
+facts (endpoints, header names, api-version, algorithm identifiers, enum names)
+pulled from `#US` string literals; vendor source was not copied.
+
+### The login is MSA-token-based, NOT an Entra `DCG.ReadWrite` scope
+The real client does **not** request an AAD/Entra access token for
+`https://dcg.microsoft.com/DCG.ReadWrite`. It acquires a **Microsoft Account
+(MSA)** ticket via the account broker (WAM `webAccount`) against the consumers
+authority, then presents it to the DCG auth host:
+- MSA authority seen: `https://login.microsoft.com` + `consumers`.
+- Scope strategy (observed log): try a **SAPI** MSA token first, then
+  **fall back to `MBI_SSL` scope** — matches the README's `service::…::MBI_SSL`
+  device-broker form.
+- DCG auth host: **`https://msatoken.dcg.microsoft.com`**.
+- Request shape: `…&api-version=2.0&clientid=<dcg client id>` (`api-version=2.0`).
+- Headers: `Authorization: Bearer <msaToken>`, **`Authorization-Type: MSA`**.
+
+**Implication for us:** our `AADSTS65001` wall is likely partly self-inflicted —
+we were requesting an Entra access token for a first-party scope. The shipped
+client never does that; it rides an MSA broker ticket (SAPI→MBI_SSL) with
+`Authorization-Type: MSA`. Worth retrying the DCG call with an MSA token of the
+MBI_SSL form rather than an Entra `DCG.ReadWrite` scope.
+
+### Per-environment DCG client ids (config keys, not secrets)
+`dcg_client_id`, `dcg_prod_client_id`, `dcg_beta_client_id`, `dcg_df_client_id`
+— the app selects one per `EnvironmentType` (PROD/BETA/DF), resolved through an
+`EnvironmentDiscoveryManager` that calls a discovery service and can snap the
+device PROD↔BETA.
+
+### Device identity ceremony (`DcgAuthManager` / `AuthServiceCryptoHelper`)
+Nonce-bound, certificate-based establish/refresh/rotate:
+- Activities: `EstablishIdentityActivity`, `RefreshAccessTokenActivity`,
+  `KeyRotationActivity`; states `DeviceIdProvisioned` / `DeviceIdDeprovisioned`.
+- Nonce: fetched from the DCG auth service (not Workplace-Join DRS — see
+  correction below), then a **nonce JWT** is signed and sent with establish /
+  sign-in / key-rotation. Failure anomalies: `InvalidNonceEvent`,
+  `DeviceIdCollisionEvent`.
+- Key-rotation messages: `keyOwnershipProofRequest`,
+  `newIdentityOwnershipProofRequest`, `keyRotationRequest`.
+- **Signing:** ECDSA P-384 — `http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha384`.
+- **JWE:** `RSA-OAEP` key wrap + `A256CBC-HS512` content encryption.
+- Self-signed cert with `CN=<distinguished name>`; cert + private key held in the
+  platform key store (`CngKeyName`), DPAPI-protected key storage.
+
+### Crypto trust relationships (device-to-device trust)
+`CryptoTrustRelationship` records: `SelfClientId`, `PartnerClientId`,
+`PartnerCertificate`, `PartnerTemporaryCertificate`, `PartnerKeyExpirationTime`,
+`MsaCid`, `TrustType`, `TrustedClients`. **TrustType** enum:
+`LegacyD2D`, `AccountPairingD2D`, `AsyncD2D`, `A2D` (+ `Unknown`). This is the
+trust store that a completed pairing populates — `A2D` / `AccountPairingD2D`
+correspond to the QR/account-transfer pairing path.
+
+### Correction to earlier assumptions
+Our `Sources/DCGAuth` modeled the nonce as a **Workplace-Join / DRS** flow
+(`enterpriseregistration.windows.net`, `EnrollmentServer/contract`). The binary
+shows the nonce is **DCG-native** (via `msatoken.dcg.microsoft.com`), and the
+token is an **MSA** ticket, not an Entra `DCG.ReadWrite` scope. The DRS model is
+likely wrong for Phone Link; treat `DCGWireContract` (new) as the confirmed shape.
+
+Confidence: endpoint/header/api-version/algorithm/enum strings are **observed**
+in the shipped artifact; the end-to-end sequence is **derived** from them and
+not yet confirmed against live traffic (see `docs/EVIDENCE_PLAN.md` item A/C).
