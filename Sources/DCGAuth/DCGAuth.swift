@@ -3,15 +3,18 @@
 //
 // SPDX-License-Identifier: MIT
 //
-// IMPORTANT — first-party constraint (read before wiring this up):
-// The DCG resource (`https://dcg.microsoft.com`, scope `DCG.ReadWrite`) is a
-// Microsoft FIRST-PARTY protected resource. A third-party / user-registered
-// Entra app will almost certainly be refused consent for it
-// (AADSTS65001 / AADSTS650057 / invalid_scope). This wrapper therefore takes a
-// caller-supplied `clientId` and does NOT embed any first-party app identity —
-// doing so would be impersonating the official app, not interoperating with it.
-// Use `DCGScopes.diagnostic` first to prove the sign-in mechanics work, then try
-// `DCGScopes.dcgReadWrite` to observe exactly how/whether the tenant grants it.
+// IMPORTANT — the DCG resource scope below is likely NOT how the real client
+// authenticates. Static RE of `YourPhone.YPP.Auth.dll` (see
+// docs/FINDINGS.md § "DCG auth + device identity" and `DCGWireContract`) shows
+// the shipped client does NOT request an Entra access token for
+// `https://dcg.microsoft.com/DCG.ReadWrite`. It acquires a Microsoft Account
+// (MSA) broker ticket (SAPI scope, falling back to `MBI_SSL`) and presents it to
+// `https://msatoken.dcg.microsoft.com` with header `Authorization-Type: MSA`.
+// So our prior `AADSTS65001` refusal was probably from asking for the wrong KIND
+// of token, not purely a first-party wall. `DCGScopes.dcgReadWrite` is kept only
+// as the earlier hypothesis; prefer the MSA/MBI_SSL path in `DCGWireContract`.
+// This wrapper still takes a caller-supplied `clientId` and embeds no first-party
+// identity — matching the protocol is interoperating, impersonating is not.
 
 import Foundation
 import MSAL
