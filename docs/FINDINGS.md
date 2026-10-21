@@ -328,3 +328,98 @@ likely wrong for Phone Link; treat `DCGWireContract` (new) as the confirmed shap
 Confidence: endpoint/header/api-version/algorithm/enum strings are **observed**
 in the shipped artifact; the end-to-end sequence is **derived** from them and
 not yet confirmed against live traffic (see `docs/EVIDENCE_PLAN.md` item A/C).
+
+---
+
+## Android companion surface  — CONFIRMED from live pairing logcat
+From a redacted `adb logcat` taken during a Windows↔Android pairing (raw kept
+local per `EVIDENCE_PLAN`; only names recorded here). App = `com.microsoft.appmanager`,
+log tag `WindowsLink`, MSA tag `OneAuthLog`.
+
+- **Phone-side auth is MSAL against `login.microsoftonline.com/consumers`** (MSA
+  consumers authority), consistent with the DCG MSA-ticket finding. (The Windows
+  DCG leg uses `login.microsoft.com/consumers` + `msatoken.dcg.microsoft.com`;
+  two different legs.)
+- **Transport bootstrap uses a Bluetooth RFCOMM server** on the phone
+  (`method_is_rfcomm_server_opened`, `capability_bluetooth_transport`,
+  `notifyConnectionState`) — confirms the BLE/RFCOMM side-channel + wake we
+  inferred from the YPP layer; the media path (Nano/ICE) is negotiated after.
+- **Capability flags the phone advertises to the PC** (cross-process query
+  grammar `capability_<name>`): `adaptive_layout`, `android_apps_on_windows`,
+  `audio_streaming`, `black_screen_control`, `bluetooth_transport`,
+  `call_support`, `clipboard_redirector`, `device_info`, `drag_and_drop_broker`,
+  `input_inject`, `instant_hotspot`, `launch_activity`, `message_support`,
+  `pre_granted_permissions`, `recent_apps`, `remote_lock_simulation`,
+  `tablet_support`, `wifi_direct`. This is the authoritative feature set a
+  faithful client negotiates.
+- **Internal content-provider IPC surface** (phone app): `DeviceInfo@{isFolded,
+  getVendorRssiLevel,getMAXRssiLevel}`, `PermissionManager@{isWFDPermissionGranted,
+  isBluetoothConnectPermissionGranted}`, `TaskInfoManager@getRecentTasks`,
+  `UserInfo@isTwoPhoneModeEnabled`, `PreviewMode@isPreviewModeEnabled`,
+  `ServiceInfo@getLauncherIconEnabled`, `WindowsLinkTileRequest@setStateOnAnd{Connected,Disconnected}`.
+- Note: logcat does **not** carry the Nano/ICE/TURN wire bytes or the DCG HTTP —
+  those live in native libs + on the network. (`quic`/`ice`/`turn` substring hits
+  in logcat were Qualcomm-camera / "device" / "return" noise, not transport.)
+
+## "Phone as webcam" feature  — CONFIRMED from live webcam logcat
+Separate feature from screen mirroring: the phone's camera is streamed to the PC
+and surfaced there as a **virtual camera** device.
+
+- Phone-side owner: `com.microsoft.mmx.agents.camera` —
+  `…ui.views.CameraStreamActivity`, `…foregroundservice.CameraStreamForegroundService`,
+  `…ui.views.StreamConnectedFragment.showEffectsDialog` (so camera effects are a
+  phone-side control surface).
+- **Encoding = H.264** (`mime = "video/avc"`, input `video/raw`), via the
+  Qualcomm hw encoder `c2.qti.avc.encoder` (sw fallback `c2.android.avc.encoder`),
+  `bitrate-mode = 1` (VBR). Observed bitrate ladder ~1 Mbps / ~2 Mbps with a high
+  max ceiling. This is the **same codec and transport as mirroring** — just the
+  camera as the source instead of the screen.
+- **Implication for the Mac client:** receiving/decoding reuses the existing
+  H.264 path (`VTVideoDecoder`) over a Nano typed channel; the only genuinely new
+  pieces are (a) the camera-stream control messages (start/stop/effects) and
+  (b) a macOS-side sink. The macOS equivalent of the Windows virtual camera is a
+  **Core Media IO camera extension** (`CMIOExtension` system extension) that
+  publishes decoded frames as a system camera any app (FaceTime/Zoom) can select.
+  Both are buildable independently of the first-party wall; lighting them up still
+  needs the live Nano transport.
+
+Confidence: component/class names, codec mime, encoder ids and MSAL authority are
+**observed** in live logcat; the stream↔transport binding is **derived** (reuses
+the confirmed mirroring/Nano path) and not yet confirmed on the wire.
+
+## Windows auth leg  — CONFIRMED ON THE WIRE (live WPR/ETW trace)
+From a targeted LiveId + WinHTTP/WinINet ETW trace during a live reconnect (raw
+`.etl` kept local). This is the first **on-the-wire** confirmation of the DCG
+auth model — it upgrades the earlier static-RE inferences to observed fact.
+
+- **DCG.ReadWrite is acquired as an MSA *token-broker* scope, not an Entra OAuth
+  scope.** The exact request scope string on the wire is
+  `scope=https://dcg.microsoft.com/DCG.ReadWrite&api-version=2.0`, used inside a
+  WS-Trust `RequestSecurityToken` SOAP with a `_TOKEN_BROKER` policy suffix
+  (`.../DCG.ReadWrite_TOKEN_BROKER`). So the client asks **wlidsvc / the MSA
+  token broker** for a ticket to the DCG resource — it never does an Entra
+  `/oauth2/v2.0/token` call for that scope. **This is the concrete explanation
+  for `AADSTS65001`:** we were asking the wrong authority (Entra) for a scope the
+  real client only ever requests through the MSA broker.
+- **Device-token broker scopes confirmed live** (match the external DDS note
+  exactly): `service::dds.microsoft.com::MBI_SSL` and
+  `service::dds.microsoft.com::MBI_SSL_TOKEN_BROKER`.
+- **The device identity ceremony is live PPCRL / WS-Trust:** `GetDeviceCert`,
+  `RequestSecurityToken` / `RequestMultipleSecurityTokens` (RST/RSTR), `wsse:`
+  security headers, and `DeviceAssociateService` all appear during the window —
+  against `login.live.com` / `login.microsoft.com`. The device cert + MBI_SSL
+  device ticket are minted here by the native stack; this is the gated step.
+- **Device-graph endpoint (DDS / "Continuum"):**
+  `GET https://continuum.dds.microsoft.com/Command/user/Continuum/Devices?scenario=…`
+  (resolves via Azure Front Door, `*.tm-azurefd.net`). This is the cross-device
+  directory the client registers into — the `g:<decimal>` graph from the DDS note.
+- Hosts seen: `login.microsoft.com`, `login.live.com`, `dcg.microsoft.com`,
+  `continuum.dds.microsoft.com`, `account.live.com`. `api-version=2.0` confirmed.
+- **No Nano/TURN/relay host appeared** in this trace — expected, the ETW
+  providers were HTTP/auth only. The transport leg still needs a packet capture
+  (`capture/phonelink-transport-pktmon.ps1`).
+
+Net: the auth side is now **confirmed, not inferred** — and it confirms the wall
+is specifically the MSA device-token / device-cert mint (`wlidsvc` PPCRL), which
+a third party cannot reproduce. `Sources/DCGAuth` should target the MSA
+token-broker path (`DCGWireContract`), not Entra OAuth.
