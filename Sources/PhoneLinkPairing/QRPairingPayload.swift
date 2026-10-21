@@ -58,8 +58,13 @@ public struct QRPairingPayload: Equatable, Sendable {
     public var packageName: String
     /// `tsft` — MSA transfer token (transfer modes only).
     public var transferToken: String?
-    /// `cpsi` — cloud pin-session id (proxy/transfer modes only).
+    /// `cpsi` — cloud pin-session id (proxy/transfer modes only). When set, the
+    /// link is encoded in the real PC "Add device" `/dl` grammar.
     public var cloudPinSessionId: String?
+    /// `et` — session expiry, Unix seconds (the `/dl` add-device flow only).
+    public var expiry: Date?
+    /// `mvc` — client min-version code (the `/dl` add-device flow only).
+    public var minVersionCode: String?
 
     public init(uaid: String,
                 environment: DCGEnvironment = .production,
@@ -68,7 +73,9 @@ public struct QRPairingPayload: Equatable, Sendable {
                 traceId: String? = nil,
                 packageName: String = QRPairingPayload.defaultPackageName,
                 transferToken: String? = nil,
-                cloudPinSessionId: String? = nil) {
+                cloudPinSessionId: String? = nil,
+                expiry: Date? = nil,
+                minVersionCode: String? = nil) {
         self.uaid = uaid
         self.environment = environment
         self.mode = mode
@@ -77,6 +84,8 @@ public struct QRPairingPayload: Equatable, Sendable {
         self.packageName = packageName
         self.transferToken = transferToken
         self.cloudPinSessionId = cloudPinSessionId
+        self.expiry = expiry
+        self.minVersionCode = minVersionCode
     }
 
     /// Build from an explicit pairing code plus optional prefix, producing a
@@ -116,6 +125,26 @@ public struct QRPairingPayload: Equatable, Sendable {
         var comps = URLComponents()
         comps.scheme = "https"
         comps.host = environment.host
+        // The real PC "Add device" link uses the /dl path + a cpsi PinSession
+        // (mvc/cpsi/vm/et/r/ti, no uaid/apn), confirmed from a live PC. The
+        // uaid "ideal flow" is the other entry point.
+        if let cpsi = cloudPinSessionId {
+            comps.path = "/dl"
+            var items = [
+                URLQueryItem(name: "mvc", value: minVersionCode ?? "0"),
+                URLQueryItem(name: "cpsi", value: cpsi),
+                URLQueryItem(name: "vm", value: mode.rawValue),
+            ]
+            if let et = expiry {
+                items.append(URLQueryItem(name: "et", value: String(Int(et.timeIntervalSince1970))))
+            }
+            items.append(URLQueryItem(name: "r", value: ring.rawValue))
+            // `ti` here is 32 lowercase hex, no dashes (not a dashed GUID).
+            items.append(URLQueryItem(name: "ti", value: traceId ?? Self.randomTraceId32()))
+            if let tsft = transferToken { items.append(URLQueryItem(name: "tsft", value: tsft)) }
+            comps.queryItems = items
+            return comps.url!
+        }
         comps.path = "/"
         var items = [
             URLQueryItem(name: "vm", value: mode.rawValue),
@@ -125,9 +154,14 @@ public struct QRPairingPayload: Equatable, Sendable {
             URLQueryItem(name: "apn", value: packageName),
         ]
         if let tsft = transferToken { items.append(URLQueryItem(name: "tsft", value: tsft)) }
-        if let cpsi = cloudPinSessionId { items.append(URLQueryItem(name: "cpsi", value: cpsi)) }
         comps.queryItems = items
         return comps.url!
+    }
+
+    /// A 32-char lowercase-hex trace id, the format the `/dl` add-device link uses.
+    static func randomTraceId32() -> String {
+        let hex = "0123456789abcdef"
+        return String((0..<32).map { _ in hex.randomElement()! })
     }
 
     public func encoded() -> String { url().absoluteString }
@@ -142,7 +176,12 @@ public struct QRPairingPayload: Equatable, Sendable {
         else { return nil }
         let q = Dictionary(uniqueKeysWithValues:
             (comps.queryItems ?? []).map { ($0.name, $0.value ?? "") })
-        guard let uaid = q["uaid"], !uaid.isEmpty else { return nil }
+        // Accept either the uaid "ideal flow" (/) or the cpsi "add device"
+        // flow (/dl). One of the two must be present.
+        let uaid = q["uaid"] ?? ""
+        let cpsi = q["cpsi"].flatMap { $0.isEmpty ? nil : $0 }
+        guard !uaid.isEmpty || cpsi != nil else { return nil }
+        let et = q["et"].flatMap { Double($0) }.map { Date(timeIntervalSince1970: $0) }
         self.init(
             uaid: uaid,
             environment: env,
@@ -151,7 +190,9 @@ public struct QRPairingPayload: Equatable, Sendable {
             traceId: q["ti"],
             packageName: q["apn"] ?? Self.defaultPackageName,
             transferToken: q["tsft"],
-            cloudPinSessionId: q["cpsi"]
+            cloudPinSessionId: cpsi,
+            expiry: et,
+            minVersionCode: q["mvc"]
         )
     }
 }

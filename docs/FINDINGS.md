@@ -60,6 +60,42 @@ Source: `FreQrCodeManager`, `FreParseDynamicLinkManager`, `DeeplinkResolver`.
   the transfer modes. `validateDynamicLink` fails on `EMPTY_{VM,CPSI,RING,TSFT,MVC}`.
 Modeled: `QRPairingPayload`, `DynamicLinkMode`, `RingDefinition`.
 
+### Real PC "Add device" link  — CONFIRMED from a live Windows PC
+Captured from a real Windows Phone Link "Add device" button (live `cpsi`/`ti`/`et`
+values redacted — the `cpsi` is a short-lived session token). The add-device link
+the **PC** produces is a *different* shape from the `uaid` "ideal flow" above:
+```
+https://dcg.microsoft.com/dl?mvc=<int>&cpsi=<char><guid>&vm=101&et=<unix>&r=5&ti=<32-hex>
+```
+Corrections this forces to the earlier model:
+- **Path is `/dl`** (a deeplink path), not `/`.
+- **`vm=101`** is the real PC add-device mode (we'd labelled 101 "minimalism
+  OOBE"); `vm=5` ideal-flow is a *different* entry point.
+- **`cpsi`** carries the cloud PinSession — a single letter prefix + a GUID
+  (e.g. `n<guid>`); this flow uses **no `uaid` and no `apn`**.
+- **`et`** = Unix-seconds **expiry** (new param; observed ≈ capture time, so the
+  session is short-lived — explains why an old link later reads "unavailable").
+- **`mvc`** = numeric client **min-version code** (~5.23M).
+- **`ti`** here is **32 lowercase hex, no dashes** — not a dashed GUID.
+This is the link whose `cpsi` only the first-party pairing proxy can mint; the
+grammar is now exact, but the session behind it is still cloud-gated.
+
+**What `/dl` does when opened — CONFIRMED live (observed resolver behavior):**
+opening the link on a non-Android client (Claude's browser) **302-redirects to
+the Google Play page** for `com.microsoft.appmanager`, carrying the pairing
+context as the Play **install `referrer`**:
+`cpsi=<session>&ti=<32hex>&vm=101&r=5&et=<unix>&mvc=<int>&utm_source=pcqr`.
+So pairing is a **deferred deep link via the Play Install Referrer**:
+1. Phone scans the PC QR → hits `dcg.microsoft.com/dl`.
+2. If the app isn't installed → redirect to Play **with the pairing params as
+   the install referrer**; on first launch the app reads the Play Install
+   Referrer API, recovers `cpsi`/`ti`/`vm`, and completes pairing cloud-side.
+3. If the app **is** installed → the `autoVerify` App Link opens the app
+   directly with the deeplink (no Play round-trip).
+`utm_source=pcqr` tags the origin as the PC QR. This explains why a scan without
+a live, cloud-minted `cpsi` just falls through to a web/Play page and never
+pairs: the whole ceremony hinges on a `cpsi` the first-party proxy issues.
+
 ### Why a locally-built QR still won't pair
 `dcg.microsoft.com` IS an `autoVerify` App Link in the manifest, so the format is
 right — but `validateDynamicLink` only treats the link as a *pairing* link when
