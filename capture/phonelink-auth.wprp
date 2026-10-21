@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  phonelink-auth.wprp — a TARGETED Windows Performance Recorder profile.
+
+  Records ONLY the providers relevant to the Phone Link *auth / token-mint* leg:
+    - Microsoft-Windows-LiveId  : the wlidsvc MSA ticket mint (scopes, authority,
+                                   MBI_SSL / RST / PPCRL device-token requests)
+    - Microsoft-Windows-WinHttp : the native HTTP stack most MS services use
+                                   (the DCG calls to msatoken.dcg.microsoft.com)
+    - Microsoft-Windows-WinINet : WinINet-backed HTTP (fallback stack)
+    - Microsoft-Windows-WebIO   : the shared Web I/O layer under both
+
+  It does NOT enable CPU sampling, disk, GPU, or GeneralProfile — that is what
+  turned the old capture into 7 GB. The same pairing session with this profile
+  is typically tens of MB.
+
+  It does NOT (and cannot) capture the Nano media transport bytes
+  (ICE/STUN/TURN/pseudo-TLS) — those are payload on the wire, not ETW events.
+  Use capture/phonelink-transport-pktmon.ps1 for that leg.
+
+  Usage is wired into capture/phonelink-trace.ps1 (-Mode Auth, the default).
+-->
+<WindowsPerformanceRecorder Version="1.0" Author="mac-phone-link">
+  <Profiles>
+    <EventCollector Id="EC_PhoneLinkAuth" Name="PhoneLinkAuthCollector">
+      <BufferSize Value="1024" />
+      <Buffers Value="256" />
+    </EventCollector>
+
+    <EventProvider Id="EP_LiveId"  Name="Microsoft-Windows-LiveId" />
+    <EventProvider Id="EP_WinHttp" Name="Microsoft-Windows-WinHttp" />
+    <EventProvider Id="EP_WinINet" Name="Microsoft-Windows-WinINet" />
+    <EventProvider Id="EP_WebIO"   Name="Microsoft-Windows-WebIO" />
+
+    <Profile Id="PhoneLinkAuth.Verbose.File" Name="PhoneLinkAuth"
+             Description="Phone Link auth / token-mint + HTTP (targeted, small)"
+             LoggingMode="File" DetailLevel="Verbose">
+      <Collectors>
+        <EventCollectorId Value="EC_PhoneLinkAuth">
+          <EventProviders>
+            <EventProviderId Value="EP_LiveId" />
+            <EventProviderId Value="EP_WinHttp" />
+            <EventProviderId Value="EP_WinINet" />
+            <EventProviderId Value="EP_WebIO" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <!-- Light mode: same providers, Light detail. Referenced for completeness
+         so `wpr -start phonelink-auth.wprp!PhoneLinkAuth.Light.File` also works. -->
+    <Profile Id="PhoneLinkAuth.Light.File" Name="PhoneLinkAuth"
+             Description="Phone Link auth / token-mint + HTTP (targeted, light)"
+             LoggingMode="File" DetailLevel="Light" Base="PhoneLinkAuth.Verbose.File" />
+  </Profiles>
+</WindowsPerformanceRecorder>

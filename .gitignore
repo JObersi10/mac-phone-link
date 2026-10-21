@@ -27,3 +27,18 @@ protos/EXTRACTED_SCHEMAS.md
 
 # ---- Packaged app output ----
 /dist/
+
+# ---- Raw live captures (DO NOT COMMIT, even redacted) ----
+# ETW/pcap/HAR/logcat and their redacted derivatives stay local; only
+# paraphrased findings go into docs/.
+outputs logs/
+*.etl
+*.etl.xml
+*.pcap
+*.pcapng
+*.har
+*.saz
+*.log
+*logcat*.txt
+*_pairing_*.txt
+SSLKEYLOGFILE*
