@@ -108,18 +108,24 @@ jobs:
             --wait
           xcrun stapler staple dist/PhoneLink.app
 
-      - name: Zip bundle for upload
-        run: |
-          # A .app is a directory; zipping is not a .dmg. Re-zip after any staple.
-          ditto -c -k --sequesterRsrc --keepParent dist/PhoneLink.app dist/PhoneLink.app.zip
-          ls -lh dist
-
+      # Upload the .app BUNDLE DIRECTLY. actions/upload-artifact zips its
+      # contents itself, so the downloaded PhoneLink-app.zip contains
+      # PhoneLink.app — not a zip-inside-a-zip. (Do NOT pre-zip for the
+      # artifact; that double-zips.)
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: PhoneLink-app
-          path: dist/PhoneLink.app.zip
+          path: dist/PhoneLink.app
           if-no-files-found: error
+
+      # A Release asset must be a single file, so make one zip ONLY on tag
+      # builds and attach it. This never feeds the artifact upload above.
+      - name: Zip bundle for release
+        if: github.ref_type == 'tag'
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent dist/PhoneLink.app dist/PhoneLink.app.zip
+          ls -lh dist
 
       - name: Publish to GitHub Releases
         if: github.ref_type == 'tag'
