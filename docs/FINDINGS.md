@@ -495,3 +495,46 @@ Implication for `Sources/NanoTransport`: the ICE/STUN core is the right
 primitive (confirmed). Priorities are a working **TURN client** and the ICE
 nomination/USE-CANDIDATE path; `QUICNanoConnection` remains the wrong primitive
 for the media leg (QUIC is only the cloud/signaling leg).
+
+## Prior art + the TWO pairing paths  — CORRECTION
+Earlier notes treated "the first-party wall" as one thing blocking everything.
+A survey of existing open-source clients shows that was wrong: there are **two
+distinct pairing models**, and only one is hard-gated.
+
+Prior art:
+- **LinkMyPhone** (`github.com/YMGPwcca/linkmyphone`) — an unofficial **Linux**
+  client that **actually interoperates** with Microsoft's DCG + Hub Relay.
+  Working: **clipboard (bidirectional) and notifications** (dismiss/actions/
+  reply). Not implemented: messages, calls, media, files, **screen mirroring**,
+  and **no QR pairing**. Crucially, it authenticates with an **OAuth
+  device-code flow** (standard MSA sign-in) and stores self-generated
+  **private keys** — *not* a TPM/`wlidsvc` device certificate.
+- **SapkaLabs/sapkalink** — research only; treats independent pairing as an
+  unresolved gate; explicitly refuses token extraction / impersonation.
+- Sefirah / mdgspace / KDE Connect — own-protocol apps, not MS interop.
+
+The two paths:
+1. **QR / `cpsi` pairing** — the cloud PinSession from the first-party pairing
+   proxy (the `/dl?...cpsi=` link). Needs the MSA device token / device cert.
+   **Hard-gated; not reproducible client-side.** (This is the wall we kept hitting.)
+2. **Account device-to-device** — both ends signed into the *same* MSA; the
+   client signs in via **device-code**, generates its **own** device key pair,
+   and **registers into the DDS device graph** (the
+   `continuum.dds.microsoft.com/.../Devices` endpoint we saw live) under an
+   `AccountPairingD2D`-type `CryptoTrustRelationship` (the trust types we
+   documented). **Open enough that LinkMyPhone's clipboard + notifications work
+   today** — no QR, no `cpsi`, no TPM.
+
+Implication: the **feature layer (clipboard, notifications, likely messages/
+contacts) is reachable on Mac via path 2** — device-code sign-in + DDS
+registration + Hub Relay — which is what we should build. **Screen mirroring +
+QR pairing stay the hard part** (mirroring rides the Nano ICE/STUN/TURN
+transport; QR/`cpsi` stays gated).
+
+**Open question to resolve before building (clean-room gate):** which
+**client id** the device-code flow presents, and whether the Hub Relay accepts
+a token from a *user-registered* client id. If path 2 only works with a
+**first-party** client id, using it would be impersonation (against our rules);
+if a user/own client id is accepted, the path is clean. Resolve by RE of the
+Android app (`com.microsoft.appmanager`, on disk) + our captured scopes, not by
+copying LinkMyPhone's code.
