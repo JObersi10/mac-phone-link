@@ -423,3 +423,39 @@ Net: the auth side is now **confirmed, not inferred** — and it confirms the wa
 is specifically the MSA device-token / device-cert mint (`wlidsvc` PPCRL), which
 a third party cannot reproduce. `Sources/DCGAuth` should target the MSA
 token-broker path (`DCGWireContract`), not Entra OAuth.
+
+## Nano transport  — CONFIRMED ON THE WIRE (live pktmon capture)
+From a `pktmon` packet capture of a live mirroring/camera session, decoded by
+`scripts/parse_transport.py` (headers + STUN only; media never read; raw kept
+local). This confirms the ICE/STUN/TURN model from static RE **on the wire** and
+answers the open relay-vs-P2P question.
+
+- **Media is delivered PEER-TO-PEER over the local network**, not relayed. The
+  dominant flow was phone→PC directly between the two LAN addresses (~116k UDP
+  packets for the video leg), alongside **5–6 parallel UDP channel pairs** —
+  matching the Nano multi-channel model (video / audio / input / message / blob).
+- **ICE connectivity checks confirmed:** ~48 STUN **Binding Request** / ~44
+  **Binding Success** between the peers (RFC 5389/8445).
+- **TURN is used for candidate gathering / fallback against Microsoft Azure**
+  STUN-TURN servers on **port 3478** (hosts in the `20.202.x.x` Azure range).
+  The classic long-term-credential dance was observed: `Allocate` → `Error`
+  (401, no creds) → `CreatePermission` **Success**. So a faithful client needs a
+  real TURN client (Allocate/Refresh/CreatePermission/ChannelBind), even though
+  the happy path on a shared LAN is a direct host-candidate pair.
+- **Candidate types seen** (via `XOR-MAPPED-ADDRESS` / `XOR-PEER-ADDRESS`):
+  **host** candidates (both devices' LAN addresses, on several ports) and a
+  **server-reflexive** candidate (the public address returned by the STUN
+  server). Both ends reflexed to the *same* public IP → same NAT → ICE correctly
+  selected the direct LAN path and kept TURN as fallback.
+- Also present (cloud/signaling legs, not the media path): UDP/443 to Cloudflare
+  (`162.159.x` — likely HTTP/3/QUIC signaling) and assorted `:443` to Azure/CDN.
+  These are the control/relay-coordination legs, separate from the P2P media.
+- Not visible in this capture: the pseudo-TLS record layout and per-channel
+  versioned handshake bytes (packets were header-truncated). Those still need a
+  fuller payload capture or native disasm — but the **transport selection and
+  ICE/STUN/TURN behaviour are now confirmed fact**.
+
+Implication for `Sources/NanoTransport`: the ICE/STUN core is the right
+primitive (confirmed). Priorities are a working **TURN client** and the ICE
+nomination/USE-CANDIDATE path; `QUICNanoConnection` remains the wrong primitive
+for the media leg (QUIC is only the cloud/signaling leg).
