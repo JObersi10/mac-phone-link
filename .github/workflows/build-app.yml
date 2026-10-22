@@ -108,22 +108,27 @@ jobs:
             --wait
           xcrun stapler staple dist/PhoneLink.app
 
-      - name: Zip bundle for upload
-        run: |
-          # A .app is a directory; zipping is not a .dmg. Re-zip after any staple.
-          ditto -c -k --sequesterRsrc --keepParent dist/PhoneLink.app dist/PhoneLink.app.zip
-          ls -lh dist
-
+      # Upload the PARENT dir (dist/), which at this point holds only
+      # PhoneLink.app. actions/upload-artifact zips once and keeps paths
+      # relative to dist/, so the downloaded PhoneLink-app.zip unzips to a
+      # proper PhoneLink.app wrapper — not a zip-in-zip, and not a bare
+      # Contents/ folder you have to rename.
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: PhoneLink-app
-          path: dist/PhoneLink.app.zip
+          path: dist/
           if-no-files-found: error
+
+      # A Release asset must be a single file. Zip to RUNNER_TEMP (outside
+      # dist/) ONLY on tag builds, so it never lands in the artifact above.
+      - name: Zip bundle for release
+        if: github.ref_type == 'tag'
+        run: ditto -c -k --sequesterRsrc --keepParent dist/PhoneLink.app "$RUNNER_TEMP/PhoneLink.app.zip"
 
       - name: Publish to GitHub Releases
         if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/PhoneLink.app.zip
+          files: ${{ runner.temp }}/PhoneLink.app.zip
           fail_on_unmatched_files: true

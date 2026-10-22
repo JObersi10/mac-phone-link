@@ -5,6 +5,27 @@ Microsoft **Phone Link / Link to Windows**.
 
 > Clean-room project. See [`NOTICE.md`](NOTICE.md). Not affiliated with Microsoft.
 
+## Status: research complete, interop blocked at the first-party wall
+This project reverse-engineered the full Phone Link link (auth, pairing,
+transport) and built the macOS client up to — but not through — Microsoft's
+first-party identity gate. See the docs below for exactly where that line is.
+
+- [`docs/FINDINGS.md`](docs/FINDINGS.md) — everything confirmed, incl. live
+  captures: auth is an **MSA device/token-broker** flow (not Entra OAuth);
+  pairing is a **cloud `cpsi` PinSession** (QR) or **account device-to-device**;
+  media transport is **ICE/STUN/TURN, P2P over LAN** with Azure TURN fallback.
+- [`docs/WINDOWS_COMPONENTS.md`](docs/WINDOWS_COMPONENTS.md) — which Windows DLL
+  owns each part and how they connect, mapped to our Mac modules.
+- [`docs/SETUP_CLIENT_ID.md`](docs/SETUP_CLIENT_ID.md) — the client is wired
+  end-to-end (`AccountLinkCoordinator`) but needs a **caller-supplied client
+  id**; DCG only issues to the first-party id, which this repo does not embed.
+- [`docs/OWN_APP.md`](docs/OWN_APP.md) — the no-wall alternative (own protocol,
+  LAN-direct), with the Mac engine reused and an `LANTransport` started.
+
+**The wall:** completing a real link needs a Microsoft-minted device token /
+first-party client id that a clean third-party client cannot reproduce. The code
+is complete and runnable up to that point; it is not a working link on its own.
+
 ## What's here
 - **`Protos/`** — clean-room protobuf schemas (`maclink.*`) mirroring the
   observed wire interface (clipboard, notifications, platform channel &

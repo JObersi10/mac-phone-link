@@ -60,6 +60,42 @@ Source: `FreQrCodeManager`, `FreParseDynamicLinkManager`, `DeeplinkResolver`.
   the transfer modes. `validateDynamicLink` fails on `EMPTY_{VM,CPSI,RING,TSFT,MVC}`.
 Modeled: `QRPairingPayload`, `DynamicLinkMode`, `RingDefinition`.
 
+### Real PC "Add device" link  — CONFIRMED from a live Windows PC
+Captured from a real Windows Phone Link "Add device" button (live `cpsi`/`ti`/`et`
+values redacted — the `cpsi` is a short-lived session token). The add-device link
+the **PC** produces is a *different* shape from the `uaid` "ideal flow" above:
+```
+https://dcg.microsoft.com/dl?mvc=<int>&cpsi=<char><guid>&vm=101&et=<unix>&r=5&ti=<32-hex>
+```
+Corrections this forces to the earlier model:
+- **Path is `/dl`** (a deeplink path), not `/`.
+- **`vm=101`** is the real PC add-device mode (we'd labelled 101 "minimalism
+  OOBE"); `vm=5` ideal-flow is a *different* entry point.
+- **`cpsi`** carries the cloud PinSession — a single letter prefix + a GUID
+  (e.g. `n<guid>`); this flow uses **no `uaid` and no `apn`**.
+- **`et`** = Unix-seconds **expiry** (new param; observed ≈ capture time, so the
+  session is short-lived — explains why an old link later reads "unavailable").
+- **`mvc`** = numeric client **min-version code** (~5.23M).
+- **`ti`** here is **32 lowercase hex, no dashes** — not a dashed GUID.
+This is the link whose `cpsi` only the first-party pairing proxy can mint; the
+grammar is now exact, but the session behind it is still cloud-gated.
+
+**What `/dl` does when opened — CONFIRMED live (observed resolver behavior):**
+opening the link on a non-Android client (Claude's browser) **302-redirects to
+the Google Play page** for `com.microsoft.appmanager`, carrying the pairing
+context as the Play **install `referrer`**:
+`cpsi=<session>&ti=<32hex>&vm=101&r=5&et=<unix>&mvc=<int>&utm_source=pcqr`.
+So pairing is a **deferred deep link via the Play Install Referrer**:
+1. Phone scans the PC QR → hits `dcg.microsoft.com/dl`.
+2. If the app isn't installed → redirect to Play **with the pairing params as
+   the install referrer**; on first launch the app reads the Play Install
+   Referrer API, recovers `cpsi`/`ti`/`vm`, and completes pairing cloud-side.
+3. If the app **is** installed → the `autoVerify` App Link opens the app
+   directly with the deeplink (no Play round-trip).
+`utm_source=pcqr` tags the origin as the PC QR. This explains why a scan without
+a live, cloud-minted `cpsi` just falls through to a web/Play page and never
+pairs: the whole ceremony hinges on a `cpsi` the first-party proxy issues.
+
 ### Why a locally-built QR still won't pair
 `dcg.microsoft.com` IS an `autoVerify` App Link in the manifest, so the format is
 right — but `validateDynamicLink` only treats the link as a *pairing* link when
@@ -328,3 +364,193 @@ likely wrong for Phone Link; treat `DCGWireContract` (new) as the confirmed shap
 Confidence: endpoint/header/api-version/algorithm/enum strings are **observed**
 in the shipped artifact; the end-to-end sequence is **derived** from them and
 not yet confirmed against live traffic (see `docs/EVIDENCE_PLAN.md` item A/C).
+
+---
+
+## Android companion surface  — CONFIRMED from live pairing logcat
+From a redacted `adb logcat` taken during a Windows↔Android pairing (raw kept
+local per `EVIDENCE_PLAN`; only names recorded here). App = `com.microsoft.appmanager`,
+log tag `WindowsLink`, MSA tag `OneAuthLog`.
+
+- **Phone-side auth is MSAL against `login.microsoftonline.com/consumers`** (MSA
+  consumers authority), consistent with the DCG MSA-ticket finding. (The Windows
+  DCG leg uses `login.microsoft.com/consumers` + `msatoken.dcg.microsoft.com`;
+  two different legs.)
+- **Transport bootstrap uses a Bluetooth RFCOMM server** on the phone
+  (`method_is_rfcomm_server_opened`, `capability_bluetooth_transport`,
+  `notifyConnectionState`) — confirms the BLE/RFCOMM side-channel + wake we
+  inferred from the YPP layer; the media path (Nano/ICE) is negotiated after.
+- **Capability flags the phone advertises to the PC** (cross-process query
+  grammar `capability_<name>`): `adaptive_layout`, `android_apps_on_windows`,
+  `audio_streaming`, `black_screen_control`, `bluetooth_transport`,
+  `call_support`, `clipboard_redirector`, `device_info`, `drag_and_drop_broker`,
+  `input_inject`, `instant_hotspot`, `launch_activity`, `message_support`,
+  `pre_granted_permissions`, `recent_apps`, `remote_lock_simulation`,
+  `tablet_support`, `wifi_direct`. This is the authoritative feature set a
+  faithful client negotiates.
+- **Internal content-provider IPC surface** (phone app): `DeviceInfo@{isFolded,
+  getVendorRssiLevel,getMAXRssiLevel}`, `PermissionManager@{isWFDPermissionGranted,
+  isBluetoothConnectPermissionGranted}`, `TaskInfoManager@getRecentTasks`,
+  `UserInfo@isTwoPhoneModeEnabled`, `PreviewMode@isPreviewModeEnabled`,
+  `ServiceInfo@getLauncherIconEnabled`, `WindowsLinkTileRequest@setStateOnAnd{Connected,Disconnected}`.
+- Note: logcat does **not** carry the Nano/ICE/TURN wire bytes or the DCG HTTP —
+  those live in native libs + on the network. (`quic`/`ice`/`turn` substring hits
+  in logcat were Qualcomm-camera / "device" / "return" noise, not transport.)
+
+## "Phone as webcam" feature  — CONFIRMED from live webcam logcat
+Separate feature from screen mirroring: the phone's camera is streamed to the PC
+and surfaced there as a **virtual camera** device.
+
+- Phone-side owner: `com.microsoft.mmx.agents.camera` —
+  `…ui.views.CameraStreamActivity`, `…foregroundservice.CameraStreamForegroundService`,
+  `…ui.views.StreamConnectedFragment.showEffectsDialog` (so camera effects are a
+  phone-side control surface).
+- **Encoding = H.264** (`mime = "video/avc"`, input `video/raw`), via the
+  Qualcomm hw encoder `c2.qti.avc.encoder` (sw fallback `c2.android.avc.encoder`),
+  `bitrate-mode = 1` (VBR). Observed bitrate ladder ~1 Mbps / ~2 Mbps with a high
+  max ceiling. This is the **same codec and transport as mirroring** — just the
+  camera as the source instead of the screen.
+- **Implication for the Mac client:** receiving/decoding reuses the existing
+  H.264 path (`VTVideoDecoder`) over a Nano typed channel; the only genuinely new
+  pieces are (a) the camera-stream control messages (start/stop/effects) and
+  (b) a macOS-side sink. The macOS equivalent of the Windows virtual camera is a
+  **Core Media IO camera extension** (`CMIOExtension` system extension) that
+  publishes decoded frames as a system camera any app (FaceTime/Zoom) can select.
+  Both are buildable independently of the first-party wall; lighting them up still
+  needs the live Nano transport.
+
+Confidence: component/class names, codec mime, encoder ids and MSAL authority are
+**observed** in live logcat; the stream↔transport binding is **derived** (reuses
+the confirmed mirroring/Nano path) and not yet confirmed on the wire.
+
+## Windows auth leg  — CONFIRMED ON THE WIRE (live WPR/ETW trace)
+From a targeted LiveId + WinHTTP/WinINet ETW trace during a live reconnect (raw
+`.etl` kept local). This is the first **on-the-wire** confirmation of the DCG
+auth model — it upgrades the earlier static-RE inferences to observed fact.
+
+- **DCG.ReadWrite is acquired as an MSA *token-broker* scope, not an Entra OAuth
+  scope.** The exact request scope string on the wire is
+  `scope=https://dcg.microsoft.com/DCG.ReadWrite&api-version=2.0`, used inside a
+  WS-Trust `RequestSecurityToken` SOAP with a `_TOKEN_BROKER` policy suffix
+  (`.../DCG.ReadWrite_TOKEN_BROKER`). So the client asks **wlidsvc / the MSA
+  token broker** for a ticket to the DCG resource — it never does an Entra
+  `/oauth2/v2.0/token` call for that scope. **This is the concrete explanation
+  for `AADSTS65001`:** we were asking the wrong authority (Entra) for a scope the
+  real client only ever requests through the MSA broker.
+- **Device-token broker scopes confirmed live** (match the external DDS note
+  exactly): `service::dds.microsoft.com::MBI_SSL` and
+  `service::dds.microsoft.com::MBI_SSL_TOKEN_BROKER`.
+- **The device identity ceremony is live PPCRL / WS-Trust:** `GetDeviceCert`,
+  `RequestSecurityToken` / `RequestMultipleSecurityTokens` (RST/RSTR), `wsse:`
+  security headers, and `DeviceAssociateService` all appear during the window —
+  against `login.live.com` / `login.microsoft.com`. The device cert + MBI_SSL
+  device ticket are minted here by the native stack; this is the gated step.
+- **Device-graph endpoint (DDS / "Continuum"):**
+  `GET https://continuum.dds.microsoft.com/Command/user/Continuum/Devices?scenario=…`
+  (resolves via Azure Front Door, `*.tm-azurefd.net`). This is the cross-device
+  directory the client registers into — the `g:<decimal>` graph from the DDS note.
+- Hosts seen: `login.microsoft.com`, `login.live.com`, `dcg.microsoft.com`,
+  `continuum.dds.microsoft.com`, `account.live.com`. `api-version=2.0` confirmed.
+- **No Nano/TURN/relay host appeared** in this trace — expected, the ETW
+  providers were HTTP/auth only. The transport leg still needs a packet capture
+  (`capture/phonelink-transport-pktmon.ps1`).
+
+Net: the auth side is now **confirmed, not inferred** — and it confirms the wall
+is specifically the MSA device-token / device-cert mint (`wlidsvc` PPCRL), which
+a third party cannot reproduce. `Sources/DCGAuth` should target the MSA
+token-broker path (`DCGWireContract`), not Entra OAuth.
+
+## Nano transport  — CONFIRMED ON THE WIRE (live pktmon capture)
+From a `pktmon` packet capture of a live mirroring/camera session, decoded by
+`scripts/parse_transport.py` (headers + STUN only; media never read; raw kept
+local). This confirms the ICE/STUN/TURN model from static RE **on the wire** and
+answers the open relay-vs-P2P question.
+
+- **Media is delivered PEER-TO-PEER over the local network**, not relayed. The
+  dominant flow was phone→PC directly between the two LAN addresses (~116k UDP
+  packets for the video leg), alongside **5–6 parallel UDP channel pairs** —
+  matching the Nano multi-channel model (video / audio / input / message / blob).
+- **ICE connectivity checks confirmed:** ~48 STUN **Binding Request** / ~44
+  **Binding Success** between the peers (RFC 5389/8445).
+- **TURN is used for candidate gathering / fallback against Microsoft Azure**
+  STUN-TURN servers on **port 3478** (hosts in the `20.202.x.x` Azure range).
+  The classic long-term-credential dance was observed: `Allocate` → `Error`
+  (401, no creds) → `CreatePermission` **Success**. So a faithful client needs a
+  real TURN client (Allocate/Refresh/CreatePermission/ChannelBind), even though
+  the happy path on a shared LAN is a direct host-candidate pair.
+- **Candidate types seen** (via `XOR-MAPPED-ADDRESS` / `XOR-PEER-ADDRESS`):
+  **host** candidates (both devices' LAN addresses, on several ports) and a
+  **server-reflexive** candidate (the public address returned by the STUN
+  server). Both ends reflexed to the *same* public IP → same NAT → ICE correctly
+  selected the direct LAN path and kept TURN as fallback.
+- Also present (cloud/signaling legs, not the media path): UDP/443 to Cloudflare
+  (`162.159.x` — likely HTTP/3/QUIC signaling) and assorted `:443` to Azure/CDN.
+  These are the control/relay-coordination legs, separate from the P2P media.
+- Not visible in this capture: the pseudo-TLS record layout and per-channel
+  versioned handshake bytes (packets were header-truncated). Those still need a
+  fuller payload capture or native disasm — but the **transport selection and
+  ICE/STUN/TURN behaviour are now confirmed fact**.
+
+Implication for `Sources/NanoTransport`: the ICE/STUN core is the right
+primitive (confirmed). Priorities are a working **TURN client** and the ICE
+nomination/USE-CANDIDATE path; `QUICNanoConnection` remains the wrong primitive
+for the media leg (QUIC is only the cloud/signaling leg).
+
+## Prior art + the TWO pairing paths  — CORRECTION
+Earlier notes treated "the first-party wall" as one thing blocking everything.
+A survey of existing open-source clients shows that was wrong: there are **two
+distinct pairing models**, and only one is hard-gated.
+
+Prior art:
+- **LinkMyPhone** (`github.com/YMGPwcca/linkmyphone`) — an unofficial **Linux**
+  client that **actually interoperates** with Microsoft's DCG + Hub Relay.
+  Working: **clipboard (bidirectional) and notifications** (dismiss/actions/
+  reply). Not implemented: messages, calls, media, files, **screen mirroring**,
+  and **no QR pairing**. Crucially, it authenticates with an **OAuth
+  device-code flow** (standard MSA sign-in) and stores self-generated
+  **private keys** — *not* a TPM/`wlidsvc` device certificate.
+- **SapkaLabs/sapkalink** — research only; treats independent pairing as an
+  unresolved gate; explicitly refuses token extraction / impersonation.
+- Sefirah / mdgspace / KDE Connect — own-protocol apps, not MS interop.
+
+The two paths:
+1. **QR / `cpsi` pairing** — the cloud PinSession from the first-party pairing
+   proxy (the `/dl?...cpsi=` link). Needs the MSA device token / device cert.
+   **Hard-gated; not reproducible client-side.** (This is the wall we kept hitting.)
+2. **Account device-to-device** — both ends signed into the *same* MSA; the
+   client signs in via **device-code**, generates its **own** device key pair,
+   and **registers into the DDS device graph** (the
+   `continuum.dds.microsoft.com/.../Devices` endpoint we saw live) under an
+   `AccountPairingD2D`-type `CryptoTrustRelationship` (the trust types we
+   documented). **Open enough that LinkMyPhone's clipboard + notifications work
+   today** — no QR, no `cpsi`, no TPM.
+
+Implication: the **feature layer (clipboard, notifications, likely messages/
+contacts) is reachable on Mac via path 2** — device-code sign-in + DDS
+registration + Hub Relay — which is what we should build. **Screen mirroring +
+QR pairing stay the hard part** (mirroring rides the Nano ICE/STUN/TURN
+transport; QR/`cpsi` stays gated).
+
+**Clean-room gate — RESOLVED (no-go for a clean client).** The question was
+which **client id** the device-code flow presents. Answer, from the Android app
++ LinkMyPhone's own docs:
+- The flow authenticates with the **first-party Phone Link MSA client id** (a
+  fixed GUID shipped in the APK; the *same* id appears in our live DCG trace
+  next to `DCG.ReadWrite_TOKEN_BROKER`). Not recorded verbatim here, by our own
+  "no first-party client ids" rule.
+- LinkMyPhone works by **presenting that first-party id** — i.e. **impersonating
+  the Phone Link app.** Its docs call the device-code path "an interoperability
+  experiment, not a source-confirmed replacement," and note there's no evidence
+  a *user-registered* client id is accepted by DCG (consistent with our earlier
+  `AADSTS65001`).
+- **Correction to the TPM assumption:** DCG device trust is a **self-signed**
+  device cert via `EnrollDevice` (trust identity `SelfSigned`), **not** the
+  TPM/`wlidsvc` cert. So the device cert is *not* the blocker — the **client id
+  is.**
+
+Net: the account/device-code path is technically real but only functions by
+embedding Microsoft's first-party client id = impersonation, which this project
+will not do. The clean ceiling is unchanged: everything up to the first-party
+client-id gate is buildable; the auth itself is not reproducible by a
+non-impersonating third-party client. Options are (1) ship clean up to the wall,
+(2) impersonate (out of scope for this repo), or (3) run real Windows in a VM.

@@ -57,13 +57,17 @@ logic is buildable and testable now.
 Make the direct path actually carry media once a peer exists.
 1. **Frame container** — SPS parse now sets `videoSize` (✅); still confirm
    Annex B vs AVCC and PPS/VPS signaling against real bytes from a peer.
-2. **Transport primitive** — CORRECTED: the media path is **ICE/STUN/TURN +
-   pseudo-TLS** (WebRTC-style), **not QUIC** (✅ confirmed, FINDINGS). Our
-   `QUICNanoConnection` is the wrong primitive; a faithful client needs an ICE
-   agent + STUN/TURN + the pseudo-TLS handshake. Multi-stream confirmed — one
-   Connect multiplexes typed channels (video/audio/input/message/blob, modeled in
-   `NanoChannel`, ✅). `msquic` is likely the cloud/relay (HTTP/3) leg. Exact
-   STUN/pseudo-TLS/handshake-packet bytes still need native disasm or live capture.
+2. **Transport primitive** — CONFIRMED ON THE WIRE (live pktmon capture, FINDINGS
+   § "Nano transport — CONFIRMED ON THE WIRE"): the media path is
+   **ICE/STUN/TURN** (WebRTC-style), **not QUIC**. Media runs **peer-to-peer over
+   the LAN** (host candidates) with **Azure TURN `:3478` as fallback**; ICE
+   Binding checks + the TURN Allocate/CreatePermission dance were observed.
+   Multi-stream confirmed — 5–6 parallel UDP channel pairs (video/audio/input/
+   message/blob, modeled in `NanoChannel`, ✅). QUIC/443 is only the cloud/
+   signaling leg. Our `QUICNanoConnection` is the wrong primitive for media.
+   **Next:** a working TURN client (Allocate/Refresh/CreatePermission/ChannelBind)
+   + the ICE nomination/USE-CANDIDATE path. Exact pseudo-TLS/handshake-packet
+   bytes still need a fuller payload capture or native disasm.
 3. **Handshake on the wire** — drive `NanoHandshake` (context_source) end to end;
    confirm message framing (netty codec) of the pairing-channel ceremony.
 4. **Transport negotiation** — confirmed there is a `hotspotSideChannelService`

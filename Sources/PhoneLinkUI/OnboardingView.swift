@@ -115,9 +115,6 @@ private struct PermissionRow: View {
 
 private struct SignInStep: View {
     @ObservedObject var model: OnboardingViewModel
-    // Same key MicrosoftSignIn reads in the app layer. Lets a user paste the
-    // client id of their own Entra registration without env vars or Info.plist.
-    @AppStorage("PhoneLinkMSALClientId") private var clientId = ""
 
     var body: some View {
         VStack(spacing: 14) {
@@ -126,15 +123,15 @@ private struct SignInStep: View {
             if let user = model.signedInUser {
                 Label(user, systemImage: "checkmark.seal.fill").foregroundStyle(.green)
             } else {
-                VStack(spacing: 6) {
-                    TextField("Entra app client id (GUID)", text: $clientId)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(maxWidth: 320)
-                    Text("Register your own Entra app with redirect "
-                         + "`msauth.com.maclink.phonelink://auth`, then paste its client id.")
-                        .font(.caption2).foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center).frame(maxWidth: 320)
-                }
+                // The app injects an in-app Microsoft sign-in window (WebViewSignIn,
+                // login.live.com). The user signs into their own account and we keep
+                // only the resulting MSA session — no Entra app registration, no
+                // client id to paste. (DCG auth is MSA-ticket-based, not an Entra
+                // OAuth scope — see docs/FINDINGS.md.)
+                Text("A Microsoft sign-in window opens in the app. Use the same "
+                     + "account your phone is signed in with — nothing else to set up.")
+                    .font(.caption).foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center).frame(maxWidth: 320)
                 Button {
                     Task { await model.signIn() }
                 } label: {
@@ -142,12 +139,11 @@ private struct SignInStep: View {
                     else { Text("Sign in with Microsoft") }
                 }
                 .buttonStyle(.borderedProminent)
-                .disabled(model.isSigningIn || clientId.trimmingCharacters(in: .whitespaces).isEmpty)
+                .disabled(model.isSigningIn)
 
                 Button("Skip for now") { model.next() }
                     .buttonStyle(.link)
-                    .help("Explore the app without signing in. Microsoft sign-in "
-                          + "needs your own Entra app id and isn't required yet.")
+                    .help("Explore the app without signing in. You can sign in later.")
             }
             if let err = model.signInError {
                 Text(err).font(.caption).foregroundStyle(.red).multilineTextAlignment(.center)
