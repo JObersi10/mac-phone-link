@@ -531,10 +531,26 @@ registration + Hub Relay — which is what we should build. **Screen mirroring +
 QR pairing stay the hard part** (mirroring rides the Nano ICE/STUN/TURN
 transport; QR/`cpsi` stays gated).
 
-**Open question to resolve before building (clean-room gate):** which
-**client id** the device-code flow presents, and whether the Hub Relay accepts
-a token from a *user-registered* client id. If path 2 only works with a
-**first-party** client id, using it would be impersonation (against our rules);
-if a user/own client id is accepted, the path is clean. Resolve by RE of the
-Android app (`com.microsoft.appmanager`, on disk) + our captured scopes, not by
-copying LinkMyPhone's code.
+**Clean-room gate — RESOLVED (no-go for a clean client).** The question was
+which **client id** the device-code flow presents. Answer, from the Android app
++ LinkMyPhone's own docs:
+- The flow authenticates with the **first-party Phone Link MSA client id** (a
+  fixed GUID shipped in the APK; the *same* id appears in our live DCG trace
+  next to `DCG.ReadWrite_TOKEN_BROKER`). Not recorded verbatim here, by our own
+  "no first-party client ids" rule.
+- LinkMyPhone works by **presenting that first-party id** — i.e. **impersonating
+  the Phone Link app.** Its docs call the device-code path "an interoperability
+  experiment, not a source-confirmed replacement," and note there's no evidence
+  a *user-registered* client id is accepted by DCG (consistent with our earlier
+  `AADSTS65001`).
+- **Correction to the TPM assumption:** DCG device trust is a **self-signed**
+  device cert via `EnrollDevice` (trust identity `SelfSigned`), **not** the
+  TPM/`wlidsvc` cert. So the device cert is *not* the blocker — the **client id
+  is.**
+
+Net: the account/device-code path is technically real but only functions by
+embedding Microsoft's first-party client id = impersonation, which this project
+will not do. The clean ceiling is unchanged: everything up to the first-party
+client-id gate is buildable; the auth itself is not reproducible by a
+non-impersonating third-party client. Options are (1) ship clean up to the wall,
+(2) impersonate (out of scope for this repo), or (3) run real Windows in a VM.
